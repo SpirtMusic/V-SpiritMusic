@@ -19,6 +19,7 @@ qt_add_qml_module(appvsonegx
         qml/Main.qml
         qml/themes/Theme.qml
         qml/controls/VTabButton.qml
+        qml/views/layouts/VTabBar.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
