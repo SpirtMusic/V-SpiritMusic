@@ -6,6 +6,7 @@ int main(int argc, char *argv[])
     QGuiApplication app(argc, argv);
 
     QQmlApplicationEngine engine;
+    qmlRegisterSingletonType( QUrl(QStringLiteral("qrc:/vsonegx/qml/themes/Theme.qml")), "Theme", 1, 0, "Theme" );
     const QUrl url(QStringLiteral("qrc:/vsonegx/qml/Main.qml"));
     QObject::connect(
         &engine,
