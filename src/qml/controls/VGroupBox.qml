@@ -17,7 +17,7 @@ GroupBox {
     background: Rectangle {
         y: groupBox.topPadding - groupBox.bottomPadding
         width: parent.width
-        height: parent.height - upperGroup.topPadding + groupBox.bottomPadding
+        height: parent.height - groupBox.topPadding + groupBox.bottomPadding
         color: "transparent"
         border.color: groupBox.colorSelect
         radius: 4
