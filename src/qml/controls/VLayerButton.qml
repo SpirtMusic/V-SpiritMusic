@@ -15,7 +15,7 @@ Switch {
 
     width: widthScale*100
     height: heightScale*100
-    property bool switchToggled: false
+    property bool layerToggled: false
     indicator: Rectangle {
         color: layerButton.checked ? layerButton.colorSelect : layerButton.colorUnselect
         radius: 4

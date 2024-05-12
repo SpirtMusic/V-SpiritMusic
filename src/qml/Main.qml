@@ -30,4 +30,6 @@ ApplicationWindow {
             decorator.x = decorator.targetX+5
         }
     }
+    VLayerContainer{
+    }
 }

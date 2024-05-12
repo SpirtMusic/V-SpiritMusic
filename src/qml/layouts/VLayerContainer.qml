@@ -1,6 +1,8 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Theme
+import "../controls"
 
 MouseArea {
     id: layoutContainer
@@ -22,7 +24,7 @@ MouseArea {
                            currentlayer.checked = !currentlayer.checked;
                        }
                        else {
-                           currentlayer.switchToggled = false;
+                           currentlayer.layerToggled = false;
                        }
                    }
                    toggleLayers(mouse.x, mouse.y);
@@ -34,7 +36,27 @@ MouseArea {
         z:-1
         spacing: 10
         anchors.centerIn: parent
+        VLayerButton{
+            id:layer1
+            Component.onCompleted: {
+                layoutContainer.layers.push(layer1);
 
+            }
+        }
+        VLayerButton{
+            id:layer2
+            Component.onCompleted: {
+                layoutContainer.layers.push(layer2);
+
+            }
+        }
+        VLayerButton{
+            id:layer3
+            Component.onCompleted: {
+                layoutContainer.layers.push(layer3);
+
+            }
+        }
     }
     function toggleLayers(mouseX, mouseY) {
         for (var i = 0; i < layers.length; ++i) {
@@ -43,7 +65,7 @@ MouseArea {
             var layerY = currentlayer.y + layoutsRow.y;
             if (mouseX >= layerX && mouseX <= layerX + currentlayer.width &&
                     mouseY >= layerY && mouseY <= layerY + currentlayer.height) {
-                if(!currentlayer.switchToggled){
+                if(!currentlayer.layerToggled){
                     currentlayer.checked = !currentlayer.checked;
                     currentlayer.layerToggled = true;
                 }
