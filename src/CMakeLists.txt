@@ -7,7 +7,10 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(Qt6 6.4 REQUIRED COMPONENTS Quick)
 
 qt_standard_project_setup()
+qt_add_resources(appvsonegx
 
+
+)
 qt_add_executable(appvsonegx
     main.cpp
 )
@@ -19,7 +22,9 @@ qt_add_qml_module(appvsonegx
         qml/Main.qml
         qml/themes/Theme.qml
         qml/controls/VTabButton.qml
-        qml/views/layouts/VTabBar.qml
+        qml/layouts/VTabBar.qml
+    RESOURCES
+        qml/imgs/music.svg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
