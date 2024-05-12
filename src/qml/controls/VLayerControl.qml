@@ -112,6 +112,7 @@ Rectangle{
             anchors.top:parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             height: parent.height
+            width: parent.width/3 * widthScale
             value: 50
             to:100
 

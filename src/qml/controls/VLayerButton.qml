@@ -1,6 +1,5 @@
 import QtQuick
 import QtQuick.Controls
-
 Switch {
     id: layerButton
     property int baseWidth: 1024
@@ -12,17 +11,18 @@ Switch {
     property color colorUnselect: "#ffffff"
     property color colorBorder: "#26282a"
     property string textLayer: "1"
-
-    width: widthScale*100
     height: heightScale*100
+    width: widthScale*100
+
+    padding:0
     property bool layerToggled: false
     indicator: Rectangle {
         color: layerButton.checked ? layerButton.colorSelect : layerButton.colorUnselect
         radius: 4
         border.color: layerButton.colorBorder
         border.width: 1
-        implicitWidth: widthScale*100
-        implicitHeight: heightScale*100
+        implicitWidth: widthScale*50
+        implicitHeight: heightScale*50
         Behavior {
             ColorAnimation {
                 duration: 50
