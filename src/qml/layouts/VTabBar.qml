@@ -9,13 +9,26 @@ TabBar {
         color: Theme.colorBackground
     }
     VTabButton{
+        text:"SoneGX"
         tabBarCurrentItem:tabBar.currentItem
         imageSource:"qrc:/vsonegx/qml/imgs/music.svg"
     }
     VTabButton{
+        text:"Voices"
+        tabBarCurrentItem:tabBar.currentItem
+        imageSource:"qrc:/vsonegx/qml/imgs/sliders-h.svg"
+    }
+    VTabButton{
+        text:"V"
         tabBarCurrentItem:tabBar.currentItem
         imageSource:"qrc:/vsonegx/qml/imgs/music.svg"
     }
+    VTabButton{
+        text:"Settings"
+        tabBarCurrentItem:tabBar.currentItem
+        imageSource:"qrc:/vsonegx/qml/imgs/cog.svg"
+    }
+
 }
 
 
