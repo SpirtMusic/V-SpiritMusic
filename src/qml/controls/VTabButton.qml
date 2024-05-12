@@ -9,10 +9,14 @@ TabButton {
     property color iconColor: "#ffffff"
     property color backgroundColor: "#41474d"
     property color selectColor: "#ff6127"
+    property int baseWidth: 1024
+    property int baseHeight: 768
+    property real widthScale: rootAppWindow.width / baseWidth
+    property real heightScale: rootAppWindow.height / baseHeight
     property int iconHeight: 24
     property int iconWidth: 24
-    property int thisIndex: 0
-    property string imageSource: "qrc:/file.svg"
+    property url imageSource: "qrc:/file.svg"
+    property Item tabBarCurrentItem
 
     text: qsTr("Text")
     leftInset:5
@@ -28,16 +32,16 @@ TabButton {
                 sourceSize.width: tabButton.iconWidth
                 sourceSize.height: tabButton.iconHeight
                 ColorOverlay {
-                    color:control.currentIndex===tabButton.thisIndex ? tabButton.selectColor : tabButton.iconColor
+                    color:tabBarCurrentItem===tabButton ? tabButton.selectColor : tabButton.iconColor
                     anchors.fill: parent
                     source: parent
                     antialiasing: true
-                    //cached: true
+                   // cached: true
                 }
             }
             Text {
                 text:tabButton.text
-                color:  control.currentIndex===tabButton.thisIndex ? tabButton.selectColor : tabButton.textColor
+                color:tabBarCurrentItem===tabButton ? tabButton.selectColor : tabButton.textColor
                 //   font.bold:true
                 font.pointSize:12
                 elide: Text.ElideRight
@@ -45,8 +49,9 @@ TabButton {
         }
     }
     background: Rectangle {
+        implicitWidth: widthScale * 100
+        implicitHeight: heightScale * 40
         color:  tabButton.backgroundColor
         radius: 4
     }
-
 }
