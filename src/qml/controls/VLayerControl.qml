@@ -33,7 +33,70 @@ Rectangle{
             anchors.left: parent.left
             anchors.top:parent.top
             color:layerControl.backgroundColor
-            z:1
+            z:2
+            MouseArea {
+                property real previousPosition: 0
+                property real direction: 0
+                property real swipeDistance: 0
+                property real swipeThreshold: 5  // Minimum swipe distance required
+                property real swipeSensitivity: 1  // Adjust this value to control the sensitivity
+                property int pressInterval: 30
+                property Timer pressTimer: Timer {
+                    interval: parent.pressInterval
+                    repeat: true
+                    onTriggered: voiceControl.decrease()
+                }
+                anchors.fill: parent;
+                onPressed: {
+                    previousPosition = mouseX;
+                    direction = 0;
+                    console.debug("onPressed mouseX:" + mouseX);
+                    parent.color= "#e4e4e4";
+                    swipeDistance = 0
+                    pressTimer.start()
+                }
+                onPositionChanged: {
+                    if (!containsMouse) {
+                        pressTimer.stop()
+                    }
+                    if (previousPosition < mouseX) {
+                        direction = 1  // Swipe to the right
+                        swipeDistance += mouseX - previousPosition
+                    } else if (previousPosition > mouseX) {
+                        direction = -1  // Swipe to the left
+                        swipeDistance += previousPosition - mouseX
+                    } else {
+                        direction = 0
+                    }
+
+                    if (Math.abs(swipeDistance) >= swipeThreshold) {
+                        let increments = swipeDistance / swipeSensitivity
+                        if (direction > 0) {
+                            voiceControl.value += increments * voiceControl.stepSize
+                        } else if (direction < 0) {
+                            voiceControl.value -= Math.abs(increments) * voiceControl.stepSize
+                        }
+                        swipeDistance = 0  // Reset swipeDistance after updating the value
+                    }
+                    previousPosition = mouseX
+                }
+
+                onReleased: {
+                    parent.color= "#41474d";
+                    if(direction > 0){
+                        console.debug("swipe to right");
+                    }
+                    else if(direction < 0){
+                        console.debug("swipe to left");
+                    }
+                    else{
+                        console.debug("swipe no detected");
+                        voiceControl.decrease()
+                    }
+                    pressTimer.stop()
+                }
+
+            }
             Text {
                 text: "-"
                 font.pixelSize: voiceControl.font.pixelSize * 2
@@ -67,14 +130,132 @@ Rectangle{
                     text: voiceControl.textFromValue(voiceControl.value, voiceControl.locale)
                     color: layerControl.textColor
                 }
+                MouseArea {
+                    property real previousPosition: 0
+                    property real direction: 0
+                    property real swipeDistance: 0
+                    property real swipeThreshold: 5  // Minimum swipe distance required
+                    property real swipeSensitivity: 1  // Adjust this value to control the sensitivity
+                    z:-1
+
+                    anchors.fill: parent;
+                    onPressed: {
+                        previousPosition = mouseX;
+                        direction = 0;
+                        console.debug("onPressed mouseX:" + mouseX);
+                        swipeDistance = 0
+
+                    }
+                    onPositionChanged: {
+
+                        if (previousPosition < mouseX) {
+                            direction = 1  // Swipe to the right
+                            swipeDistance += mouseX - previousPosition
+                        } else if (previousPosition > mouseX) {
+                            direction = -1  // Swipe to the left
+                            swipeDistance += previousPosition - mouseX
+                        } else {
+                            direction = 0
+                        }
+
+                        if (Math.abs(swipeDistance) >= swipeThreshold) {
+                            let increments = swipeDistance / swipeSensitivity
+                            if (direction > 0) {
+                                voiceControl.value += increments * voiceControl.stepSize
+                            } else if (direction < 0) {
+                                voiceControl.value -= Math.abs(increments) * voiceControl.stepSize
+                            }
+                            swipeDistance = 0  // Reset swipeDistance after updating the value
+                        }
+                        previousPosition = mouseX
+                    }
+
+                    onReleased: {
+                        if(direction > 0){
+                            console.debug("swipe to right");
+                        }
+                        else if(direction < 0){
+                            console.debug("swipe to left");
+                        }
+                        else{
+                            console.debug("swipe no detected");
+                        }
+                    }
+
+                }
             }
         }
         Rectangle{
+
             height: parent.height
             width: 40 * widthScale
             anchors.right: parent.right
             anchors.top:parent.top
             color:layerControl.backgroundColor
+            MouseArea {
+
+                property real previousPosition: 0
+                property real direction: 0
+                property real swipeDistance: 0
+                property real swipeThreshold: 5  // Minimum swipe distance required
+                property real swipeSensitivity: 1  // Adjust this value to control the sensitivity
+                property int pressInterval: 30
+                property Timer pressTimer: Timer {
+                    interval: parent.pressInterval
+                    repeat: true
+                    onTriggered: voiceControl.increase()
+                }
+                anchors.fill: parent;
+                onPressed: {
+                    previousPosition = mouseX;
+                    direction = 0;
+                    console.debug("onPressed mouseX:" + mouseX);
+                    parent.color= "#e4e4e4";
+                    swipeDistance = 0
+                    pressTimer.start()
+                }
+                onPositionChanged: {
+                    if (!containsMouse) {
+                        pressTimer.stop()
+                    }
+                    if (previousPosition < mouseX) {
+                        direction = 1  // Swipe to the right
+                        swipeDistance += mouseX - previousPosition
+                    } else if (previousPosition > mouseX) {
+                        direction = -1  // Swipe to the left
+                        swipeDistance += previousPosition - mouseX
+                    } else {
+                        direction = 0
+                    }
+
+                    if (Math.abs(swipeDistance) >= swipeThreshold) {
+                        let increments = swipeDistance / swipeSensitivity
+                        if (direction > 0) {
+                            voiceControl.value += increments * voiceControl.stepSize
+                        } else if (direction < 0) {
+                            voiceControl.value -= Math.abs(increments) * voiceControl.stepSize
+                        }
+                        swipeDistance = 0  // Reset swipeDistance after updating the value
+                    }
+                    previousPosition = mouseX
+                }
+
+                onReleased: {
+                    parent.color= "#41474d";
+                    if(direction > 0){
+                        console.debug("swipe to right");
+                    }
+                    else if(direction < 0){
+                        console.debug("swipe to left");
+                    }
+                    else{
+                        console.debug("swipe no detected");
+                        voiceControl.increase()
+                    }
+                    pressTimer.stop()
+                }
+
+            }
             Text {
                 text: "+"
                 font.pixelSize: voiceControl.font.pixelSize * 2
@@ -100,6 +281,59 @@ Rectangle{
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
+    }
+    MouseArea {
+        property real previousPosition: 0
+        property real direction: 0
+        property real swipeDistance: 0
+        property real swipeThreshold: 5  // Minimum swipe distance required
+        property real swipeSensitivity: 1  // Adjust this value to control the sensitivity
+        z:-1
+
+        anchors.fill: parent;
+        onPressed: {
+            previousPosition = mouseX;
+            direction = 0;
+            console.debug("onPressed mouseX:" + mouseX);
+            swipeDistance = 0
+
+        }
+        onPositionChanged: {
+
+            if (previousPosition < mouseX) {
+                direction = 1  // Swipe to the right
+                swipeDistance += mouseX - previousPosition
+            } else if (previousPosition > mouseX) {
+                direction = -1  // Swipe to the left
+                swipeDistance += previousPosition - mouseX
+            } else {
+                direction = 0
+            }
+
+            if (Math.abs(swipeDistance) >= swipeThreshold) {
+                let increments = swipeDistance / swipeSensitivity
+                if (direction > 0) {
+                    voiceControl.value += increments * voiceControl.stepSize
+                } else if (direction < 0) {
+                    voiceControl.value -= Math.abs(increments) * voiceControl.stepSize
+                }
+                swipeDistance = 0  // Reset swipeDistance after updating the value
+            }
+            previousPosition = mouseX
+        }
+
+        onReleased: {
+            if(direction > 0){
+                console.debug("swipe to right");
+            }
+            else if(direction < 0){
+                console.debug("swipe to left");
+            }
+            else{
+                console.debug("swipe no detected");
+            }
+        }
+
     }
 }
 
