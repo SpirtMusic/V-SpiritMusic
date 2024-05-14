@@ -1,42 +1,59 @@
 import QtQuick
 import QtQuick.Controls
-Switch {
-    id: layerButton
-    property int baseWidth: 1024
-    property int baseHeight: 768
+import QtQuick.Layouts
+
+Rectangle {
+    property int baseWidth: rootAppWindow.winBaseWidth
+    property int baseHeight: rootAppWindow.winBaseHeight
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
+    id: vLayerButton
     property color textColor: "#ffffff"
     property color colorSelect: "#ff6127"
     property color colorUnselect: "#ffffff"
     property color colorBorder: "#26282a"
+    property color colorBackgroundButton: "#41474d"
     property string textLayer: "1"
-    height: heightScale*100
-    width: widthScale*100
-
-    padding:0
+    property bool checked: false
     property bool layerToggled: false
-    indicator: Rectangle {
-        color: layerButton.checked ? layerButton.colorSelect : layerButton.colorUnselect
-        radius: 4
-        border.color: layerButton.colorBorder
-        border.width: 1
-        implicitWidth: widthScale*50
-        implicitHeight: heightScale*50
-        Behavior {
-            ColorAnimation {
-                duration: 50
-            }
-        }
-        Text {
-            anchors.fill: parent
-            text: layerButton.textLayer
-            color: layerButton.checked ? layerButton.colorUnselect : layerButton.colorSelect
-            font.bold:true
-            font.pointSize:24
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            elide: Text.ElideRight
+    Layout.margins: 2
+    Layout.fillHeight: true
+    Layout.fillWidth:true
+    Layout.preferredWidth: 60 * widthScale
+    Layout.preferredHeight: 60 * heightScale
+    radius: 4
+    border.color: colorBorder
+    border.width: 1
+    color: checked ? colorSelect : colorBorder
+    Text {
+        anchors.fill: parent
+        text: vLayerButton.textLayer
+        color: vLayerButton.checked ? vLayerButton.colorUnselect : vLayerButton.colorSelect
+        font.bold: true
+        font.pointSize: 22
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        elide: Text.ElideRight
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        onClicked: {
+            vLayerButton.checked = !vLayerButton.checked
         }
     }
+
+    Behavior on color {
+        ColorAnimation {
+            duration: 70
+        }
+    }
+//  onHeightChanged: {
+// console.log("fffffff")
+//  width=Math.min(width, height)
+// }
+// onWidthChanged: {
+//     height=Math.min(width, height)
+
+// }
 }

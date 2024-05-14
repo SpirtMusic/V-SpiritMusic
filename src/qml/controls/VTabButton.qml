@@ -9,8 +9,8 @@ TabButton {
     property color iconColor: "#ffffff"
     property color backgroundColor: "#41474d"
     property color selectColor: "#ff6127"
-    property int baseWidth: 1024
-    property int baseHeight: 768
+    property int baseWidth: rootAppWindow.winBaseWidth
+    property int baseHeight: rootAppWindow.winBaseHeight
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
     property int iconHeight: 24

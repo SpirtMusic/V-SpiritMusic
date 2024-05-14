@@ -3,8 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 Rectangle{
     id:layerControl
-    property int baseWidth: 1024
-    property int baseHeight: 768
+    property int baseWidth: rootAppWindow.winBaseWidth
+    property int baseHeight: rootAppWindow.winBaseHeight
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
     property color textColor: "#ffffff"
@@ -16,7 +16,7 @@ Rectangle{
     color:backgroundColor
     radius: 4
     height: 50 * heightScale
-    width: 120 * widthScale
+    width: 95 * widthScale
     Rectangle{
         color: layerControl.backgroundColor
         anchors.left: parent.left
@@ -26,10 +26,9 @@ Rectangle{
         anchors.topMargin: 2
         anchors.rightMargin: 2
         height: parent.height/2
-
         Rectangle{
             height: parent.height
-            width: 40 * widthScale
+            width: 30 * widthScale
             anchors.left: parent.left
             anchors.top:parent.top
             color:layerControl.backgroundColor
@@ -112,7 +111,7 @@ Rectangle{
             anchors.top:parent.top
             anchors.horizontalCenter: parent.horizontalCenter
             height: parent.height
-            width: parent.width/3 * widthScale
+            width: parent.width/3.5 * widthScale
             value: 50
             to:100
 
@@ -122,9 +121,14 @@ Rectangle{
             down.indicator:Item{
                 visible: false
             }
+            background:Rectangle{
+
+                visible:false
+            }
             contentItem: Rectangle {
                 anchors.fill: parent
-                color:layerControl.backgroundColor
+                color: layerControl.backgroundColor
+
                 Text {
                     anchors.centerIn: parent
                     z: 2
@@ -189,7 +193,7 @@ Rectangle{
         Rectangle{
 
             height: parent.height
-            width: 40 * widthScale
+            width: 30 * widthScale
             anchors.right: parent.right
             anchors.top:parent.top
             color:layerControl.backgroundColor
