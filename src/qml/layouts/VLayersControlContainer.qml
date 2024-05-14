@@ -2,13 +2,11 @@ import QtQuick
 import QtQuick.Layouts
 import "../controls"
 Item{
-
     Column{
         spacing: 10
-
-
         anchors.centerIn: parent
         Row{
+
             spacing: 5
             VLayerControl{}
             VLayerControl{}
@@ -21,6 +19,7 @@ Item{
         }
 
         Row{
+
             spacing: 5
             VLayerControl{}
             VLayerControl{}
