@@ -34,6 +34,7 @@ qt_add_qml_module(appvsonegx
         qml/views/Voices.qml
         qml/layouts/VLayersControlContainer.qml
         qml/controls/VGroupBox.qml
+        qml/views/VoicesLayout1.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
