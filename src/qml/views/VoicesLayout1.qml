@@ -18,19 +18,68 @@ SplitView {
         SplitView.preferredHeight: 120 *heightScale
     }
     SplitView {
+        id:quickSetSplit
         orientation: Qt.Horizontal
         SplitView.preferredHeight: availableHeight
         SplitView.fillHeight: true
+        property bool toggled: true
+
         handle: Rectangle {
-            implicitWidth: 2
-            implicitHeight: 2
-            color: SplitHandle.pressed ? "#ff6127"
-                                       : (SplitHandle.hovered ? Qt.lighter("#ff8d3c", 1.1) : "#ff8d3c")
+
+            implicitWidth: 4
+            implicitHeight: 4
+            color: SplitHandle.pressed ? "#a33e19"
+                                       : (SplitHandle.hovered ? Qt.lighter("#ff6127", 1.1) : "#ff6127")
+            Rectangle {
+                width: 30
+                height: 16
+                anchors.top: parent.top
+                anchors.right: parent.right
+                color:"#26282a"
+                border.color: "#ff6127"
+                Text{
+                    anchors.fill: parent
+                    color:"#ff6127"
+
+                    text:quickSetSplit.toggled ? String.fromCodePoint(0x25B8) :String.fromCodePoint(0x25C2)
+                    fontSizeMode: Text.Fit
+                    font.bold: true
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                    MouseArea{
+                        anchors.fill: parent
+                        onClicked: {
+                            console.log("toggled")
+                            if(quickSetSplit.toggled){
+                                quickSetSplit.toggled=false
+
+                            }
+                            else{
+                                quickSetSplit.toggled=true
+                            }
+
+                        }
+                    }
+                }
+
+
+            }
+
         }
+
         Item{
             SplitView.preferredHeight: availableHeight
             Layout.topMargin: 20 *heightScale
-            SplitView.minimumWidth: availableWidth /2
+
+            SplitView.preferredWidth: quickSetSplit.toggled ? availableWidth / 2 : availableWidth
+
+            Behavior on SplitView.preferredWidth {
+                NumberAnimation {
+                    id: animateContentHeight
+                    duration: 400
+                    easing.type: Easing.OutQuint
+                }
+            }
             ColumnLayout {
                 anchors.fill: parent
                 anchors.margins: 5
@@ -43,7 +92,7 @@ SplitView {
                     RowLayout{
                         anchors.fill: parent
                         VLayerContainer {
-                            selectedLayout: voicesViewLayout1.selectedLayout
+                            selectedLayout:  quickSetSplit.toggled ? 1:0
                         }
                     }
                 }
@@ -55,7 +104,7 @@ SplitView {
                     RowLayout{
                         anchors.fill: parent
                         VLayerContainer {
-                            selectedLayout: voicesViewLayout1.selectedLayout
+                            selectedLayout:  quickSetSplit.toggled ? 1:0
                         }
                     }
                 }
@@ -67,18 +116,24 @@ SplitView {
                     RowLayout{
                         anchors.fill: parent
                         VLayerContainer {
-                            selectedLayout: voicesViewLayout1.selectedLayout
+                            selectedLayout:  quickSetSplit.toggled ? 1:0
 
                         }
                     }
                 }
             }
+
         }
 
         Item{
+
             SplitView.preferredHeight: availableHeight
+            //  SplitView.preferredWidth:  quickSetSplit.toggled?  availableWidth/2 : 5
+
             Layout.margins:40
+
             ColumnLayout{
+                visible: quickSetSplit.toggled
                 anchors.fill: parent
                 anchors.margins: 5
                 VGroupBox{
