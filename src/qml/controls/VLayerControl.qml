@@ -11,9 +11,11 @@ Rectangle{
     property color iconColor: "#ffffff"
     property color backgroundColor: "#41474d"
     property color selectColor: "#ff6127"
-    property string voiceName: "voice 1"
+    property string voiceName: "voice name"
+    property bool selected: false
 
     color:backgroundColor
+    border.color: selected ? selectColor : backgroundColor
     radius: 4
     height: 50 * heightScale
     width: 95 * widthScale
@@ -183,7 +185,11 @@ Rectangle{
                             console.debug("swipe to left");
                         }
                         else{
-                            console.debug("swipe no detected");
+                            if (vLayersControlContainer.selectedControl) {
+                                vLayersControlContainer.selectedControl.selected = false
+                            }
+                            vLayersControlContainer.selectedControl = layerControl
+                            layerControl.selected = true
                         }
                     }
 
@@ -335,7 +341,11 @@ Rectangle{
                 console.debug("swipe to left");
             }
             else{
-                console.debug("swipe no detected");
+                if (vLayersControlContainer.selectedControl) {
+                    vLayersControlContainer.selectedControl.selected = false
+                }
+                vLayersControlContainer.selectedControl = layerControl
+                layerControl.selected = true
             }
         }
 
