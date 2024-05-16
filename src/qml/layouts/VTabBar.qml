@@ -14,14 +14,19 @@ TabBar {
         imageSource:"qrc:/vsonegx/qml/imgs/music.svg"
     }
     VTabButton{
+        text:"SoneGX L1"
+        tabBarCurrentItem:tabBar.currentItem
+        imageSource:"qrc:/vsonegx/qml/imgs/music.svg"
+    }
+    VTabButton{
         text:"Voices"
         tabBarCurrentItem:tabBar.currentItem
         imageSource:"qrc:/vsonegx/qml/imgs/sliders-h.svg"
     }
     VTabButton{
-        text:"V"
+        text:"Setup"
         tabBarCurrentItem:tabBar.currentItem
-        imageSource:"qrc:/vsonegx/qml/imgs/music.svg"
+        imageSource:"qrc:/vsonegx/qml/imgs/wrench.svg"
     }
     VTabButton{
         text:"Settings"

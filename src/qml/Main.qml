@@ -1,14 +1,26 @@
 import QtQuick
 import QtQuick.Controls
+import QtQuick.Layouts
 import Theme
 import "layouts"
-
+import "controls"
+import "views"
 ApplicationWindow {
     id: rootAppWindow
-    width: 1024
-    height: 768
-    minimumWidth: 800
-    minimumHeight: 600
+    property real winBaseWidth: 800
+    property real winBaseHeight: 600
+    // width: 1024
+    // height: 768
+
+    width: winBaseWidth
+    height: winBaseHeight
+
+    minimumWidth: width
+    minimumHeight: height
+
+    maximumWidth:width
+    maximumHeight: height
+
     visible: true
     title: qsTr("vsonegxapp")
     header:VTabBar{
@@ -30,6 +42,16 @@ ApplicationWindow {
             decorator.x = decorator.targetX+5
         }
     }
-    VLayerContainer{
+    StackLayout {
+        anchors.fill: parent
+        currentIndex: tabBar.currentIndex
+        Voices{
+        selectedLayout:  tabBar.currentIndex
+        }
+        VoicesLayout1{
+            selectedLayout:  tabBar.currentIndex
+        }
+
     }
+
 }
