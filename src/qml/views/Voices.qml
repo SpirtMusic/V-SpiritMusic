@@ -8,6 +8,8 @@ SplitView {
     property int baseHeight: rootAppWindow.winBaseHeight
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
+    property int selectedLayout: 0
+    id:voicesView
     orientation: Qt.Vertical
     VLayersControlContainer{
         SplitView.fillWidth :true
@@ -35,6 +37,7 @@ SplitView {
                     anchors.fill: parent
 
                     VLayerContainer {
+                        selectedLayout: voicesView.selectedLayout
 
                     }
                 }
@@ -48,7 +51,7 @@ SplitView {
                     anchors.fill: parent
 
                     VLayerContainer {
-
+                        selectedLayout: voicesView.selectedLayout
                     }
                 }
             }
@@ -61,6 +64,7 @@ SplitView {
                     anchors.fill: parent
 
                     VLayerContainer {
+                        selectedLayout: voicesView.selectedLayout
 
                     }
                 }
@@ -76,6 +80,7 @@ SplitView {
         SplitView.fillWidth :true
         VLayersControlContainer{
             anchors.fill: parent
+
             z:3
         }
     }
