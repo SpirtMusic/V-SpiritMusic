@@ -23,15 +23,6 @@ qt_add_qml_module(appvsonegx
         qml/themes/Theme.qml
         qml/controls/VTabButton.qml
         qml/layouts/VTabBar.qml
-    RESOURCES
-        qml/imgs/music.svg
-        qml/imgs/sliders-h.svg
-        qml/imgs/wrench.svg
-        qml/imgs/cog.svg
-        qml/imgs/wrench.svg
-        qml/imgs/indicatore.png
-         qml/imgs/btn.png
-          qml/imgs/incavo.png
         qml/controls/VLayerButton.qml
         qml/layouts/VLayerContainer.qml
         qml/controls/VLayerControl.qml
@@ -40,6 +31,13 @@ qt_add_qml_module(appvsonegx
         qml/controls/VGroupBox.qml
         qml/views/VoicesLayout1.qml
          qml/controls/VKnob.qml
+    RESOURCES
+        qml/imgs/music.svg
+        qml/imgs/sliders-h.svg
+        qml/imgs/wrench.svg
+        qml/imgs/cog.svg
+        qml/imgs/wrench.svg
+
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
