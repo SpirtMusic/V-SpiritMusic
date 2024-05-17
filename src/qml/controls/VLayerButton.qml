@@ -7,7 +7,7 @@ Rectangle {
     property int baseHeight: rootAppWindow.winBaseHeight
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
-    id: vLayerButton
+
     property color textColor: "#ffffff"
     property color colorSelect: "#ff6127"
     property color colorUnselect: "#ffffff"
@@ -16,6 +16,9 @@ Rectangle {
     property string textLayer: "1"
     property bool checked: false
     property bool layerToggled: false
+    property real fontScale: Math.max(widthScale, heightScale)
+
+    id: vLayerButton
     Layout.margins: 2
     Layout.fillHeight: true
     Layout.fillWidth:true
@@ -48,12 +51,12 @@ Rectangle {
             duration: 70
         }
     }
-//  onHeightChanged: {
-// console.log("fffffff")
-//  width=Math.min(width, height)
-// }
-// onWidthChanged: {
-//     height=Math.min(width, height)
+    //  onHeightChanged: {
+    // console.log("fffffff")
+    //  width=Math.min(width, height)
+    // }
+    // onWidthChanged: {
+    //     height=Math.min(width, height)
 
-// }
+    // }
 }
