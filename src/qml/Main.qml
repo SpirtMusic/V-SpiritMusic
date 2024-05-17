@@ -20,9 +20,10 @@ ApplicationWindow {
 
     maximumWidth:width
     maximumHeight: height
-
+//    flags: Qt.FramelessWindowHint | Qt.Window
     visible: true
     title: qsTr("vsonegxapp")
+    color:"#2a2e32"
     header:VTabBar{
         id:tabBar
     }
@@ -42,16 +43,12 @@ ApplicationWindow {
             decorator.x = decorator.targetX+5
         }
     }
+
     StackLayout {
         anchors.fill: parent
         currentIndex: tabBar.currentIndex
         Voices{
-        selectedLayout:  tabBar.currentIndex
-        }
-        VoicesLayout1{
-            selectedLayout:  tabBar.currentIndex
-        }
-
+         }
     }
 
 }
