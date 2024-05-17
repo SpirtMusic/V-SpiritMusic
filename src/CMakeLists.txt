@@ -29,14 +29,15 @@ qt_add_qml_module(appvsonegx
         qml/views/Voices.qml
         qml/layouts/VLayersControlContainer.qml
         qml/controls/VGroupBox.qml
-        qml/views/VoicesLayout1.qml
-         qml/controls/VKnob.qml
+        qml/controls/VKnob.qml
+        qml/controls/VSplitView.qml
     RESOURCES
         qml/imgs/music.svg
         qml/imgs/sliders-h.svg
         qml/imgs/wrench.svg
         qml/imgs/cog.svg
         qml/imgs/wrench.svg
+
 
 )
 
