@@ -198,15 +198,18 @@ Rectangle{
         }
     }
     onHeightChanged:{
-        var scale1Default=120*heightScale
+        var scale1Default=117*heightScale
         var scale2Default=200*heightScale
-        var scale1Layout1=180*heightScale
-        var scale2Layout1=350*heightScale
-        console.log("selectedLayout :" + vLayerContainer.selectedLayout)
+        var scale1Layout1=170*heightScale
+        var scale2Layout1=345*heightScale
         if(vLayerContainer.selectedLayout==0)
         {
+
+            layoutsRowGlobal.anchors.topMargin= 20
+            layoutsRowGlobal.anchors.bottomMargin= 20
             if(height >= scale1Default && height < scale2Default )
             {
+
                 layoutsRowGlobal.columns=8
                 layoutsRowGlobal.rowSpacing=-1
                 layoutsRowGlobal.columnSpacing= 20  * heightScale
@@ -230,11 +233,12 @@ Rectangle{
         if(vLayerContainer.selectedLayout==1)
         {
             layoutsRowGlobal.anchors.topMargin= 20
-            layoutsRowGlobal.anchors.bottomMargin=20
+            layoutsRowGlobal.anchors.bottomMargin= 20
             if(height >= scale1Layout1 && height < scale2Layout1 )
             {
-                layoutsRowGlobal.anchors.topMargin= 30*heightScale
-                layoutsRowGlobal.anchors.bottomMargin= 30*heightScale
+
+                layoutsRowGlobal.anchors.topMargin= 40*heightScale
+                layoutsRowGlobal.anchors.bottomMargin= 40*heightScale
                 layoutsRowGlobal.columns=8
                 layoutsRowGlobal.rowSpacing=20  * widthScale
                 layoutsRowGlobal.columnSpacing= 1  * heightScale
@@ -242,8 +246,7 @@ Rectangle{
             }
             else if(height >=scale2Layout1)
             {
-
-                layoutsRowGlobal.columns=8
+                 layoutsRowGlobal.columns=8
                 layoutsRowGlobal.rowSpacing=10 * widthScale
                 layoutsRowGlobal.anchors.topMargin= 125*heightScale
                 layoutsRowGlobal.anchors.bottomMargin= 125*heightScale
@@ -260,13 +263,14 @@ Rectangle{
 
     }
     onWidthChanged:{
-        var scale1Default=120*heightScale
+        var scale1Default=117*heightScale
         var scale2Default=200*heightScale
-        var scale1Layout1=180*heightScale
+        var scale1Layout1=170*heightScale
         var scale2Layout1=350*heightScale
-        console.log("selectedLayout :" + vLayerContainer.selectedLayout)
         if(vLayerContainer.selectedLayout==0)
         {
+            layoutsRowGlobal.anchors.topMargin= 20
+            layoutsRowGlobal.anchors.bottomMargin=20
             if(height >= scale1Default && height < scale2Default )
             {
                 layoutsRowGlobal.columns=8
@@ -276,7 +280,6 @@ Rectangle{
             }
             else if(height >=scale2Default)
             {
-
                 layoutsRowGlobal.columns=8
                 layoutsRowGlobal.rowSpacing=15 * widthScale
                 layoutsRowGlobal.columnSpacing= 2 * heightScale
@@ -295,12 +298,11 @@ Rectangle{
             layoutsRowGlobal.anchors.bottomMargin=20
             if(height >= scale1Layout1 && height < scale2Layout1 )
             {
-                layoutsRowGlobal.anchors.topMargin= 30*heightScale
-                layoutsRowGlobal.anchors.bottomMargin= 30*heightScale
+                layoutsRowGlobal.anchors.topMargin= 40*heightScale
+                layoutsRowGlobal.anchors.bottomMargin= 40*heightScale
                 layoutsRowGlobal.columns=8
                 layoutsRowGlobal.rowSpacing=20  * widthScale
                 layoutsRowGlobal.columnSpacing= 1  * heightScale
-
             }
             else if(height >=scale2Layout1)
             {
