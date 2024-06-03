@@ -17,8 +17,8 @@ Dial {
     property string knobLabel: "knob"
     Layout.fillHeight: true
     Layout.fillWidth: true
-    Layout.preferredWidth: 40 * widthScale
-    Layout.preferredHeight: 40 * heightScale
+    Layout.preferredWidth: 20 * widthScale
+    Layout.preferredHeight: 20 * heightScale
 
     from: 0
     to: 100
@@ -37,13 +37,13 @@ Dial {
     }
 
     handle: Rectangle {
-        property real handlewWidthScale: 6 * (vKnob.width /  vKnob.Layout.preferredWidth)
-        property real handlewHeightScale: 6 * (vKnob.height /  vKnob.Layout.preferredHeight)
+        property real handleWidthScale: 3 * (vKnob.width /  vKnob.Layout.preferredWidth)
+        property real handleHeightScale: 3 * (vKnob.height /  vKnob.Layout.preferredHeight)
 
         id: handleItem
         x: vKnob.background.x + vKnob.background.width / 2 - width / 2
         y: vKnob.background.y + vKnob.background.height / 2 - height / 2
-        width:  Math.min(handlewWidthScale,handlewHeightScale)
+        width:  Math.min(handleWidthScale,handleHeightScale)
         height:  handleItem.width
         color: vKnob.pressed ? vKnob.colorpress : vKnob.colorSelect
         radius: width/2
@@ -74,7 +74,7 @@ Dial {
         anchors.top: vKnob.background.bottom
         anchors.bottomMargin: 10
         text: vKnob.knobLabel
-        font.pixelSize: 14
+        font.pixelSize: 12
         color: vKnob.textColor
         elide: Text.ElideRight
 
