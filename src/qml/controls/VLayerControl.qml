@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+
 Rectangle{
     id:layerControl
     property int baseWidth: rootAppWindow.winBaseWidth
@@ -19,6 +20,7 @@ Rectangle{
     radius: 4
     height: 50 * heightScale
     width: 95 * widthScale
+
     Rectangle{
         color: layerControl.backgroundColor
         anchors.left: parent.left
@@ -195,6 +197,7 @@ Rectangle{
 
                 }
             }
+
         }
         Rectangle{
 
