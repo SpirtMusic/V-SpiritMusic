@@ -5,33 +5,38 @@ import "../controls"
 TabBar {
     id: tabBar
     currentIndex: 0
+    property bool enableScaling: true
+
     background: Rectangle {
         color: Theme.colorBackground
     }
     VTabButton{
         text:"SoneGX"
+        tabBarInstance: tabBar
         tabBarCurrentItem:tabBar.currentItem
-        imageSource:"qrc:/vsonegx/qml/imgs/music.svg"
+        imageSource:"qrc:/vsonegx/qml/imgs/th.svg"
+        backgroundColor:Theme.colorBackground
     }
     VTabButton{
-        text:"SoneGX L1"
+        text:"Sounds"
+        tabBarInstance: tabBar
         tabBarCurrentItem:tabBar.currentItem
         imageSource:"qrc:/vsonegx/qml/imgs/music.svg"
+        backgroundColor:Theme.colorBackground
     }
     VTabButton{
-        text:"Voices"
+        text:"Setup Sounds"
+        tabBarInstance: tabBar
         tabBarCurrentItem:tabBar.currentItem
         imageSource:"qrc:/vsonegx/qml/imgs/sliders-h.svg"
-    }
-    VTabButton{
-        text:"Setup"
-        tabBarCurrentItem:tabBar.currentItem
-        imageSource:"qrc:/vsonegx/qml/imgs/wrench.svg"
+        backgroundColor:Theme.colorBackground
     }
     VTabButton{
         text:"Settings"
+        tabBarInstance: tabBar
         tabBarCurrentItem:tabBar.currentItem
-        imageSource:"qrc:/vsonegx/qml/imgs/cog.svg"
+        imageSource:"qrc:/vsonegx/qml/imgs/wrench.svg"
+        backgroundColor:Theme.colorBackground
     }
 
 }

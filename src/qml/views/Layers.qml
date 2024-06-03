@@ -1,7 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
-import "../layouts"
+import "../layouts/layers"
 import "../controls"
 VSplitView {
     property int baseWidth: rootAppWindow.winBaseWidth
@@ -10,7 +10,7 @@ VSplitView {
     property real heightScale: rootAppWindow.height / baseHeight
      property bool quickSetSplitToggle: quickSetSplit.toggled
     property real fontScale: Math.max(widthScale, heightScale)
-    id:voicesView
+    id:layersView
 
     orientation: Qt.Vertical
     toggle: false
@@ -18,8 +18,8 @@ VSplitView {
     VLayersControlContainer{
         SplitView.fillWidth :true
         z:3
-        SplitView.minimumHeight: 120 *heightScale
-        SplitView.preferredHeight: 120 *heightScale
+        SplitView.minimumHeight: 112 *heightScale
+        SplitView.preferredHeight: 115 *heightScale
     }
     VSplitView {
         id:quickSetSplit

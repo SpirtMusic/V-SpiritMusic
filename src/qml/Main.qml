@@ -9,6 +9,7 @@ ApplicationWindow {
     id: rootAppWindow
     property real winBaseWidth: 800
     property real winBaseHeight: 600
+
     // width: 1024
     // height: 768
 
@@ -20,17 +21,20 @@ ApplicationWindow {
 
     maximumWidth:width
     maximumHeight: height
-//    flags: Qt.FramelessWindowHint | Qt.Window
+    //    flags: Qt.FramelessWindowHint | Qt.Window
     visible: true
     title: qsTr("vsonegxapp")
     color:"#2a2e32"
     header:VTabBar{
         id:tabBar
+        z:1000
+
     }
     Rectangle {
         id : decorator;
         property real targetX: tabBar.currentItem.x
         anchors.top: tabBar.bottom;
+        anchors.topMargin: 2
         width: tabBar.currentItem.width -10 ;
         height: 1;
         color: Theme.colorSelect
@@ -44,11 +48,15 @@ ApplicationWindow {
         }
     }
 
+
     StackLayout {
         anchors.fill: parent
         currentIndex: tabBar.currentIndex
-        Voices{
-         }
+        Layers{
+        }
+        Item{}
+        Item{}
+        Settings{}
     }
 
 }
