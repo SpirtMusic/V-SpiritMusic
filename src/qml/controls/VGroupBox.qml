@@ -3,8 +3,9 @@ import QtQuick.Controls
 import QtQuick.Layouts
 GroupBox {
     id:groupBox
-    property color textColor: "#ff6127"
+    property color textColor: "#ffffff"
     property color colorSelect: "#ff6127"
+    property color colorBorder: "#67707a"
     property string tmpTitle: title
     title: qsTr("GroupBox")
     label:Item{
@@ -14,7 +15,7 @@ GroupBox {
             color: groupBox.textColor
             elide: Text.ElideRight
             font.pixelSize: 14
-            font.bold: true
+           // font.bold: true
             padding: 2
             Rectangle{
                 anchors.fill: parent
@@ -39,7 +40,7 @@ GroupBox {
                             contentItem.visible=true
                             contentHeight=implicitContentHeight
                             title=tmpTitle + " " +String.fromCodePoint(0x25B2)
-                             groupBox.Layout.fillHeight= true
+                            groupBox.Layout.fillHeight= true
                         }
                     }
 
@@ -52,7 +53,7 @@ GroupBox {
         width: parent.width
         height: parent.height - groupBox.topPadding + groupBox.bottomPadding
         color: "#41474d"
-        border.color: groupBox.colorSelect
+        border.color: groupBox.colorBorder
         radius: 4
         Behavior on height {
             NumberAnimation {
@@ -63,7 +64,7 @@ GroupBox {
         }
     }
     Component.onCompleted: {
-    tmpTitle=title
-    title=tmpTitle + " " +String.fromCodePoint(0x25B2)
+        tmpTitle=title
+        title=tmpTitle + " " +String.fromCodePoint(0x25B2)
     }
 }
