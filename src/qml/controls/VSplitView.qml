@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 
 SplitView {
+    id:vSplitView
     property int baseWidth: rootAppWindow.winBaseWidth
     property int baseHeight: rootAppWindow.winBaseHeight
     property real widthScale: rootAppWindow.width / baseWidth
@@ -10,7 +11,8 @@ SplitView {
     property real fontScale: Math.max(widthScale, heightScale)
     property bool toggled: true
     property bool toggle: true
-    id:vSplitView
+    property color colorBorder: "#67707a"
+
     orientation: Qt.Vertical
 
     handle: Rectangle {
@@ -18,7 +20,7 @@ SplitView {
         implicitWidth: 2
         implicitHeight: 2
         color: SplitHandle.pressed ? "#a33e19"
-                                   : (SplitHandle.hovered ? Qt.lighter("#ff6127", 1.1) : "#ff6127")
+                                   : (SplitHandle.hovered ? Qt.lighter(vSplitView.colorBorder, 1.1) : vSplitView.colorBorder)
         Loader {
             width: 30 * widthScale
             height: 16 * heightScale
