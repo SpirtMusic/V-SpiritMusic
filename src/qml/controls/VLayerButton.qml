@@ -33,7 +33,7 @@ Rectangle {
         text: vLayerButton.textLayer
         color: vLayerButton.checked ? vLayerButton.colorUnselect : vLayerButton.colorSelect
         font.bold: true
-        font.pointSize: 22
+        font.pointSize: 18
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
