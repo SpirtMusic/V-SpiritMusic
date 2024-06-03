@@ -19,33 +19,38 @@ qt_add_qml_module(appvsonegx
     URI vsonegx
     VERSION 1.0
     QML_FILES
-        qml/Main.qml
-        qml/themes/Theme.qml
-        qml/controls/VTabButton.qml
-        qml/layouts/VTabBar.qml
-        qml/controls/VLayerButton.qml
-        qml/layouts/VLayerContainer.qml
-        qml/controls/VLayerControl.qml
-        qml/views/Voices.qml
-        qml/layouts/VLayersControlContainer.qml
-        qml/controls/VGroupBox.qml
-        qml/controls/VKnob.qml
-        qml/controls/VSplitView.qml
+    qml/Main.qml
+    qml/themes/Theme.qml
+    qml/controls/VTabButton.qml
+    qml/layouts/VTabBar.qml
+    qml/controls/VLayerButton.qml
+    qml/layouts/layers/VLayerContainer.qml
+    qml/controls/VLayerControl.qml
+    qml/views/Layers.qml
+    qml/layouts/layers/VLayersControlContainer.qml
+    qml/controls/VGroupBox.qml
+    qml/controls/VKnob.qml
+    qml/controls/VSplitView.qml
+    qml/views/Settings.qml
+    qml/layouts/settings/TabBarSettings.qml
     RESOURCES
-        qml/imgs/music.svg
-        qml/imgs/sliders-h.svg
-        qml/imgs/wrench.svg
-        qml/imgs/cog.svg
-        qml/imgs/wrench.svg
-
-
+    qml/imgs/music.svg
+    qml/imgs/sliders-h.svg
+    qml/imgs/wrench.svg
+    qml/imgs/cog.svg
+    qml/imgs/wrench.svg
+    qml/imgs/midi.svg
+    qml/imgs/info-circle.svg
+    qml/imgs/th.svg
+    qml/imgs/pencil-ruler.svg
+    QML_FILES
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
 set_target_properties(appvsonegx PROPERTIES
-#    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appvsonegx
+    #    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appvsonegx
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
     MACOSX_BUNDLE TRUE
