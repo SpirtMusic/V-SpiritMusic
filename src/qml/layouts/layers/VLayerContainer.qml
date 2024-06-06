@@ -212,7 +212,7 @@ Rectangle{
 
                 layoutsRowGlobal.columns=8
                 layoutsRowGlobal.rowSpacing=-1
-                layoutsRowGlobal.columnSpacing= 20  * heightScale
+                layoutsRowGlobal.columnSpacing= 25  * heightScale
 
             }
             else if(height >=scale2Default)
@@ -225,7 +225,7 @@ Rectangle{
             }
             else{
                 layoutsRowGlobal.columns=-1
-                layoutsRowGlobal.columnSpacing= -1
+                layoutsRowGlobal.columnSpacing= 3
                 layoutsRowGlobal.rowSpacing= -1
 
             }
@@ -269,13 +269,14 @@ Rectangle{
         var scale2Layout1=350*heightScale
         if(vLayerContainer.selectedLayout==0)
         {
+            console.log("selectedLayout==0")
             layoutsRowGlobal.anchors.topMargin= 20
             layoutsRowGlobal.anchors.bottomMargin=20
             if(height >= scale1Default && height < scale2Default )
             {
                 layoutsRowGlobal.columns=8
                 layoutsRowGlobal.rowSpacing=-1
-                layoutsRowGlobal.columnSpacing= 20  * heightScale
+                layoutsRowGlobal.columnSpacing= 25  * heightScale
 
             }
             else if(height >=scale2Default)
@@ -287,7 +288,7 @@ Rectangle{
             }
             else{
                 layoutsRowGlobal.columns=-1
-                layoutsRowGlobal.columnSpacing= -1
+                layoutsRowGlobal.columnSpacing= 3
                 layoutsRowGlobal.rowSpacing= -1
 
             }
