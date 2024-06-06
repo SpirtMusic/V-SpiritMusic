@@ -1,89 +1,69 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Theme
+Item{
+    id:knobItem
+    property int knobpreferredHeight: 90
+    property int knobpreferredWidth: 50
+    property int knobSize: knobItem.knobpreferredWidth
+    Layout.preferredHeight: knobpreferredHeight
+    Layout.preferredWidth: knobpreferredWidth
+    property string knobLabel: "test"
+    property string knobUnit: "%"
+    ColumnLayout{
+        Layout.alignment: Qt.AlignVCenter
 
-Dial {
-    id: vKnob
-    property int baseWidth: rootAppWindow.winBaseWidth
-    property int baseHeight: rootAppWindow.winBaseHeight
-    property real widthScale: rootAppWindow.width / baseWidth
-    property real heightScale: rootAppWindow.height / baseHeight
-    property color textColor: "#ffffff"
-    property color colorSelect: "#ff6127"
-    property color colorpress: "#a33e19"
-    property color colorUnselect: "#ffffff"
-    property color colorBorder: "#26282a"
-    property color colorBackgroundButton: "#41474d"
-    property string knobLabel: "knob"
-    Layout.fillHeight: true
-    Layout.fillWidth: true
-    Layout.preferredWidth: 20 * widthScale
-    Layout.preferredHeight: 20 * heightScale
+        Text {
+            Layout.preferredWidth: knobItem.knobpreferredWidth
+            id: valueText
+            text: knob.value + knobUnit
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color:Theme.colorText
+        }
+        Dial{
+            id: knob
 
-    from: 0
-    to: 100
-    stepSize:1
+            property string knobType: "LittlePhatty"
+            from : 0
+            to : 100
+            stepSize : 1
+            width: knobItem.knobSize
+            height: knobItem.knobSize
+            Layout.preferredHeight: knobItem.knobSize
+            Layout.preferredWidth: knobItem.knobSize
 
-    background: Rectangle {
-        x: vKnob.width / 2 - width / 2
-        y: vKnob.height / 2 - height / 2
-        width: Math.max(64, Math.min(vKnob.width, vKnob.height))
-        height: width
-        color: "transparent"
-        radius: width / 2
-        border.color: vKnob.pressed ? vKnob.colorpress : vKnob.colorSelect
-        opacity: vKnob.enabled ? 1 : 0.3
-        border.width: 3
-    }
-
-    handle: Rectangle {
-        property real handleWidthScale: 3 * (vKnob.width /  vKnob.Layout.preferredWidth)
-        property real handleHeightScale: 3 * (vKnob.height /  vKnob.Layout.preferredHeight)
-
-        id: handleItem
-        x: vKnob.background.x + vKnob.background.width / 2 - width / 2
-        y: vKnob.background.y + vKnob.background.height / 2 - height / 2
-        width:  Math.min(handleWidthScale,handleHeightScale)
-        height:  handleItem.width
-        color: vKnob.pressed ? vKnob.colorpress : vKnob.colorSelect
-        radius: width/2
-        antialiasing: true
-        opacity: vKnob.enabled ? 1 : 0.3
-        transform: [
-            Translate {
-                y: -Math.min(vKnob.background.width, vKnob.background.height) * 0.4 + handleItem.height / 2
-            },
-            Rotation {
-                angle: vKnob.angle
-                origin.x: handleItem.width / 2
-                origin.y: handleItem.height / 2
+            handle:Item{
             }
-        ]
-    }
+            background:
 
-    Text {
-        anchors.centerIn: parent
-        text: vKnob.value + "%"
-        font.pixelSize: 18
-        color: vKnob.textColor
-        font.bold: true
-    }
+                Image {
+                id: knobGraphic
+                width: knobItem.knobSize
+                height: knobItem.knobSize
+                sourceClipRect: knob.getKnobRect(knob.value)
+                sourceSize.width : undefined
+                sourceSize.height : undefined
+                Component.onCompleted: {
+                    let knobSourece="qrc:/vsonegx/qml/controls/resource/knob/"+knob.knobType+"/"+knob.knobType+"_"+knobItem.knobSize+".png"
+                    source=knobSourece
+                }
+            }
+            function getKnobRect(value) {
+                var index = Math.floor(value / (100 / 50)); // Calculate the index based on the value and the number of positions
+                var y = index * knobItem.knobSize; // Calculate the y coordinate based on the index and knob size
+                return Qt.rect(0, y, knobItem.knobSize, knobItem.knobSize);
+            }
 
-    Text {
-        anchors.horizontalCenter: vKnob.background.horizontalCenter
-        anchors.top: vKnob.background.bottom
-        anchors.bottomMargin: 10
-        text: vKnob.knobLabel
-        font.pixelSize: 12
-        color: vKnob.textColor
-        elide: Text.ElideRight
-
-    }
-    onHeightChanged: {
-
-    console.log("Knob height :" + height)
-        console.log("Knob width :" + width)
-
-
+        }
+        Text {
+            Layout.preferredWidth: knobItem.knobpreferredWidth
+            id: labelText
+            text: knobLabel
+            horizontalAlignment: Text.AlignHCenter
+            verticalAlignment: Text.AlignVCenter
+            color:Theme.colorText
+        }
     }
 }
