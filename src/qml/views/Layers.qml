@@ -8,7 +8,7 @@ VSplitView {
     property int baseHeight: rootAppWindow.winBaseHeight
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
-     property bool quickSetSplitToggle: quickSetSplit.toggled
+    property bool quickSetSplitToggle: quickSetSplit.toggled
     property real fontScale: Math.max(widthScale, heightScale)
     id:layersView
 
@@ -18,8 +18,8 @@ VSplitView {
     VLayersControlContainer{
         SplitView.fillWidth :true
         z:3
-        SplitView.minimumHeight: 112 *heightScale
-        SplitView.preferredHeight: 115 *heightScale
+        SplitView.minimumHeight: 120 *heightScale
+        SplitView.preferredHeight: 120 *heightScale
     }
     VSplitView {
         id:quickSetSplit
@@ -106,18 +106,24 @@ VSplitView {
                     Layout.margins: 0
                     Layout.fillHeight: true
 
-                    RowLayout{
+                    GridLayout{
                         anchors.fill: parent
                         anchors.margins: 15
+                        columns:4
+                        rows:2
                         VKnob{
-                            knobLabel: "Reverb Depth"
+                            knobLabel: "Reverb Dph"
                         }
                         VKnob{
-                            knobLabel: "Chorus Depth"
+                            knobLabel: "Chorus Dph"
                         }
                         VKnob{
-                            knobLabel: "Varl Depth"
+                            knobLabel: "Varl"
                         }
+                        VKnob{
+                            knobLabel: "Dph"
+                        }
+
                     }
                 }
                 VGroupBox{
@@ -129,34 +135,31 @@ VSplitView {
                     RowLayout{
                         anchors.fill: parent
                         anchors.margins: 15
-                        VKnob{
-                            knobLabel: "Attack"
-                        }
-                        VKnob{
-                            knobLabel: "Release"
-                        }
-                    }
-                }
-                VGroupBox{
-                    title: qsTr("Effects")
-                    Layout.fillWidth: true
-                    Layout.margins: 0
-                    Layout.fillHeight: true
+                        VSlider{
 
-                    RowLayout{
-                        anchors.fill: parent
-                        anchors.margins: 15
-                        VKnob{
-                            knobLabel: "Reverb Depth"
+                            sliderValue:60
                         }
-                        VKnob{
-                            knobLabel: "Chorus Depth"
+                        VSlider{
+
                         }
-                        VKnob{
-                            knobLabel: "Varl Depth"
+                        VSlider{
+                            sliderValue:77
                         }
+                        VSlider{
+                            sliderValue:100
+                        }
+                        VSlider{
+                            sliderValue:33
+                        }
+                        VSlider{
+                            sliderValue:70
+                        }
+
+
+
                     }
                 }
+
 
             }
         }
