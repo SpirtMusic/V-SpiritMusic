@@ -2,13 +2,13 @@ import QtQuick
 import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import QtQuick.Layouts
-
+import Theme
 TabButton {
     id:tabButton
-    property color textColor: "#ffffff"
-    property color iconColor: "#ffffff"
-    property color backgroundColor: "#41474d"
-    property color selectColor: "#ff6127"
+    property color textColor: Theme.colorText
+    property color iconColor: Theme.colorText
+    property color backgroundColor:    Theme.colorBackgroundView
+    property color selectColor:Theme.colorSelect
     property int baseWidth: rootAppWindow.winBaseWidth
     property int baseHeight: rootAppWindow.winBaseHeight
     property real widthScale: rootAppWindow.width / baseWidth
@@ -20,7 +20,6 @@ TabButton {
     property TabBar tabBarInstance
     property real scaleFactor: 1.1
     property real fontScale: Math.max(widthScale, heightScale)
-
 
     text: qsTr("Text")
     leftInset:5
@@ -53,7 +52,16 @@ TabButton {
                 //   font.bold:true
                 font.pointSize:10 * fontScale
                 elide: Text.ElideRight
+                layer.enabled: tabBarCurrentItem===tabButton ? true : false
+                layer.effect: Glow {
+                    radius: 64
+                    spread: 0.2
+                    samples: 128
+                    color:   "#ff6127"
+                    visible: true
+                }
             }
+
         }
     }
     background: Rectangle {

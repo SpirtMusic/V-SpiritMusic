@@ -1,6 +1,6 @@
 import QtQuick
 import QtQuick.Controls
-
+import Qt5Compat.GraphicalEffects
 SplitView {
     id:vSplitView
     property int baseWidth: rootAppWindow.winBaseWidth
@@ -11,16 +11,25 @@ SplitView {
     property real fontScale: Math.max(widthScale, heightScale)
     property bool toggled: true
     property bool toggle: true
-    property color colorBorder: "#67707a"
+    property color colorBorder: "#ff6127"
 
     orientation: Qt.Vertical
 
     handle: Rectangle {
 
-        implicitWidth: 2
+        implicitWidth: 1
         implicitHeight: 2
         color: SplitHandle.pressed ? "#a33e19"
                                    : (SplitHandle.hovered ? Qt.lighter(vSplitView.colorBorder, 1.1) : vSplitView.colorBorder)
+
+        layer.enabled: true
+        layer.effect: Glow {
+            radius: 64
+            spread: 0.2
+            samples: 128
+            color: "#ff6127"
+            visible: true
+        }
         Loader {
             width: 30 * widthScale
             height: 16 * heightScale

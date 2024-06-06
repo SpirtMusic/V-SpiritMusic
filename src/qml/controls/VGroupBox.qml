@@ -1,11 +1,14 @@
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
+import Qt5Compat.GraphicalEffects
+import Theme
+
 GroupBox {
     id:groupBox
-    property color textColor: "#ffffff"
-    property color colorSelect: "#ff6127"
-    property color colorBorder: "#67707a"
+    property color textColor: Theme.colorText
+    property color colorSelect: Theme.colorSelect
+    property color colorBorder: Theme.colorBorder
     property string tmpTitle: title
     title: qsTr("GroupBox")
     label:Item{
@@ -17,6 +20,14 @@ GroupBox {
             font.pixelSize: 14
            // font.bold: true
             padding: 2
+            layer.enabled: true
+                   layer.effect: Glow {
+                       radius: 64
+                       spread: 0.5
+                       samples: 128
+                       color: "#ff6127"
+                       visible: true
+                   }
             Rectangle{
                 anchors.fill: parent
                 border.width: 1
@@ -52,7 +63,7 @@ GroupBox {
         y: groupBox.topPadding - groupBox.bottomPadding
         width: parent.width
         height: parent.height - groupBox.topPadding + groupBox.bottomPadding
-        color: "#41474d"
+        color:"transparent" //Theme.colorBackgroundView
         border.color: groupBox.colorBorder
         radius: 4
         Behavior on height {
@@ -62,6 +73,7 @@ GroupBox {
                 easing.type: Easing.OutQuint
             }
         }
+
     }
     Component.onCompleted: {
         tmpTitle=title
