@@ -17,7 +17,7 @@ Rectangle {
     property string textLayer: "1"
     property bool checked: false
     property bool layerToggled: false
-    property real fontScale: Math.max(widthScale, heightScale)
+    property real fontScale: Math.min(widthScale, heightScale)
 
     id: vLayerButton
     Layout.margins: 2
@@ -46,13 +46,7 @@ Rectangle {
         maskSource: mask
         z:80
     }
-    // gradient: Gradient {
 
-    //     GradientStop { position: 0.0; color: "#38567cff" }
-    //     GradientStop { position: 0.30; color: checked ? "#41cd52" :colorBorder}
-    //     GradientStop { position: 0.60; color: colorBorder }
-    //     GradientStop { position: 1.0; color: colorBorder }
-    // }
     Rectangle {
         id:recMask
         anchors.fill: parent
@@ -88,68 +82,13 @@ Rectangle {
 
     }
 
-    // }
-
-    // RectangularGlow {
-    //     anchors.fill: parent
-    //     glowRadius: 5
-    //     spread: 2
-    //     color: checked ? "#41cd52" : "yellow"
-    //     // visible: checked
-    //     cornerRadius: parent.radius + glowRadius
-    // }
-
-    // LinearGradient {
-    //     anchors.fill: parent
-    //     start: Qt.point(0, 0)
-    //     end: Qt.point(parent.height, parent.width)
-    //         gradient: Gradient {
-    //             GradientStop { position: 0.0; color:  "#527eb5ff"}
-    //             GradientStop { position: 0.55; color: Theme.colorButtonBackground }
-    //             GradientStop { position: 1.0; color: Theme.colorButtonBackground }
-    //         }
-    // }
-    // LinearGradient {
-    //     anchors.fill: parent
-    //     start: Qt.point(parent.height/2, parent.width/2)
-    //     end: Qt.point(parent.height, parent.width)
-    //     gradient: Gradient {
-    //         GradientStop { position: 0.0; color: colorBorder }
-    //         GradientStop { position: 0.5; color:  checked ? "#41cd52" :colorBorder }
-    //         GradientStop { position: 0.9; color: colorBorder }
-    //         GradientStop { position: 1; color: colorBorder }
-    //     }
-    // }
-    // LinearGradient {
-    //     anchors.fill: parent
-    //     start:Qt.point(parent.height, parent.width)
-    //     end: Qt.point(0, 0)
-    //     gradient: Gradient {
-    //         GradientStop { position: 0.0; color: colorBorder }
-    //         GradientStop { position: 0.5; color:  checked ? "#41cd52"  :"yellow"  }
-    //         GradientStop { position: 0.9; color: colorBorder }
-    //         GradientStop { position: 1; color: colorBorder }
-    //     }
-    // }
-
-
-
-    // Glow {
-    //     anchors.fill: parent
-    //     radius: 12
-    //     samples: 25
-    //     spread: 0.5
-    //     color: checked ? "#41cd52" :colorBorder
-    //     source: recMask
-    //     visible: checked
-    // }
 
     Text {
         anchors.fill: parent
         text: vLayerButton.textLayer
         color:  vLayerButton.colorUnselect
         font.bold: true
-        font.pointSize: 12
+        font.pointSize: 12  *fontScale
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight
@@ -170,23 +109,7 @@ Rectangle {
     }
 
 
-    //  onHeightChanged: {
-    // console.log("fffffff")
-    //  width=Math.min(width, height)
-    // }
-    // onWidthChanged: {
-    //     height=Math.min(width, height)
 
-    // }
-    // DropShadow {
-    //     //anchors.fill: vLayerButton
-    //     horizontalOffset: 3
-    //     verticalOffset: 3
-    //     radius: 4.0
-    //     color: "#000000"
-    //     spread: 0
-    //     source: vLayerButton
-    // }
     layer.enabled: true
     layer{effect: DropShadow {
             transparentBorder: true

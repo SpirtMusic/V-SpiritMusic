@@ -20,6 +20,7 @@ VSplitView {
         z:3
         SplitView.minimumHeight: 120 *heightScale
         SplitView.preferredHeight: 120 *heightScale
+        SplitView.maximumHeight: 120 * heightScale
     }
     VSplitView {
         id:quickSetSplit
@@ -108,6 +109,7 @@ VSplitView {
 
                     GridLayout{
                         anchors.fill: parent
+                        clip:true
                         anchors.margins: 15
                         columns:4
                         rows:2

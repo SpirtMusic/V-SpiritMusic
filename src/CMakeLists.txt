@@ -123,6 +123,9 @@ qt_add_qml_module(appvsonegx
     qml/controls/resource/slider/handler.png
     qml/controls/resource/slider/slider_handler_H.png
     qml/controls/resource/slider/slider_handler_V.png
+    QML_FILES qml/controls/VPopup.qml
+    QML_FILES qml/controls/VSliderPopup.qml
+    QML_FILES qml/controls/VSliderPopupH.qml
 
 
 

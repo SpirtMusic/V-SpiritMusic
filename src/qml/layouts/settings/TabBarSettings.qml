@@ -8,7 +8,8 @@ TabBar {
 
     currentIndex: 0
     background: Rectangle {
-        color:Theme.colorBackground
+        anchors.fill: parent
+        color : Theme.colorBackgroundView
     }
     VTabButton{
 

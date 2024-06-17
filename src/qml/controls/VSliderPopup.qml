@@ -5,33 +5,32 @@ import Qt5Compat.GraphicalEffects
 import Theme
 Item{
     id:sliderItem
-    property int baseWidth: rootAppWindow.winBaseWidth
-    property int baseHeight: rootAppWindow.winBaseHeight
-    property real widthScale: rootAppWindow.width / baseWidth
-    property real heightScale: rootAppWindow.height / baseHeight
-    property real fontScale: Math.min(widthScale, heightScale)
     property string sliderLabel: "Volume"
     property string sliderUnit: "%"
     property int sliderpreferredHeight: 200
-    property int sliderpreferredWidth: 40
+    property int sliderpreferredWidth: 60
     property int sliderValue: 0
     Layout.preferredHeight: sliderpreferredHeight
     Layout.preferredWidth: sliderpreferredWidth
-    property alias control: control
-    ColumnLayout{
+    height: sliderpreferredHeight
+    width: sliderpreferredWidth
+    Column{
+                anchors.fill: parent
         // Layout.alignment: Qt.AlignVCenter
         Text {
             id: valueText
             text: Math.trunc(control.value)  + sliderUnit
-            Layout.alignment: Qt.AlignRight
+         //   Layout.alignment: Qt.AlignRight
             horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
+           // verticalAlignment: Text.AlignVCenter
             color:Theme.colorText
-            font.pointSize: 10 *fontScale
+           anchors.left: parent.left
         }
+
         Slider {
-            property real sliderHight:150
-            property real sliderWidth: 6
+                    anchors.horizontalCenter: parent.horizontalCenter
+            property real sliderHight:100
+            property real sliderWidth: 40
             Layout.preferredHeight: sliderHight
             id: control
             orientation: Qt.Vertical
@@ -40,6 +39,7 @@ Item{
             from:0
             to:100
             stepSize:1
+
             Behavior on value {
                 NumberAnimation {
                     duration: 100
@@ -47,14 +47,15 @@ Item{
             }
 
             background: Rectangle {
-                implicitWidth:control.sliderWidth
+                implicitWidth:30
                 implicitHeight: control.sliderHight
+
                 radius: 2
                 color:"transparent"
                 Rectangle {
                     x: control.leftPadding + control.availableWidth / 2 - width / 2
                     y: control.topPadding + 10
-                    implicitWidth: control.sliderWidth
+                    implicitWidth: 6
                     implicitHeight: control.sliderHight
                     width: implicitWidth
                     height: control.availableHeight - 20
@@ -84,7 +85,7 @@ Item{
                 x: control.leftPadding + control.availableWidth / 2 - width / 2
                 y:  control.topPadding + control.visualPosition * (control.availableHeight - height)
                 source: "qrc:/vsonegx/qml/controls/resource/slider/slider_handler_V.png"
-                sourceSize.width:20
+                sourceSize.width:14
 
                 Rectangle{
                     id:activeRec
@@ -106,24 +107,8 @@ Item{
                     visible: true
                 }
             }
-            // Timer {
-            //     running: true
-            //   //  repeat: true
-            //     interval: 1000
-            //     onTriggered: {control.value=sliderValue
 
-            //     }
-            // }
         }
-        Text {
-            Layout.alignment: Qt.AlignVCenter
 
-            id: labelText
-            text: sliderLabel
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            color:Theme.colorText
-            font.pointSize: 10 *fontScale
-        }
     }
 }

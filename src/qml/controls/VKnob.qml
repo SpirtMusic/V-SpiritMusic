@@ -4,6 +4,11 @@ import QtQuick.Layouts
 import Theme
 Item{
     id:knobItem
+    property int baseWidth: rootAppWindow.winBaseWidth
+    property int baseHeight: rootAppWindow.winBaseHeight
+    property real widthScale: rootAppWindow.width / baseWidth
+    property real heightScale: rootAppWindow.height / baseHeight
+    property real fontScale: Math.min(widthScale, heightScale)
     property int knobpreferredHeight: 90
     property int knobpreferredWidth: 50
     property int knobSize: knobItem.knobpreferredWidth
@@ -21,6 +26,7 @@ Item{
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color:Theme.colorText
+            font.pointSize: 10 *fontScale
         }
         Dial{
             id: knob
@@ -64,6 +70,7 @@ Item{
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color:Theme.colorText
+            font.pointSize: 10 *fontScale
         }
     }
 }

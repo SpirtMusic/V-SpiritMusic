@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
+import Theme
 SplitView {
     id:vSplitView
     property int baseWidth: rootAppWindow.winBaseWidth
@@ -11,7 +12,7 @@ SplitView {
     property real fontScale: Math.max(widthScale, heightScale)
     property bool toggled: true
     property bool toggle: true
-    property color colorBorder: "#ff6127"
+    property color colorBorder: Theme.colorSelect
 
     orientation: Qt.Vertical
 
@@ -27,7 +28,7 @@ SplitView {
             radius: 64
             spread: 0.2
             samples: 128
-            color: "#ff6127"
+            color: Theme.colorSelect
             visible: true
         }
         Loader {
@@ -43,12 +44,12 @@ SplitView {
                     width: 30 * widthScale
                     height: 16 * heightScale
                     color: "#26282a"
-                    border.color: "#ff6127"
+                    border.color: Theme.colorSelect
                     Text {
                         property string toggled: String.fromCodePoint(0x25B8) + " " + String.fromCodePoint(0x25B4)
                         property string untoggled: String.fromCodePoint(0x25C2) +  " " + String.fromCodePoint(0x25BE)
                         anchors.fill: parent
-                        color: "#ff6127"
+                        color: Theme.colorSelect
                         text: vSplitView.toggled ?  toggled  : untoggled
                         fontSizeMode: Text.Fit
                         font.bold: true

@@ -20,8 +20,8 @@ ApplicationWindow {
     minimumWidth: width
     minimumHeight: height
 
-    maximumWidth:width
-    maximumHeight: height
+    // maximumWidth:width
+    // maximumHeight: height
     //    flags: Qt.FramelessWindowHint | Qt.Window
     visible: true
     title: qsTr("vsonegxapp")
@@ -56,17 +56,19 @@ ApplicationWindow {
             radius: 64
             spread: 0.5
             samples: 128
-            color: "#ff6127"
+            color: Theme.colorSelect
             visible: true
         }
     }
     Image {
         id: mask
         source: "qrc:/vsonegx/qml/controls/resource/texture/tx3.jpg"
-       // sourceSize: Qt.size(parent.width, parent.height)
+        // sourceSize: Qt.size(parent.width, parent.height)
         smooth: true
         visible: false
     }
+
+
 
     OpacityMask {
         anchors.fill: parent

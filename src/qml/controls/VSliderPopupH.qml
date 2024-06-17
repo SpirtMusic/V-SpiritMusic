@@ -1,9 +1,8 @@
 import QtQuick
 import QtQuick.Controls
-import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
-import Theme
-Item{
+import QtQuick.Layouts
+Rectangle{
     id:sliderItem
     property int baseWidth: rootAppWindow.winBaseWidth
     property int baseHeight: rootAppWindow.winBaseHeight
@@ -12,30 +11,25 @@ Item{
     property real fontScale: Math.min(widthScale, heightScale)
     property string sliderLabel: "Volume"
     property string sliderUnit: "%"
-    property int sliderpreferredHeight: 200
-    property int sliderpreferredWidth: 40
+    property int sliderpreferredHeight: 16
+    property int sliderpreferredWidth: 200 //* widthScale
     property int sliderValue: 0
     Layout.preferredHeight: sliderpreferredHeight
-    Layout.preferredWidth: sliderpreferredWidth
     property alias control: control
-    ColumnLayout{
-        // Layout.alignment: Qt.AlignVCenter
-        Text {
-            id: valueText
-            text: Math.trunc(control.value)  + sliderUnit
-            Layout.alignment: Qt.AlignRight
-            horizontalAlignment: Text.AlignHCenter
-            verticalAlignment: Text.AlignVCenter
-            color:Theme.colorText
-            font.pointSize: 10 *fontScale
-        }
+    //    Layout.preferredWidth: sliderpreferredWidth
+    anchors.fill:parent
+    color:"transparent"
+    height: sliderpreferredHeight
+    width: sliderpreferredWidth  + ( 40* widthScale) // for text
+    Row{
+        anchors.fill:parent
+        spacing:3
         Slider {
-            property real sliderHight:150
-            property real sliderWidth: 6
-            Layout.preferredHeight: sliderHight
+            property real sliderHight: 10
+            property real sliderWidth: sliderpreferredWidth - valueText.width
+            anchors.verticalCenter: parent.verticalCenter
+
             id: control
-            orientation: Qt.Vertical
-            Layout.alignment: Qt.AlignRight
             value: sliderValue
             from:0
             to:100
@@ -45,55 +39,50 @@ Item{
                     duration: 100
                 }
             }
-
             background: Rectangle {
                 implicitWidth:control.sliderWidth
                 implicitHeight: control.sliderHight
                 radius: 2
                 color:"transparent"
                 Rectangle {
-                    x: control.leftPadding + control.availableWidth / 2 - width / 2
-                    y: control.topPadding + 10
-                    implicitWidth: control.sliderWidth
-                    implicitHeight: control.sliderHight
-                    width: implicitWidth
-                    height: control.availableHeight - 20
+                    x: control.leftPadding + 10
+                    y: control.topPadding + control.availableHeight / 2 - height / 2
+                    implicitWidth: 150
+                    implicitHeight: 4
+                    width: control.availableWidth -20
+                    height: implicitHeight
                     radius: 2
                     color: "#353532"
                     Rectangle {
-                        x: 0
-                        height: control.availableHeight - control.visualPosition * parent.height - 30
-                        width: parent.width
-                        y:  control.visualPosition * parent.height + 10
-                        color: Theme.colorSelect
+                        width: control.visualPosition * parent.width
+                        height: parent.height
+                        color: "#004de8"
                         radius: 2
                         layer.enabled: true
                         layer.effect: Glow {
                             radius: 64
                             spread: 0.1
                             samples: 128
-                            color: Theme.colorSelect
+                            color: "#004de8"
                             visible: true
                         }
                     }
-
                 }
             }
-            handle: Image {
+            handle:Image {
                 id:handler
-                x: control.leftPadding + control.availableWidth / 2 - width / 2
-                y:  control.topPadding + control.visualPosition * (control.availableHeight - height)
-                source: "qrc:/vsonegx/qml/controls/resource/slider/slider_handler_V.png"
-                sourceSize.width:20
-
+                x: control.leftPadding + control.visualPosition * (control.availableWidth - width)
+                y: control.topPadding + control.availableHeight / 2 - height / 2
+                source: "qrc:/vsonegx/qml/controls/resource/slider/slider_handler_H.png"
+                sourceSize.height:12
                 Rectangle{
                     id:activeRec
                     //  anchors.centerIn: handler
                     anchors.centerIn: handler //: handler.verticalCenter
-                    x: handler.x  - 3
-                    // y:handler.y-3
-                    height: 5
-                    width: handler.width -1
+                    // x: handler.x  - 3
+                    y:handler.y-3
+                    height: handler.height -1
+                    width: 4
                     color:control.value==0 ? "#ff0000" : "#55ff00"
                 }
                 Glow {
@@ -106,23 +95,18 @@ Item{
                     visible: true
                 }
             }
-            // Timer {
-            //     running: true
-            //   //  repeat: true
-            //     interval: 1000
-            //     onTriggered: {control.value=sliderValue
 
-            //     }
-            // }
+
+
         }
         Text {
-            Layout.alignment: Qt.AlignVCenter
-
-            id: labelText
-            text: sliderLabel
+            id: valueText
+            text: Math.trunc(control.value)  + sliderItem.sliderUnit
+            //Layout.alignment: Qt.AlignRight
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
-            color:Theme.colorText
+            anchors.verticalCenter: parent.verticalCenter
+            color: "white"
             font.pointSize: 10 *fontScale
         }
     }

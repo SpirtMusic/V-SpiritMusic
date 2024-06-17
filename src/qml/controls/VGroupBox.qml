@@ -6,6 +6,11 @@ import Theme
 
 GroupBox {
     id:groupBox
+    property int baseWidth: rootAppWindow.winBaseWidth
+    property int baseHeight: rootAppWindow.winBaseHeight
+    property real widthScale: rootAppWindow.width / baseWidth
+    property real heightScale: rootAppWindow.height / baseHeight
+    property real fontScale: Math.min(widthScale, heightScale)
     property color textColor: Theme.colorText
     property color colorSelect: Theme.colorSelect
     property color colorBorder: Theme.colorBorder
@@ -17,17 +22,17 @@ GroupBox {
             text: groupBox.title
             color: groupBox.textColor
             elide: Text.ElideRight
-            font.pixelSize: 14
-           // font.bold: true
+            font.pointSize: 10 * fontScale
+            // font.bold: true
             padding: 2
             layer.enabled: true
-                   layer.effect: Glow {
-                       radius: 64
-                       spread: 0.5
-                       samples: 128
-                       color: "#ff6127"
-                       visible: true
-                   }
+            layer.effect: Glow {
+                radius: 64
+                spread: 0.5
+                samples: 128
+                color: Theme.colorSelect
+                visible: true
+            }
             Rectangle{
                 anchors.fill: parent
                 border.width: 1

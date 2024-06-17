@@ -19,7 +19,7 @@ TabButton {
     property Item tabBarCurrentItem
     property TabBar tabBarInstance
     property real scaleFactor: 1.1
-    property real fontScale: Math.max(widthScale, heightScale)
+    property real fontScale: Math.min(widthScale, heightScale)
 
     text: qsTr("Text")
     leftInset:5
@@ -57,7 +57,7 @@ TabButton {
                     radius: 64
                     spread: 0.2
                     samples: 128
-                    color:   "#ff6127"
+                    color:  Theme.colorSelect
                     visible: true
                 }
             }
