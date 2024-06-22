@@ -12,6 +12,7 @@ Item{
     property int knobpreferredHeight: 90
     property int knobpreferredWidth: 50
     property int knobSize: knobItem.knobpreferredWidth
+    property alias knob: knob
     Layout.preferredHeight: knobpreferredHeight
     Layout.preferredWidth: knobpreferredWidth
     property string knobLabel: "test"
@@ -22,7 +23,7 @@ Item{
         Text {
             Layout.preferredWidth: knobItem.knobpreferredWidth
             id: valueText
-            text: knob.value + knobUnit
+            text: Math.trunc(knob.value) + knobUnit
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             color:Theme.colorText
@@ -30,7 +31,6 @@ Item{
         }
         Dial{
             id: knob
-
             property string knobType: "LittlePhatty"
             from : 0
             to : 100
@@ -39,7 +39,11 @@ Item{
             height: knobItem.knobSize
             Layout.preferredHeight: knobItem.knobSize
             Layout.preferredWidth: knobItem.knobSize
-
+            Behavior on value {
+                NumberAnimation {
+                    duration: 100
+                }
+            }
             handle:Item{
             }
             background:
