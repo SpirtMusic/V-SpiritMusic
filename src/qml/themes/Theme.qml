@@ -9,7 +9,7 @@ QtObject {
     property color colorBackground: "#1e1e1c"
     property color colorBackgroundView: "#222220"
     property color colorBorder: "#1c2b3d"
-
+    property color colorHover: "#882d00"
     property color colorPress: "#353532"
     property color colorButtonBackground: "#181816"
     property color colorUnselect: "#ffffff"
