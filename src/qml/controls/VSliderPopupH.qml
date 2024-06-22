@@ -14,6 +14,7 @@ Rectangle{
     property int sliderpreferredHeight: 16
     property int sliderpreferredWidth: 200 //* widthScale
     property int sliderValue: 0
+    property var emitterControl: null
     Layout.preferredHeight: sliderpreferredHeight
     property alias control: control
     //    Layout.preferredWidth: sliderpreferredWidth
@@ -39,7 +40,12 @@ Rectangle{
                     duration: 100
                 }
             }
-            background: Rectangle {
+
+            // onValueChanged: {
+            //     console.log("Slider value changed to: " + value)
+            //     // Add your custom logic here
+            // }
+             background: Rectangle {
                 implicitWidth:control.sliderWidth
                 implicitHeight: control.sliderHight
                 radius: 2

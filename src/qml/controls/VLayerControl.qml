@@ -18,6 +18,7 @@ Rectangle{
     property string voiceName: "voice name"
     property bool selected: false
     property int controlIndex: 0
+    property int spinBoxValue: 0
     color:Theme.colorBackgroundView
     border.color: selected ? selectColor : backgroundColor
 
@@ -154,7 +155,7 @@ Rectangle{
             anchors.horizontalCenter: parent.horizontalCenter
             height: parent.height
             width: parent.width/3.5 * widthScale
-            value: 50
+            value:20// spinBoxValue
             to:100
 
             up.indicator:Item{
@@ -238,13 +239,16 @@ Rectangle{
                 }
             }
             onValueChanged:{
-
                 vLayersControlContainer.vPopupInfo.open()
                 vLayersControlContainer.vPopupText = voiceControl.value
                 vLayersControlContainer.vPopupTimer.restart()
                 vLayersControlContainer.vPopUpItem.getX(layerControl)
                 vLayersControlContainer.vPopUpItem.getY(layerControl)
-
+                vLayersControlContainer.vPopupEmitterControl=voiceControl
+                sm.setControlVolume(controlIndex,value)
+            }
+            Component.onCompleted: {
+                value=sm.getControlVolume(controlIndex)
             }
 
         }
