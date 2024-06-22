@@ -4,21 +4,7 @@ MidiClient::MidiClient(QObject *parent)
     : QObject(parent) {
     jackClient = new JackClient;
     connect(jackClient, &JackClient::midiMessageReceived, this, &MidiClient::handleMidiMessage);
-    if (jackClient->observer.has_value()) { // Check if optional has a value
-        libremidi::observer& obs = jackClient->observer.value(); // Dereference optional to get the underlying libremidi::observer object
-        for(const libremidi::input_port& port : obs.get_input_ports()) {
-            qDebug()<< port.port_name;
-            //   jackClient->midiin->open_port(port,"In");
-        }
-    }
-    if (jackClient->observer.has_value()) { // Check if optional has a value
-        libremidi::observer& obs = jackClient->observer.value(); // Dereference optional to get the underlying libremidi::observer object
-        for(const libremidi::output_port& port : obs.get_output_ports()) {
-            qDebug()<< port.port_name;
-            //   jackClient->midiout->open_port(port,"Out");
 
-        }
-    }
 }
 void MidiClient::handleMidiMessage(const libremidi::message& message)
 {
@@ -108,4 +94,21 @@ void MidiClient::sendAllNotesOff(int channel)
     // Send the "All Notes Off" message for the specified channel
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 123, 0));
     qDebug()<<"sendAllNotesOff Channel : "<<channel+1;
+}
+void MidiClient::getIOPorts(){
+    if (jackClient->observer.has_value()) { // Check if optional has a value
+        libremidi::observer& obs = jackClient->observer.value(); // Dereference optional to get the underlying libremidi::observer object
+        for(const libremidi::input_port& port : obs.get_input_ports()) {
+            qDebug()<< port.port_name;
+            //   jackClient->midiin->open_port(port,"In");
+        }
+    }
+    if (jackClient->observer.has_value()) { // Check if optional has a value
+        libremidi::observer& obs = jackClient->observer.value(); // Dereference optional to get the underlying libremidi::observer object
+        for(const libremidi::output_port& port : obs.get_output_ports()) {
+            qDebug()<< port.port_name;
+            //   jackClient->midiout->open_port(port,"Out");
+
+        }
+    }
 }

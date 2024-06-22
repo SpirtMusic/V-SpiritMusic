@@ -17,6 +17,7 @@ public slots:
     void sendRawMessage(const libremidi::message& message);
     void sendAllNotesOff(int channel);
     void setVolume(int channel, int volume);
+    void getIOPorts();
 private slots:
     void handleMidiMessage(const libremidi::message& message);
 private:
