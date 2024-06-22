@@ -110,19 +110,40 @@ VSplitView {
                     GridLayout{
                         anchors.fill: parent
                         clip:true
-                        anchors.margins: 15
+                        anchors.margins: 1
                         columns:4
                         rows:2
+
                         VKnob{
-                            knobLabel: "Reverb Dph"
+                            id:reverbKnob
+                            knobLabel: "Reverb"
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                            Connections {
+                                target:rootAppWindow
+                                function  onSelectedControlIndexChanged(){
+                                    reverbKnob.knob.value = sm.getControlReverb(rootAppWindow.selectedControlIndex)
+
+                                }
+
+                            }
+                            Connections{
+                                target:reverbKnob.knob
+                                function onValueChanged(){
+                                    sm.setControlReverb(rootAppWindow.selectedControlIndex,reverbKnob.knob.value)
+                                }
+                            }
+
                         }
                         VKnob{
-                            knobLabel: "Chorus Dph"
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
+                            knobLabel: "Chorus"
                         }
                         VKnob{
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                             knobLabel: "Varl"
                         }
                         VKnob{
+                            Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                             knobLabel: "Dph"
                         }
 
