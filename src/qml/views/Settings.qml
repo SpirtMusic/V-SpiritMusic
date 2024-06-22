@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import "../layouts/settings"
+import "../layouts/settings/settingsPages"
 import "../controls"
 import Theme
 import Qt5Compat.GraphicalEffects
@@ -16,7 +17,7 @@ Item {
         anchors.horizontalCenter:parent.horizontalCenter
     }
     Rectangle {
-        id : decorator;
+        id : decoratorSettings;
         property real targetX: tabBarSettings.currentItem.x
         anchors.top: tabBarSettings.bottom;
 
@@ -25,11 +26,11 @@ Item {
         color: Theme.colorSelect
         NumberAnimation on x {
             duration: 200;
-            to: decorator.targetX+5
-            running: decorator.x != decorator.targetX
+            to: decoratorSettings.targetX+5
+            running: decoratorSettings.x != decoratorSettings.targetX
         }
         Component.onCompleted: {
-            decorator.x = decorator.targetX+5
+            decoratorSettings.x = decoratorSettings.targetX+5
         }
         layer.enabled: true
         layer.effect: Glow {
@@ -39,5 +40,20 @@ Item {
             color: Theme.colorSelect
             visible: true
         }
+    }
+    StackLayout {
+        //anchors.fill: parent
+        anchors.top: decoratorSettings.bottom
+
+        anchors.left: parent.left
+        anchors.right: parent.right
+        anchors.bottom: parent.bottom
+        currentIndex: tabBarSettings.currentIndex
+
+
+        ConnectionsPage{}
+
+        Item{}
+
     }
 }
