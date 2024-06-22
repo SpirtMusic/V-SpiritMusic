@@ -126,6 +126,10 @@ qt_add_qml_module(appvsonegx
     QML_FILES qml/controls/VPopup.qml
     QML_FILES qml/controls/VSliderPopup.qml
     QML_FILES qml/controls/VSliderPopupH.qml
+    SOURCES settingsmanager.h settingsmanager.cpp
+    QML_FILES qml/layouts/settings/settingsPages/ConnectionsPage.qml
+    QML_FILES qml/controls/VComboBox.qml
+    QML_FILES qml/controls/VButton.qml
 
 
 
