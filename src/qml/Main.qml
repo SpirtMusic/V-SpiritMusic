@@ -6,11 +6,14 @@ import Qt5Compat.GraphicalEffects
 import "layouts"
 import "controls"
 import "views"
+import com.sonegx.settingsmanager
+import com.sonegx.midiclient
 ApplicationWindow {
     id: rootAppWindow
     property real winBaseWidth: 800
     property real winBaseHeight: 600
-
+    property alias sm: settingsmanager
+    property int selectedControlIndex:0
     // width: 1024
     // height: 768
 
@@ -85,6 +88,16 @@ ApplicationWindow {
         Item{}
         Item{}
         Settings{}
+    }
+    SettingsManager{
+        id:settingsmanager
+
+    }
+    MidiClient{
+    id: mc
+    }
+    Component.onCompleted: {
+
     }
 
 }
