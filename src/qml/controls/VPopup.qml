@@ -11,6 +11,7 @@ Item {
     property int  sliderpreferredWidth: 0
     property int  sliderpreferredHeight:0
     property bool controlPressed: false
+    property var emitterControl: null
     Popup {
         id: vPopupInfo
         width: sliderpreferredWidth
@@ -23,6 +24,7 @@ Item {
             sliderpreferredWidth:vPopup.sliderpreferredWidth
             sliderpreferredHeight:vPopup.sliderpreferredHeight
 
+
         }
         exit: Transition {
             // Animation when the popup is hidden
@@ -34,6 +36,13 @@ Item {
             }
         }
 
+    }
+    Connections {
+        target: sliderPopupH.control
+        function onValueChanged() {
+            if(sliderPopupH.control.pressed)
+            emitterControl.value=sliderPopupH.control.value
+        }
     }
     Timer {
         id: vPopupTimer
