@@ -11,12 +11,12 @@ ComboBox {
     property color textColor: Theme.colorText
     property color colorSelect: Theme.colorSelect
     property color colorBorder: Theme.colorBorder
-    model: ["First", "Secondssssssssssssss", "Third"]
-
+    //model: ["First", "Secondssssssssssssss", "Third"]
+model: ListModel {}  // Default empty model
     delegate: ItemDelegate {
         width: control.width
         contentItem: Text {
-            text: modelData
+            text: model.name
             color: textColor
             font: control.font
             elide: Text.ElideRight

@@ -16,27 +16,52 @@ Item {
             //Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
             spacing: 10
-            Label{
-                text: "Input"
+            RowLayout{
+                Label{
+                    Layout.fillWidth: true
+                    text: "Input"
+                }
+                VButton{
+                    // Layout.alignment: Qt.AlignHCenter
+                    text: "Refresh"
+                    onClicked: mc.getIOPorts()
+                    iconSource: "qrc:/vsonegx/qml/imgs/icon-refresh.svg"
+
+                }
             }
             VComboBox{
-                      Layout.fillWidth: true
+                id:inputs
+                Layout.fillWidth: true
+                model: mc.inputPorts
+                textRole: "name"
+                onCountChanged: {
+                    if(model.count === 0)
+                        currentIndex = -1  // Reset selection when model changes
+                }
             }
         }
         ColumnLayout{
-           // Layout.alignment: Qt.AlignHCenter
-              Layout.fillWidth: true
-              spacing: 10
+            // Layout.alignment: Qt.AlignHCenter
+            Layout.fillWidth: true
+            spacing: 10
             Label{
                 text: "Output"
             }
             VComboBox{
-                      Layout.fillWidth: true
+                id:outputs
+                Layout.fillWidth: true
+                model: mc.outputPorts
+                textRole: "name"
+                onCountChanged: {
+                    if(model.count === 0)
+                        currentIndex = -1  // Reset selection when model changes
+                }
             }
         }
         VButton{
-           // Layout.alignment: Qt.AlignHCenter
+            // Layout.alignment: Qt.AlignHCenter
             text: "Connect"
+           // onClicked: mc.getIOPorts()
         }
     }
 }
