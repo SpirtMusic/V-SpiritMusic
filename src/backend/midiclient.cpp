@@ -4,6 +4,9 @@ MidiClient::MidiClient(QObject *parent)
     : QObject(parent) {
     jackClient = new JackClient;
     connect(jackClient, &JackClient::midiMessageReceived, this, &MidiClient::handleMidiMessage);
+    m_inputPorts = new MidiPortModel(this);
+    m_outputPorts = new MidiPortModel(this);
+    getIOPorts();
 
 }
 void MidiClient::handleMidiMessage(const libremidi::message& message)
@@ -96,17 +99,22 @@ void MidiClient::sendAllNotesOff(int channel)
     qDebug()<<"sendAllNotesOff Channel : "<<channel+1;
 }
 void MidiClient::getIOPorts(){
+
     if (jackClient->observer.has_value()) { // Check if optional has a value
+        m_inputPorts->clear();
         libremidi::observer& obs = jackClient->observer.value(); // Dereference optional to get the underlying libremidi::observer object
         for(const libremidi::input_port& port : obs.get_input_ports()) {
             qDebug()<< port.port_name;
             //   jackClient->midiin->open_port(port,"In");
+            m_inputPorts->addPort(QString::fromStdString(port.port_name), QVariant::fromValue(port));
         }
     }
     if (jackClient->observer.has_value()) { // Check if optional has a value
+        m_outputPorts->clear();
         libremidi::observer& obs = jackClient->observer.value(); // Dereference optional to get the underlying libremidi::observer object
         for(const libremidi::output_port& port : obs.get_output_ports()) {
             qDebug()<< port.port_name;
+            m_outputPorts->addPort(QString::fromStdString(port.port_name), QVariant::fromValue(port));
             //   jackClient->midiout->open_port(port,"Out");
 
         }
