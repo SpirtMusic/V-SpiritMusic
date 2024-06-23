@@ -15,6 +15,10 @@ public:
     Q_INVOKABLE void setControlVolume(int controlIndex, int value);
     Q_INVOKABLE int getControlReverb(int controlIndex) const;
     Q_INVOKABLE  void setControlReverb(int controlIndex, int value);
+    Q_INVOKABLE void saveSelectedInput(const QString &name);
+    Q_INVOKABLE void saveSelectedOutput(const QString &name);
+    Q_INVOKABLE QString loadSelectedInput();
+    Q_INVOKABLE QString loadSelectedOutput();
 
 private slots:
     void saveSettings();

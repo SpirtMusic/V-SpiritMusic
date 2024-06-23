@@ -34,10 +34,23 @@ Item {
                 Layout.fillWidth: true
                 model: mc.inputPorts
                 textRole: "name"
-                onCountChanged: {
-                    if(model.count === 0)
-                        currentIndex = -1  // Reset selection when model changes
-                }
+                onModelChanged: {
+                        var savedName = sm.loadSelectedInput()
+                        for (var i = 0; i < model.rowCount(); i++) {
+                            console.log("model.data(model.index(i, 0), Qt.UserRole + 1) " +model.data(model.index(i, 0), Qt.UserRole + 1))
+                            if (model.data(model.index(i, 0), Qt.UserRole + 1) === savedName) {
+                                currentIndex = i
+                                return
+                            }
+                        }
+                        currentIndex = -1  // If saved name not found
+                    }
+                    onCurrentIndexChanged: {
+                        if (currentIndex >= 0) {
+                            var currentName =  model.data(model.index(currentIndex, 0), Qt.UserRole + 1)
+                            sm.saveSelectedInput(currentName)
+                        }
+                    }
             }
         }
         ColumnLayout{
@@ -52,9 +65,23 @@ Item {
                 Layout.fillWidth: true
                 model: mc.outputPorts
                 textRole: "name"
-                onCountChanged: {
-                    if(model.count === 0)
-                        currentIndex = -1  // Reset selection when model changes
+                onModelChanged: {
+
+                    var savedName = sm.loadSelectedOutput()
+                    for (var i = 0; i < model.rowCount(); i++) {
+                        if (model.data(model.index(i, 0), Qt.UserRole + 1) === savedName) {
+                            currentIndex = i
+                            return
+                        }
+                    }
+                    currentIndex = -1  // If saved name not found
+                }
+                onCurrentIndexChanged: {
+                    if (currentIndex >= 0) {
+                        var currentName =  model.data(model.index(currentIndex, 0), Qt.UserRole + 1)
+
+                        sm.saveSelectedOutput(currentName)
+                    }
                 }
             }
         }

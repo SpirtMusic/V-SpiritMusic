@@ -28,6 +28,27 @@ void SettingsManager::setControlReverb(int controlIndex, int value)
     scheduleSettingSave(QString("controlReverb/c_%1").arg(controlIndex), value);
 }
 
+
+void SettingsManager::saveSelectedInput(const QString &name)
+{
+    scheduleSettingSave("MidiInput/Input", name);
+}
+
+void SettingsManager::saveSelectedOutput(const QString &name)
+{
+    scheduleSettingSave("MidiOutput/Output", name);
+}
+
+QString SettingsManager::loadSelectedInput()
+{
+    return settings->value("MidiInput/Input", "").toString();
+}
+
+QString SettingsManager::loadSelectedOutput()
+{
+    return settings->value("MidiOutput/Output", "").toString();
+}
+
 void SettingsManager::scheduleSettingSave(const QString &key, const QVariant &value)
 {
     pendingSettings[key] = value;
