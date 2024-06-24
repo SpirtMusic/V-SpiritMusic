@@ -7,6 +7,9 @@ MidiClient::MidiClient(QObject *parent)
     m_inputPorts = new MidiPortModel(this);
     m_outputPorts = new MidiPortModel(this);
     getIOPorts();
+    QTimer *connectionCheckTimer = new QTimer(this);
+    connect(connectionCheckTimer, &QTimer::timeout, this, &MidiClient::checkOutputPortConnection);
+    connectionCheckTimer->start(1000); // Check every second
 
 }
 void MidiClient::handleMidiMessage(const libremidi::message& message)
@@ -35,15 +38,19 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
         // Send the note-off message to all enabled channels
         if(channel==0){
             qDebug()<<"CHHHHHHHHHHH 1 " <<channel;
+             emit channelActivated(0);
             for (int ch : enabledChannels) {
                 sendNoteOn(ch, note, velocity);
+
 
             }
         }
         else if(channel==1){
             qDebug()<<"CHHHHHHHHHHH 2 " <<channel;
+                  emit channelActivated(1);
             for (int ch : enabledChannels_lower) {
                 sendNoteOn(ch, note, velocity);
+
 
             }
         }
@@ -120,3 +127,45 @@ void MidiClient::getIOPorts(){
         }
     }
 }
+
+void MidiClient::makeConnection(QVariant inputPorts,QVariant outputPorts){
+
+    if (inputPorts.isValid()) {
+        jackClient->midiin->close_port();
+        libremidi::input_port selectedInputPort = qvariant_cast<libremidi::input_port>(inputPorts);
+        jackClient->midiin->open_port(selectedInputPort,"In");
+    }
+    else {
+        // Handle case when no port is selected
+        qDebug() << "No input port selected.";
+    }
+    // Use the selected ports as needed
+    if (outputPorts.isValid()) {
+        jackClient->midiout->close_port();
+        libremidi::output_port selectedOutputPort = qvariant_cast<libremidi::output_port>(outputPorts);
+        jackClient->midiout->open_port(selectedOutputPort,"Out");
+    }
+    else {
+        // Handle case when no port is selected
+        qDebug() << "No output port selected.";
+    }
+    emit outputPortConnectionChanged();
+}
+
+void MidiClient::makeDisconnect(){
+    jackClient->midiin->close_port();
+    jackClient->midiout->close_port();
+
+    // Handle case when no port is selected
+    emit outputPortConnectionChanged();
+    qDebug() << "Disconnected";
+
+}
+void MidiClient::checkOutputPortConnection(){
+    bool currentStatus = isOutputPortConnected();
+    if (currentStatus != m_lastOutputPortStatus) {
+        m_lastOutputPortStatus = currentStatus;
+        emit outputPortConnectionChanged();
+    }
+}
+
