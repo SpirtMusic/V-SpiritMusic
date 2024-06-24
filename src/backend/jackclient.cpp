@@ -11,7 +11,7 @@ JackClient::JackClient(QObject *parent)
 
     // Create a JACK client which will be shared across objects
     jack_status_t status{};
-    handle.reset(jack_client_open("SoneGX APP", JackNoStartServer, &status));
+    handle.reset(jack_client_open("VSoneGX", JackNoStartServer, &status));
 
     if (!handle)
         throw std::runtime_error("Could not start JACK client");
