@@ -4,6 +4,7 @@
 #include <QAbstractListModel>
 #include <QString>
 #include <QObject>
+
 class MidiPortModel : public QAbstractListModel
 {
     Q_OBJECT

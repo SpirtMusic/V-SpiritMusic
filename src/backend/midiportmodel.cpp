@@ -36,10 +36,13 @@ QHash<int, QByteArray> MidiPortModel::roleNames() const
 
 void MidiPortModel::addPort(const QString &name, const QVariant &port)
 {
-    beginInsertRows(QModelIndex(), m_ports.size(), m_ports.size());
-    m_ports.append({name, port});
-    endInsertRows();
-    Q_EMIT countChanged();
+    if (!name.startsWith("VSoneGX", Qt::CaseInsensitive))
+    {
+        beginInsertRows(QModelIndex(), m_ports.size(), m_ports.size());
+        m_ports.append({name, port});
+        endInsertRows();
+        Q_EMIT countChanged();
+    }
 }
 
 void MidiPortModel::clear()
