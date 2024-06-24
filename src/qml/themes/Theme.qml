@@ -6,6 +6,8 @@ QtObject {
     property color colorIcon: "#ffffff"
 
     property color colorSelect: "#e14b00"
+    property color colorStandby: "#ea7500"
+    property color colorActive: "#55ff00"
     property color colorBackground: "#1e1e1c"
     property color colorBackgroundView: "#222220"
     property color colorBorder: "#1c2b3d"
