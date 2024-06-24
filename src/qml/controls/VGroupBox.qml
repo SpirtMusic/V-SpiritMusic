@@ -15,6 +15,7 @@ GroupBox {
     property color colorSelect: Theme.colorSelect
     property color colorBorder: Theme.colorBorder
     property string tmpTitle: title
+    property bool collapsable: true
     title: qsTr("GroupBox")
     label:Item{
         Label {
@@ -38,11 +39,13 @@ GroupBox {
                 border.width: 1
                 color: 'transparent'
                 border.color : 'transparent'
+                visible:collapsable
                 MouseArea{
                     anchors.fill: parent
                     hoverEnabled: true
                     onEntered: parent.border.color = groupBox.colorSelect
                     onExited: parent.border.color = 'transparent'
+                    enabled: collapsable
                     onClicked: {
                         if(contentItem.visible){
                             contentItem.visible=false
@@ -82,6 +85,9 @@ GroupBox {
     }
     Component.onCompleted: {
         tmpTitle=title
+        if(collapsable)
         title=tmpTitle + " " +String.fromCodePoint(0x25B2)
+        else
+            title=tmpTitle
     }
 }
