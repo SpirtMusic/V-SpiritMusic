@@ -17,6 +17,8 @@ public:
     Q_INVOKABLE  void setControlReverb(int controlIndex, int value);
     Q_INVOKABLE void saveSelectedInput(const QString &name);
     Q_INVOKABLE void saveSelectedOutput(const QString &name);
+    Q_INVOKABLE void saveLayerEnabled(int layerSet, int layerNumber, bool enabled);
+    Q_INVOKABLE bool getLayerEnabled(int layerSet, int layerNumber) const;
     Q_INVOKABLE QString loadSelectedInput();
     Q_INVOKABLE QString loadSelectedOutput();
 

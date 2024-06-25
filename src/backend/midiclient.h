@@ -14,6 +14,14 @@ class MidiClient  : public QObject
     Q_PROPERTY(MidiPortModel* outputPorts READ outputPorts CONSTANT)
     Q_PROPERTY(bool isOutputPortConnected READ isOutputPortConnected NOTIFY outputPortConnectionChanged)
 public:
+
+    enum LayersSet {
+        Upper = 0,
+        Lower = 1,
+        Pedal = 2
+    };
+    Q_ENUM(LayersSet)
+
     explicit MidiClient(QObject *parent = nullptr);
     MidiPortModel* inputPorts() const { return m_inputPorts; }
     MidiPortModel* outputPorts() const { return m_outputPorts; }
@@ -31,10 +39,12 @@ public slots:
     Q_INVOKABLE void sendRawMessage(const libremidi::message& message);
     Q_INVOKABLE void sendAllNotesOff(int channel);
     Q_INVOKABLE void setVolume(int channel, int volume);
+    Q_INVOKABLE void setReverb(int channel, int reverb);
     Q_INVOKABLE void getIOPorts();
     Q_INVOKABLE void makeConnection(QVariant inputPorts,QVariant outputPorts);
     Q_INVOKABLE void  makeDisconnect();
     void checkOutputPortConnection();
+    Q_INVOKABLE void setLayerEnabled(LayersSet set, int layer, bool enabled);
 private slots:
     void handleMidiMessage(const libremidi::message& message);
 private:
@@ -43,6 +53,11 @@ private:
     MidiPortModel *m_inputPorts;
     MidiPortModel *m_outputPorts;
     bool m_lastOutputPortStatus = false;
+
+    QList<int> m_enabledLayersUpper;
+    QList<int> m_enabledLayersLower;
+    QList<int> m_enabledLayersPedal;
+
 };
 
 #endif // MIDICLIENT_H

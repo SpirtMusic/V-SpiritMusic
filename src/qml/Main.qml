@@ -83,9 +83,8 @@ ApplicationWindow {
         anchors.fill: parent
         anchors.top: decorator.bottom
         currentIndex: tabBar.currentIndex
-        Layers{
-        }
-        Item{}
+        Layers{}
+        Sounds{}
         Item{}
         Settings{}
     }
@@ -94,7 +93,8 @@ ApplicationWindow {
 
     }
     MidiClient{
-    id: mc
+        id: mc
+
     }
     Component.onCompleted: {
 

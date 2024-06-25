@@ -246,6 +246,7 @@ Rectangle{
                 vLayersControlContainer.vPopUpItem.getY(layerControl)
                 vLayersControlContainer.vPopupEmitterControl=voiceControl
                 sm.setControlVolume(controlIndex,value)
+                mc.setVolume(controlIndex,value)
             }
             Component.onCompleted: {
                 value=sm.getControlVolume(controlIndex)

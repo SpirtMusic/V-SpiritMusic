@@ -49,6 +49,15 @@ QString SettingsManager::loadSelectedOutput()
     return settings->value("MidiOutput/Output", "").toString();
 }
 
+void  SettingsManager::saveLayerEnabled(int layerSet, int layerNumber, bool enabled){
+    QString key = QString("LayerSettings/Set%1_Layer%2").arg(layerSet).arg(layerNumber);
+    scheduleSettingSave(key, enabled);
+}
+
+bool SettingsManager::getLayerEnabled(int layerSet, int layerNumber) const{
+    QString key = QString("LayerSettings/Set%1_Layer%2").arg(layerSet).arg(layerNumber);
+    return settings->value(key, false).toBool();
+}
 void SettingsManager::scheduleSettingSave(const QString &key, const QVariant &value)
 {
     pendingSettings[key] = value;

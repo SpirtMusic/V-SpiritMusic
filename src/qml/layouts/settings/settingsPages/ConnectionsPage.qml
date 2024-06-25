@@ -4,6 +4,11 @@ import QtQuick.Layouts
 import Theme
 import "../../../controls"
 Item {
+    property int baseWidth: rootAppWindow.winBaseWidth
+    property int baseHeight: rootAppWindow.winBaseHeight
+    property real widthScale: rootAppWindow.width / baseWidth
+    property real heightScale: rootAppWindow.height / baseHeight
+    property real fontScale: Math.min(widthScale, heightScale)
     ColumnLayout{
         anchors.top: parent.top
         anchors.left: parent.left
@@ -28,6 +33,7 @@ Item {
                         Label{
                             Layout.fillWidth: true
                             text: "Input"
+                            font.pixelSize: 12*fontScale
                         }
                         VButton{
                             // Layout.alignment: Qt.AlignHCenter
@@ -67,6 +73,7 @@ Item {
                     spacing: 10
                     Label{
                         text: "Output"
+                        font.pixelSize: 12*fontScale
                     }
                     VComboBox{
                         id:outputs
@@ -124,11 +131,13 @@ Item {
                     }
                     Text {
                         text:  "Status : "
+                        font.pixelSize: 12*fontScale
                         color:  Theme.colorText
                     }
                     Text {
                         Layout.alignment: Qt.AlignRight
                         text: mc.isOutputPortConnected ? "Connected" : "Disconnected"
+                        font.pixelSize: 12*fontScale
                         color: mc.isOutputPortConnected ? "#55ff00" : "#ff0000"
                     }
                 }
@@ -142,12 +151,13 @@ Item {
             GridLayout{
                 anchors.fill: parent
                 anchors.margins: 20
-                columns: 2
+                columns: 3
                 rows:1
                 RowLayout{
                     Text {
                         id: ch1
                         text: qsTr("Channel 1: ")
+                        font.pixelSize: 12*fontScale
                         color:  Theme.colorText
                     }
                     VChannelIndicator{
@@ -155,15 +165,16 @@ Item {
                         color:Theme.colorStandby
                     }
                     Timer {
-                           id: channel0Timer
-                           interval: 60
-                           onTriggered: ch1_idicator.color=Theme.colorStandby
-                       }
+                        id: channel0Timer
+                        interval: 60
+                        onTriggered: ch1_idicator.color=Theme.colorStandby
+                    }
                 }
                 RowLayout{
                     Text {
                         id: ch2
                         text: qsTr("Channel 2: ")
+                        font.pixelSize: 12*fontScale
                         color:  Theme.colorText
                     }
                     VChannelIndicator{
@@ -171,22 +182,44 @@ Item {
                         color:Theme.colorStandby
                     }
                     Timer {
-                           id: channel1Timer
-                           interval: 60
-                           onTriggered: ch2_idicator.color=Theme.colorStandby
-                       }
+                        id: channel1Timer
+                        interval: 60
+                        onTriggered: ch2_idicator.color=Theme.colorStandby
+                    }
+                }
+                RowLayout{
+                    Text {
+                        id: ch3
+                        text: qsTr("Channel 3: ")
+                        font.pixelSize: 12*fontScale
+                        color:  Theme.colorText
+
+                    }
+                    VChannelIndicator{
+                        id:ch3_idicator
+                        color:Theme.colorStandby
+                    }
+                    Timer {
+                        id: channel3Timer
+                        interval: 60
+                        onTriggered: ch3_idicator.color=Theme.colorStandby
+                    }
                 }
                 Connections{
-                target: mc
-                function onChannelActivated(channel){
-                    if (channel === 0) {
-                              ch1_idicator.color = Theme.colorActive
-                              channel0Timer.restart()
-                          } else if (channel === 1) {
-                              ch2_idicator.color = Theme.colorActive
-                              channel1Timer.restart()
-                          }
-                }
+                    target: mc
+                    function onChannelActivated(channel){
+                        if (channel === 0) {
+                            ch1_idicator.color = Theme.colorActive
+                            channel0Timer.restart()
+                        } else if (channel === 1) {
+                            ch2_idicator.color = Theme.colorActive
+                            channel1Timer.restart()
+                        }
+                        else if (channel === 2) {
+                            ch3_idicator.color = Theme.colorActive
+                            channel3Timer.restart()
+                        }
+                    }
                 }
             }
         }

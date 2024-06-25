@@ -3,6 +3,8 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../layouts/layers"
 import "../controls"
+import com.sonegx.midiclient
+
 VSplitView {
     property int baseWidth: rootAppWindow.winBaseWidth
     property int baseHeight: rootAppWindow.winBaseHeight
@@ -59,6 +61,7 @@ VSplitView {
                     RowLayout{
                         anchors.fill: parent
                         VLayerContainer {
+                            layerSetGlobal: MidiClient.Upper
                             selectedLayout:  quickSetSplit.toggled ? 1:0
                         }
                     }
@@ -71,6 +74,7 @@ VSplitView {
                     RowLayout{
                         anchors.fill: parent
                         VLayerContainer {
+                               layerSetGlobal: MidiClient.Lower
                             selectedLayout:  quickSetSplit.toggled ? 1:0
                         }
                     }
@@ -83,8 +87,8 @@ VSplitView {
                     RowLayout{
                         anchors.fill: parent
                         VLayerContainer {
+                               layerSetGlobal: MidiClient.Pedal
                             selectedLayout:  quickSetSplit.toggled ? 1:0
-
                         }
                     }
                 }
@@ -130,6 +134,7 @@ VSplitView {
                                 target:reverbKnob.knob
                                 function onValueChanged(){
                                     sm.setControlReverb(rootAppWindow.selectedControlIndex,reverbKnob.knob.value)
+                                    mc.setReverb(rootAppWindow.selectedControlIndex,reverbKnob.knob.value)
                                 }
                             }
 

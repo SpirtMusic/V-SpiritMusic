@@ -28,7 +28,7 @@ Rectangle{
     VPopup{
         id:popupInfo
         sliderpreferredWidth : 120 * widthScale
-        sliderpreferredHeight : 16// *heightScale
+        sliderpreferredHeight : 16 *heightScale
 
     }
     Image {

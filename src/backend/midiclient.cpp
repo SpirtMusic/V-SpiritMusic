@@ -18,9 +18,7 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
     // e.g., update UI, process the message, etc.
     qDebug()<< message;
     if (itsNote(message)) {
-        // Get the list of enabled channels
-        QList<int> enabledChannels =   {};
-        QList<int> enabledChannels_lower =   {};
+
 
         // Extract the note and velocity from the message
         int note = message[1];
@@ -34,26 +32,48 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
             // It's a note-off message, send note-off with velocity 0
             velocity = 0;
         }
-
         // Send the note-off message to all enabled channels
-        if(channel==0){
-            qDebug()<<"CHHHHHHHHHHH 1 " <<channel;
-             emit channelActivated(0);
-            for (int ch : enabledChannels) {
-                sendNoteOn(ch, note, velocity);
-
-
+        if(channel == 0){
+            emit channelActivated(0);
+            for (int ly : m_enabledLayersUpper) {
+                sendNoteOn(ly, note, velocity);
+                qDebug() << "Upper Channel";
             }
         }
-        else if(channel==1){
-            qDebug()<<"CHHHHHHHHHHH 2 " <<channel;
-                  emit channelActivated(1);
-            for (int ch : enabledChannels_lower) {
-                sendNoteOn(ch, note, velocity);
+        else if(channel == 1){
 
-
+            emit channelActivated(1);
+            for (int ly : m_enabledLayersLower) {
+                sendNoteOn(ly, note, velocity);
+                qDebug() << "Lower Channel";
             }
         }
+        else if(channel == 2){
+
+            emit channelActivated(2);
+            for (int ly : m_enabledLayersPedal) {
+                sendNoteOn(ly, note, velocity);
+                qDebug() << "Pedal Channel";
+            }
+        }
+        // if(channel==0){
+        //     qDebug()<<"CHHHHHHHHHHH 1 " <<channel;
+        //      emit channelActivated(0);
+        //     for (int ch : enabledChannels) {
+        //         sendNoteOn(ch, note, velocity);
+
+
+        //     }
+        // }
+        // else if(channel==1){
+        //     qDebug()<<"CHHHHHHHHHHH 2 " <<channel;
+        //           emit channelActivated(1);
+        //     for (int ch : enabledChannels_lower) {
+        //         sendNoteOn(ch, note, velocity);
+
+
+        //     }
+        // }
 
     }
 }
@@ -71,6 +91,7 @@ bool MidiClient::itsNote(const libremidi::message& message)
 }
 void MidiClient::sendNoteOn(int channel, int note, int velocity)
 {
+    qDebug() << " Layer : "<<channel;
     libremidi::message channelMessage = libremidi::channel_events::note_on(channel, note, velocity);
     jackClient->sendMidiMessage(0, channelMessage);
 }
@@ -98,6 +119,17 @@ void MidiClient::setVolume(int channel, int volume)
     qDebug()<<"Channel : "<<channel+1<< volume;
     // Send a Control Change message for CC #7 (Volume)
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x07, volume));
+}
+void MidiClient::setReverb(int channel, int reverb)
+{
+    // Ensure the channel is in the valid range (0-15)
+    if (channel < 0 || (channel > 15))
+        return;
+    // Map the reverb from the range 0-99 to the MIDI range 0-127
+    reverb = qBound(0, (reverb * 127) / 99, 127);
+    qDebug()<<"Channel : "<<channel+1<< reverb;
+    // Send a Control Change message for CC #91 (reverb)
+    jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x5B, reverb));
 }
 void MidiClient::sendAllNotesOff(int channel)
 {
@@ -166,6 +198,21 @@ void MidiClient::checkOutputPortConnection(){
     if (currentStatus != m_lastOutputPortStatus) {
         m_lastOutputPortStatus = currentStatus;
         emit outputPortConnectionChanged();
+    }
+}
+void MidiClient::setLayerEnabled(LayersSet set, int layer, bool enabled)
+{
+    QList<int>* targetList;
+    switch(set) {
+    case Upper: targetList = &m_enabledLayersUpper; break;
+    case Lower: targetList = &m_enabledLayersLower; break;
+    case Pedal: targetList = &m_enabledLayersPedal; break;
+    }
+
+    if (enabled && !targetList->contains(layer)) {
+        targetList->append(layer);
+    } else if (!enabled) {
+        targetList->removeAll(layer);
     }
 }
 

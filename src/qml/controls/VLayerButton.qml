@@ -8,6 +8,7 @@ Rectangle {
     property int baseHeight: rootAppWindow.winBaseHeight
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
+    property real fontScale: Math.min(widthScale, heightScale)
 
     property color textColor: Theme.colorText
     property color colorSelect:Theme.colorSelect
@@ -17,7 +18,11 @@ Rectangle {
     property string textLayer: "1"
     property bool checked: false
     property bool layerToggled: false
-    property real fontScale: Math.min(widthScale, heightScale)
+
+
+    property int layerNumber: 0
+    property int layerSet
+
 
     id: vLayerButton
     Layout.margins: 2
@@ -30,7 +35,12 @@ Rectangle {
     border.width: 2
     color:  colorBorder
 
-
+    onCheckedChanged: {
+        if (mc) {
+            mc.setLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
+            sm.saveLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
+        }
+    }
 
     Image {
         id: mask
@@ -119,7 +129,9 @@ Rectangle {
 
     }
 
-
+    Component.onCompleted: {
+        checked = sm.getLayerEnabled(layerSet, layerNumber)
+    }
 
 
 }
