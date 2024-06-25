@@ -11,8 +11,8 @@ Rectangle{
     property real fontScale: Math.min(widthScale, heightScale)
     property string sliderLabel: "Volume"
     property string sliderUnit: "%"
-    property int sliderpreferredHeight: 16
-    property int sliderpreferredWidth: 200 //* widthScale
+    property int sliderpreferredHeight: 16 *heightScale
+    property int sliderpreferredWidth: 200 * widthScale
     property int sliderValue: 0
     property var emitterControl: null
     Layout.preferredHeight: sliderpreferredHeight
@@ -26,7 +26,7 @@ Rectangle{
         anchors.fill:parent
         spacing:3
         Slider {
-            property real sliderHight: 10
+            property real sliderHight: 10*heightScale
             property real sliderWidth: sliderpreferredWidth - valueText.width
             anchors.verticalCenter: parent.verticalCenter
 
@@ -80,7 +80,7 @@ Rectangle{
                 x: control.leftPadding + control.visualPosition * (control.availableWidth - width)
                 y: control.topPadding + control.availableHeight / 2 - height / 2
                 source: "qrc:/vsonegx/qml/controls/resource/slider/slider_handler_H.png"
-                sourceSize.height:12
+                sourceSize.height:12*heightScale
                 Rectangle{
                     id:activeRec
                     //  anchors.centerIn: handler

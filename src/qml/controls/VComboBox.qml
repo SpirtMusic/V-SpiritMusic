@@ -12,13 +12,13 @@ ComboBox {
     property color colorSelect: Theme.colorSelect
     property color colorBorder: Theme.colorBorder
     //model: ["First", "Secondssssssssssssss", "Third"]
-model: ListModel {}  // Default empty model
+    model: ListModel {}  // Default empty model
     delegate: ItemDelegate {
         width: control.width
         contentItem: Text {
             text: model.name
             color: textColor
-            font: control.font
+            font.pixelSize: 12*fontScale
             elide: Text.ElideRight
             verticalAlignment: Text.AlignVCenter
 
@@ -55,7 +55,7 @@ model: ListModel {}  // Default empty model
         rightPadding: control.indicator.width + control.spacing
 
         text: control.displayText
-        font: control.font
+        font.pixelSize: 12*fontScale
         color: control.pressed ? Theme.colorHover : colorSelect
         verticalAlignment: Text.AlignVCenter
         elide: Text.ElideRight

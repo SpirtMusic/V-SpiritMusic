@@ -44,7 +44,7 @@ Button {
         }
         Text {
             text: control.text
-            font: control.font
+            font.pixelSize: 12*fontScale
             opacity: enabled ? 1.0 : 0.3
             color: control.down ? Theme.colorHover : colorSelect
             horizontalAlignment: Text.AlignHCenter

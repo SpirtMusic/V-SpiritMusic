@@ -12,8 +12,8 @@ Item{
     property real fontScale: Math.min(widthScale, heightScale)
     property string sliderLabel: "Volume"
     property string sliderUnit: "%"
-    property int sliderpreferredHeight: 200
-    property int sliderpreferredWidth: 40
+    property int sliderpreferredHeight: 200 *heightScale
+    property int sliderpreferredWidth: 40 *widthScale
     property int sliderValue: 0
     Layout.preferredHeight: sliderpreferredHeight
     Layout.preferredWidth: sliderpreferredWidth
@@ -30,8 +30,8 @@ Item{
             font.pointSize: 10 *fontScale
         }
         Slider {
-            property real sliderHight:150
-            property real sliderWidth: 6
+            property real sliderHight:150 *heightScale
+            property real sliderWidth: 6  *widthScale
             Layout.preferredHeight: sliderHight
             id: control
             orientation: Qt.Vertical
@@ -84,7 +84,7 @@ Item{
                 x: control.leftPadding + control.availableWidth / 2 - width / 2
                 y:  control.topPadding + control.visualPosition * (control.availableHeight - height)
                 source: "qrc:/vsonegx/qml/controls/resource/slider/slider_handler_V.png"
-                sourceSize.width:20
+                sourceSize.width:20 *fontScale
 
                 Rectangle{
                     id:activeRec
