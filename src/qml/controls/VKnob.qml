@@ -9,14 +9,24 @@ Item{
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
     property real fontScale: Math.min(widthScale, heightScale)
-    property int knobpreferredHeight: 90
-    property int knobpreferredWidth: 50
-    property int knobSize: knobItem.knobpreferredWidth
+    property int knobpreferredHeight: 128
+    property int knobpreferredWidth: getknobSize()
+    property int knobSize: getknobSize()
     property alias knob: knob
     Layout.preferredHeight: knobpreferredHeight
     Layout.preferredWidth: knobpreferredWidth
     property string knobLabel: "test"
     property string knobUnit: "%"
+    function getknobSize(){
+    if(rootAppWindow.width>=1920&&rootAppWindow.height>=1080)
+        return 128
+    else if(rootAppWindow.width>baseWidth&&rootAppWindow.height>baseHeight)
+        return 85
+    else if(rootAppWindow.width>=baseWidth&&rootAppWindow.height>=baseHeight)
+        return 50
+    else
+        return 50
+    }
     ColumnLayout{
         Layout.alignment: Qt.AlignVCenter
 
@@ -39,6 +49,7 @@ Item{
             height: knobItem.knobSize
             Layout.preferredHeight: knobItem.knobSize
             Layout.preferredWidth: knobItem.knobSize
+
             Behavior on value {
                 NumberAnimation {
                     duration: 100
@@ -55,10 +66,11 @@ Item{
                 sourceClipRect: knob.getKnobRect(knob.value)
                 sourceSize.width : undefined
                 sourceSize.height : undefined
-                Component.onCompleted: {
-                    let knobSourece="qrc:/vsonegx/qml/controls/resource/knob/"+knob.knobType+"/"+knob.knobType+"_"+knobItem.knobSize+".png"
-                    source=knobSourece
-                }
+                source:"qrc:/vsonegx/qml/controls/resource/knob/"+knob.knobType+"/"+knob.knobType+"_"+knobItem.knobSize+".png"
+                // Component.onCompleted: {
+                //     let knobSourece="qrc:/vsonegx/qml/controls/resource/knob/"+knob.knobType+"/"+knob.knobType+"_"+knobItem.knobSize+".png"
+                //     source=knobSourece
+                // }
             }
             function getKnobRect(value) {
                 var index = Math.floor(value / (100 / 50)); // Calculate the index based on the value and the number of positions
@@ -77,4 +89,5 @@ Item{
             font.pointSize: 10 *fontScale
         }
     }
+
 }
