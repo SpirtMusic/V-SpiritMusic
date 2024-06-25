@@ -32,6 +32,10 @@ qt_add_qml_module(appvsonegx
     SOURCES backend/midiutils.h
     SOURCES backend/midiportmodel.h backend/midiportmodel.cpp
     RESOURCES qml/imgs/icon-refresh.svg
+    QML_FILES qml/controls/VChannelIndicator.qml
+    QML_FILES qml/views/Sounds.qml
+    QML_FILES qml/layouts/sounds/VSoundsCategories.qml
+    QML_FILES qml/layouts/sounds/VSoundsContainer.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
