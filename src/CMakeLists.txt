@@ -36,6 +36,7 @@ qt_add_qml_module(appvsonegx
     QML_FILES qml/views/Sounds.qml
     QML_FILES qml/layouts/sounds/VSoundsCategories.qml
     QML_FILES qml/layouts/sounds/VSoundsContainer.qml
+    RESOURCES qml/imgs/cil-trash.svg qml/imgs/cil-plus.svg qml/imgs/cil-pencil.svg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
