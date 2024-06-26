@@ -16,11 +16,13 @@ Button {
     property color colorBorder: Theme.colorBorder
     property string iconSource: ""
     property real iconSizeRatio: 0.6
+    property real implicitHeightPadding: 20
+    property real fontPixelSize: 12
 
     text: qsTr("Button")
 
     implicitWidth: contentItem.implicitWidth + 20  // Add some padding
-    implicitHeight: contentItem.implicitHeight + 20  // Add some padding
+    implicitHeight: contentItem.implicitHeight + implicitHeightPadding  // Add some padding
 
     contentItem: RowLayout {
         spacing: 1
@@ -44,7 +46,7 @@ Button {
         }
         Text {
             text: control.text
-            font.pixelSize: 12*fontScale
+            font.pixelSize: fontPixelSize*fontScale
             opacity: enabled ? 1.0 : 0.3
             color: control.down ? Theme.colorHover : colorSelect
             horizontalAlignment: Text.AlignHCenter
