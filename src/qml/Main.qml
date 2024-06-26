@@ -14,6 +14,7 @@ ApplicationWindow {
     property real winBaseHeight: 600
     property alias sm: settingsmanager
     property int selectedControlIndex:0
+    property string currentCategory: ""
     // width: 1024
     // height: 768
 

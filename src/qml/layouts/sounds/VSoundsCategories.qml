@@ -11,6 +11,7 @@ Item {
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
     property real fontScale: Math.max(widthScale, heightScale)
+
     Layout.fillWidth: true
     Layout.alignment: Qt.AlignVCenter | Qt.AlignVCenter
     Layout.fillHeight: true
@@ -25,6 +26,9 @@ Item {
     function refreshModel() {
         model = sm.getCategories()
         isLoading=true
+    }
+    onSelectedCategoryChanged: {
+        rootAppWindow.currentCategory=selectedCategory
     }
     property int cellWidth: 120 * widthScale
     property int cellHeight: 40 * heightScale
@@ -187,9 +191,11 @@ Item {
         parent: rootAppWindow
         anchors.centerIn: parent
         modal: true
-        width: 300
-        height: 150
-
+        width: 300*widthScale
+        height: 150 *heightScale
+        background: Rectangle {
+              color:  Theme.colorBackgroundView
+          }
         contentItem: ColumnLayout {
             spacing: 10
             TextField {
@@ -198,8 +204,8 @@ Item {
                 placeholderText: "Enter category name"
                 text: categoryDialog.mode === "add" ? "" : root.selectedCategory
             }
-        }
 
+        }
         onOpened: {
             if (mode === "add") {
                 categoryName.text = ""
@@ -242,14 +248,18 @@ Item {
         parent: rootAppWindow
         anchors.centerIn: parent
         modal: true
-        width: 300
-        height: 150
-
+        width: 300 *widthScale
+        height: 150 *heightScale
+        background: Rectangle {
+              color:  Theme.colorBackgroundView
+          }
         contentItem: ColumnLayout {
             spacing: 10
             Text {
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
+                font.pointSize: 10* fontScale
+                color:Theme.colorText
                 text: "Are you sure you want to delete the category '" + root.selectedCategory + "'?"
             }
         }

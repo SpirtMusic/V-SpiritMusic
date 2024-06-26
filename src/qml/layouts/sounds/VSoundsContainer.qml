@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 import Theme
+import "../../controls"
 Item {
     id: root
     property int baseWidth: rootAppWindow.winBaseWidth
@@ -15,28 +16,45 @@ Item {
     Layout.fillHeight: true
     property int columns: 10
     property int rows: 10
+    property bool isEditing: false
+
+    property string currentCategory: rootAppWindow.currentCategory
+    property var soundModel: []
+    property int selectedSoundIndex: -1
 
 
-
-    property var model: generateModel(500)
     property int selectedIndex: -1
     property int cellWidth: 150 * widthScale
     property int cellHeight: 40 * heightScale
-    function generateModel(count) {
-        var result = [];
-        for (var i = 1; i <= count; i++) {
-            result.push("Voice " + i);
+    Connections{
+        target:rootAppWindow
+        function onCurrentCategoryChanged(){
+            root.currentCategory=rootAppWindow.currentCategory
+            root.refreshSoundModel()
+            selectedSoundIndex=-1
+            selectedIndex= -1
         }
-        return result;
+
     }
+    function refreshSoundModel() {
+        if (currentCategory !== "") {
+            soundModel = sm.getSoundsForCategory(currentCategory)
+        } else {
+            soundModel = []
+        }
+    }
+
     GridView {
         id: gridView
-        anchors.fill: parent
+        anchors.top: rowToolBtns.bottom
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
         cellWidth: root.cellWidth
         cellHeight: root.cellHeight
-        model: root.model
+        model: soundModel
         anchors.margins: 6
-        anchors.topMargin: 8
+        anchors.topMargin: 2
 
         // Enable horizontal scrolling
         flow: GridView.FlowTopToBottom
@@ -59,6 +77,7 @@ Item {
                     verticalOffset: 1
                 }
             }
+            property var soundDetails: sm.getSoundDetails(currentCategory, modelData)
             Image {
                 id: mask
                 source: "qrc:/vsonegx/qml/controls/resource/texture/button_texture.png"
@@ -105,20 +124,177 @@ Item {
                 border.width: 2
                 radius: 4
                 Text {
-                    anchors.centerIn: parent
+                    anchors.fill: parent
                     text: modelData
                     font.pointSize: 10* fontScale
                     color:Theme.colorText
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
+                        selectedSoundIndex = index
                         root.selectedIndex = index
                         console.log("Clicked button index:", index)
                     }
                 }
             }
+        }
+    }
+
+    // Sound Management Buttons
+    RowLayout {
+        id:rowToolBtns
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 10
+        anchors.topMargin: 8
+
+
+        VButton {
+            text: "Add"
+            enabled: currentCategory !== ""
+            onClicked: soundDialog.openSoundDialog({name: "", msb: 0, lsb: 0, pc: 0})
+            iconSource: "qrc:/vsonegx/qml/imgs/cil-plus.svg"
+            fontPixelSize:9
+            implicitHeightPadding:10
+        }
+        VButton {
+            text: "Edit"
+            enabled: selectedSoundIndex !== -1
+            onClicked: {
+                var soundDetails = sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
+                soundDialog.openSoundDialog(soundDetails)
+            }
+            iconSource: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
+            fontPixelSize:9
+            implicitHeightPadding:10
+        }
+        VButton {
+            text: "Delete"
+            enabled: selectedSoundIndex !== -1
+            onClicked: deleteSoundDialog.open()
+            iconSource: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
+            fontPixelSize:9
+            implicitHeightPadding:10
+        }
+
+    }
+
+
+    // Sound Add/Edit Dialog
+    Dialog {
+        id: soundDialog
+        title: "Add/Edit Sound"
+        standardButtons: Dialog.Ok | Dialog.Cancel
+
+        property string originalName: ""
+        parent: rootAppWindow
+        anchors.centerIn: parent
+        modal: true
+        width: 200*widthScale
+        height: 200 *heightScale
+        background: Rectangle {
+            color:  Theme.colorBackgroundView
+        }
+        function openSoundDialog(soundDetails) {
+            if (!soundDetails || soundDetails.name === undefined) {
+                console.error("Invalid sound details provided:", soundDetails);
+                return;
+            }
+            isEditing = soundDetails !== undefined;
+            console.log("  sound details provided:", soundDetails);
+            if (isEditing) {
+                soundDialog.originalName = soundDetails.name || "";
+                soundNameField.text = soundDetails.name || "";
+                soundMSB.value = soundDetails.msb || 0;
+                soundLSB.value = soundDetails.lsb || 0;
+                soundPC.value = soundDetails.pc || 0;
+            } else {
+                soundDialog.originalName = ""
+                soundNameField.text = ""
+                soundMSB.value = 0
+                soundLSB.value = 0
+                soundPC.value = 0
+            }
+
+            soundDialog.open()
+        }
+
+        GridLayout {
+            columns: 2
+            anchors.fill: parent
+            Label { text: "Name:" }
+            TextField { id: soundNameField
+                Layout.fillWidth: true
+            }
+
+            Label { text: "MSB:" }
+            SpinBox { id: soundMSB; from: 1; to: 128
+                Layout.fillWidth: true
+                editable: true
+
+            }
+
+            Label { text: "LSB:" }
+            SpinBox { id: soundLSB; from: 1; to: 128
+                Layout.fillWidth: true
+                editable: true
+
+            }
+
+            Label { text: "PC:" }
+            SpinBox { id: soundPC; from: 1; to: 128
+                Layout.fillWidth: true
+                editable: true
+
+            }
+        }
+
+        onAccepted: {
+            sm.saveSound(currentCategory, soundNameField.text, soundMSB.value, soundLSB.value, soundPC.value)
+
+            if (originalName !== "" && originalName !== soundNameField.text) {
+                sm.deleteSound(currentCategory, originalName)
+            }
+
+            refreshSoundModel()
+        }
+    }
+
+    // Sound Delete Confirmation Dialog
+    Dialog {
+        id: deleteSoundDialog
+        title: "Delete Sound"
+        standardButtons: Dialog.Yes | Dialog.No
+        parent: rootAppWindow
+        anchors.centerIn: parent
+        modal: true
+        width: 300*widthScale
+        height: 150 *heightScale
+
+        background: Rectangle {
+            color:  Theme.colorBackgroundView
+        }
+
+        contentItem: ColumnLayout {
+            spacing: 10
+            Text {
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                font.pointSize: 10* fontScale
+                color:Theme.colorText
+                text: "Are you sure you want to delete the sound '" + (soundModel[selectedSoundIndex] || "") + "'?"
+            }
+        }
+
+        onAccepted: {
+            sm.deleteSound(currentCategory, soundModel[selectedSoundIndex])
+            refreshSoundModel()
+            selectedSoundIndex = -1
         }
     }
 
