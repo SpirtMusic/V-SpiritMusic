@@ -22,6 +22,14 @@ public:
     Q_INVOKABLE QString loadSelectedInput();
     Q_INVOKABLE QString loadSelectedOutput();
 
+    // Categories
+    Q_INVOKABLE QStringList getCategories() const;
+    Q_INVOKABLE int saveCategory(const QString &name, int mode, const QString &oldName = QString());
+    Q_INVOKABLE void deleteCategory(const QString &name);
+
+signals:
+    void categoriesLoaded();
+
 private slots:
     void saveSettings();
 

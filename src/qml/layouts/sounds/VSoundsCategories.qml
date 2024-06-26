@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 import Theme
+import "../../controls"
 Item {
     id: root
     property int baseWidth: rootAppWindow.winBaseWidth
@@ -17,25 +18,28 @@ Item {
     property int rows: 2
 
 
-    property var model: generateModel(30)
+    property var model: sm.getCategories()
+    property string selectedCategory: ""
     property int selectedIndex: -1
-    property int cellWidth: 120 * widthScale
-    property int cellHeight: 50 * heightScale
-    function generateModel(count) {
-        var result = [];
-        for (var i = 1; i <= count; i++) {
-            result.push("category " + i);
-        }
-        return result;
+    property bool isLoading: false  // Add this property to control BusyIndicator visibility
+    function refreshModel() {
+        model = sm.getCategories()
+        isLoading=true
     }
+    property int cellWidth: 120 * widthScale
+    property int cellHeight: 40 * heightScale
+
     GridView {
         id: gridView
-        anchors.fill: parent
+        anchors.top: rowToolBtns.bottom
+        anchors.left: parent.left
+        anchors.bottom: parent.bottom
+        anchors.right: parent.right
         cellWidth: root.cellWidth
         cellHeight: root.cellHeight
-        model: root.model
+        model: root.isLoading ? 0 : root.model
         anchors.margins: 6
-        anchors.topMargin: 8
+        anchors.topMargin: 2
 
         // Enable horizontal scrolling
         flow: GridView.FlowTopToBottom
@@ -104,22 +108,165 @@ Item {
                 border.width: 2
                 radius: 4
                 Text {
-                    anchors.centerIn: parent
+                    anchors.fill: parent
                     text: modelData
                     font.pointSize: 10* fontScale
                     color:Theme.colorText
+                    elide: Text.ElideRight
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
                         root.selectedIndex = index
-                        console.log("Clicked button index:", index)
+                        root.selectedCategory = modelData
+                        console.log("Clicked category:", modelData)
                     }
                 }
             }
         }
+        BusyIndicator {
+
+            anchors.centerIn: parent
+            running: root.isLoading
+            visible: root.isLoading
+        }
     }
 
+
+
+
+    RowLayout {
+        id:rowToolBtns
+        anchors.top: parent.top
+        anchors.horizontalCenter: parent.horizontalCenter
+        spacing: 10
+        anchors.topMargin: 8
+        VButton {
+            text: "Add"
+            onClicked: {
+                categoryDialog.mode = "add"
+                categoryDialog.open()
+            }
+            iconSource: "qrc:/vsonegx/qml/imgs/cil-plus.svg"
+            fontPixelSize:9
+            implicitHeightPadding:10
+        }
+
+        VButton {
+            text: "Edit"
+            enabled: root.selectedCategory !== ""
+            onClicked: {
+                categoryDialog.mode = "edit"
+                categoryName.text = root.selectedCategory
+                categoryDialog.open()
+            }
+            iconSource: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
+            fontPixelSize:9
+            implicitHeightPadding:10
+        }
+
+        VButton {
+            text: "Delete"
+            enabled: root.selectedCategory !== ""
+            onClicked: deleteCategoryDialog.open()
+            iconSource: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
+            fontPixelSize:9
+            implicitHeightPadding:10
+        }
+    }
+
+    Dialog {
+        id: categoryDialog
+        property string mode: "add"
+        property string oldCategoryName: ""
+        title: mode === "add" ? "Add Category" : "Edit Category"
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        parent: rootAppWindow
+        anchors.centerIn: parent
+        modal: true
+        width: 300
+        height: 150
+
+        contentItem: ColumnLayout {
+            spacing: 10
+            TextField {
+                id: categoryName
+                Layout.fillWidth: true
+                placeholderText: "Enter category name"
+                text: categoryDialog.mode === "add" ? "" : root.selectedCategory
+            }
+        }
+
+        onOpened: {
+            if (mode === "add") {
+                categoryName.text = ""
+                oldCategoryName = ""
+            } else {
+                oldCategoryName = root.selectedCategory
+                categoryName.text = oldCategoryName
+            }
+        }
+
+        onAccepted: {
+            let result = sm.saveCategory(categoryName.text, mode === "add" ? 0 : 1, oldCategoryName)
+            switch(result) {
+            case 0:
+                console.log("Category saved successfully")
+                root.refreshModel()
+                if (mode === "edit") {
+                    root.selectedCategory = categoryName.text
+                }
+                break
+            case 1:
+                console.log("Category already exists")
+                break
+            case 2:
+                console.log("New category name already exists")
+                break
+            case 3:
+                console.log("Old category not found")
+                break
+            case 4:
+                console.log("Invalid mode")
+                break
+            }
+        }
+    }
+    Dialog {
+        id: deleteCategoryDialog
+        title: "Delete Category"
+        standardButtons: Dialog.Yes | Dialog.No
+        parent: rootAppWindow
+        anchors.centerIn: parent
+        modal: true
+        width: 300
+        height: 150
+
+        contentItem: ColumnLayout {
+            spacing: 10
+            Text {
+                Layout.fillWidth: true
+                wrapMode: Text.WordWrap
+                text: "Are you sure you want to delete the category '" + root.selectedCategory + "'?"
+            }
+        }
+
+        onAccepted: {
+            sm.deleteCategory(root.selectedCategory)
+            root.refreshModel()
+            root.selectedCategory = ""
+            root.selectedIndex = -1
+        }
+    }
+    Connections {
+        target: sm  // Assuming 'sm' is your C++ object
+        function onCategoriesLoaded() {
+            root.model = sm.getCategories()
+            root.isLoading = false
+        }
+    }
 
 }

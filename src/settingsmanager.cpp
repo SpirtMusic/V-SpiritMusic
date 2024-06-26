@@ -58,6 +58,65 @@ bool SettingsManager::getLayerEnabled(int layerSet, int layerNumber) const{
     QString key = QString("LayerSettings/Set%1_Layer%2").arg(layerSet).arg(layerNumber);
     return settings->value(key, false).toBool();
 }
+
+QStringList SettingsManager::getCategories() const
+{
+    return settings->value("Categories").toStringList();
+}
+
+int SettingsManager::saveCategory(const QString &name, int mode, const QString &oldName)
+{
+    // mode 0: add
+    // mode 1: edit
+    QStringList categories = getCategories();
+
+    if (mode == 0) {
+        // Add mode
+        if (!categories.contains(name)) {
+            categories.append(name);
+            scheduleSettingSave("Categories", categories);
+            return 0; // Success
+        } else {
+            return 1; // Category already exists
+        }
+    } else if (mode == 1) {
+        // Edit mode
+        int index = categories.indexOf(oldName);
+        if (index != -1) {
+            if (name != oldName && categories.contains(name)) {
+                return 2; // New name already exists
+            }
+            categories[index] = name;
+            scheduleSettingSave("Categories", categories);
+            return 0; // Success
+        } else {
+            return 3; // Old category not found
+        }
+    }
+
+    return 4; // Invalid mode
+}
+
+void SettingsManager::deleteCategory(const QString &name)
+{
+    QStringList categories = getCategories();
+    if (categories.removeOne(name)) {
+        scheduleSettingSave("Categories", categories);
+        settings->remove("Sounds/" + name);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
 void SettingsManager::scheduleSettingSave(const QString &key, const QVariant &value)
 {
     pendingSettings[key] = value;
@@ -72,5 +131,6 @@ void SettingsManager::saveSettings()
     for (it = pendingSettings.begin(); it != pendingSettings.end(); ++it) {
         settings->setValue(it.key(), it.value());
     }
+    emit categoriesLoaded();
     pendingSettings.clear();
 }
