@@ -15,9 +15,10 @@ Rectangle{
     property color iconColor: Theme.colorText
     property color backgroundColor: Theme.colorButtonBackground
     property color selectColor: Theme.colorSelect
+    property int controlIndex: 0
     property string voiceName: "voice name"
     property bool selected: false
-    property int controlIndex: 0
+
     property int spinBoxValue: 0
     color:Theme.colorBackgroundView
     border.color: selected ? selectColor : backgroundColor
@@ -35,6 +36,7 @@ Rectangle{
             verticalOffset: 1
         }
     }
+
     Image {
         id: mask
         source: "qrc:/vsonegx/qml/controls/resource/texture/button_texture.png"

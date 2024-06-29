@@ -10,7 +10,7 @@ Item {
     property int baseHeight: rootAppWindow.winBaseHeight
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
-    property real fontScale: Math.max(widthScale, heightScale)
+    property real fontScale: Math.min(widthScale, heightScale)
     Layout.fillWidth: true
     Layout.alignment: Qt.AlignVCenter | Qt.AlignVCenter
     Layout.fillHeight: true
@@ -126,7 +126,7 @@ Item {
                 Text {
                     anchors.fill: parent
                     text: modelData
-                    font.pointSize: 10* fontScale
+                    font.pointSize: 10 *fontScale
                     color:Theme.colorText
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignHCenter
@@ -138,6 +138,12 @@ Item {
                     onClicked: {
                         selectedSoundIndex = index
                         root.selectedIndex = index
+                        var soundDetails = sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
+                        if(soundDetails !== undefined){
+                            mc.sendMsbLsbPc(0,soundDetails.msb,soundDetails.lsb,soundDetails.pc)
+                            rootAppWindow.controlIndexSounds.voiceName=soundDetails.name
+
+                        }
                         console.log("Clicked button index:", index)
                     }
                 }

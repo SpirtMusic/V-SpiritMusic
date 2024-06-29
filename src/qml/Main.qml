@@ -15,6 +15,7 @@ ApplicationWindow {
     property alias sm: settingsmanager
     property int selectedControlIndex:0
     property string currentCategory: ""
+    property VLayerControl controlIndexSounds:null
     // width: 1024
     // height: 768
 

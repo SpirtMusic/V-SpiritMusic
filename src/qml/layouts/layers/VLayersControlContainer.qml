@@ -10,7 +10,7 @@ Rectangle{
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
 
-    property var selectedControl: null
+    property VLayerControl selectedControl: null
 
     property alias vPopupInfo: popupInfo.vPopupInfo
     property alias vPopupTimer: popupInfo.vPopupTimer
@@ -22,9 +22,11 @@ Rectangle{
 
     color: Theme.colorBackgroundView
     z:-99
+
     onSelectedControlChanged: {
-        rootAppWindow.selectedControlIndex = selectedControl.controlIndex
-    }
+          rootAppWindow.selectedControlIndex = selectedControl.controlIndex
+         rootAppWindow.controlIndexSounds = selectedControl
+      }
     VPopup{
         id:popupInfo
         sliderpreferredWidth : 120 * widthScale

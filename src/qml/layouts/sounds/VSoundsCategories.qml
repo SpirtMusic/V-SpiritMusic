@@ -10,7 +10,7 @@ Item {
     property int baseHeight: rootAppWindow.winBaseHeight
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
-    property real fontScale: Math.max(widthScale, heightScale)
+    property real fontScale: Math.min(widthScale, heightScale)
 
     Layout.fillWidth: true
     Layout.alignment: Qt.AlignVCenter | Qt.AlignVCenter
@@ -114,7 +114,7 @@ Item {
                 Text {
                     anchors.fill: parent
                     text: modelData
-                    font.pointSize: 10* fontScale
+                    font.pointSize: 10 *fontScale
                     color:Theme.colorText
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignHCenter
@@ -194,8 +194,8 @@ Item {
         width: 300*widthScale
         height: 150 *heightScale
         background: Rectangle {
-              color:  Theme.colorBackgroundView
-          }
+            color:  Theme.colorBackgroundView
+        }
         contentItem: ColumnLayout {
             spacing: 10
             TextField {
@@ -251,8 +251,8 @@ Item {
         width: 300 *widthScale
         height: 150 *heightScale
         background: Rectangle {
-              color:  Theme.colorBackgroundView
-          }
+            color:  Theme.colorBackgroundView
+        }
         contentItem: ColumnLayout {
             spacing: 10
             Text {
