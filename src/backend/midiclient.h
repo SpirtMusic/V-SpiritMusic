@@ -38,6 +38,7 @@ public slots:
     Q_INVOKABLE void sendPitchBend(int channel, int value);
     Q_INVOKABLE void sendRawMessage(const libremidi::message& message);
     Q_INVOKABLE void sendAllNotesOff(int channel);
+    Q_INVOKABLE void sendMsbLsbPc(int channel, int msb, int lsb, int pc);
     Q_INVOKABLE void setVolume(int channel, int volume);
     Q_INVOKABLE void setReverb(int channel, int reverb);
     Q_INVOKABLE void getIOPorts();

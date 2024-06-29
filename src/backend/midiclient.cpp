@@ -137,6 +137,24 @@ void MidiClient::sendAllNotesOff(int channel)
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 123, 0));
     qDebug()<<"sendAllNotesOff Channel : "<<channel+1;
 }
+void MidiClient::sendMsbLsbPc(int channel, int msb, int lsb, int pc)
+{
+    // Ensure the channel is in the valid range (1-16 in MIDI, but 0-15 in some APIs)
+    if (channel < 0 || (channel > 15))
+        return;
+
+    // Ensure MSB, LSB, and PC values are in the valid MIDI range (0-127)
+    msb = qBound(0, msb, 127);
+    lsb = qBound(0, lsb, 127);
+    pc = qBound(0, pc, 127);
+
+    // Send the MSB, LSB, and PC messages
+    jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x00, msb));  // MSB (0x00)
+    jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x20, lsb));  // LSB (0x20)
+    jackClient->sendMidiMessage(0, libremidi::channel_events::program_change(channel+1, pc));         // PC
+    qDebug() << "Sent MSB:" << msb << "LSB:" << lsb << "PC:" << pc << "on channel:" << channel;
+}
+
 void MidiClient::getIOPorts(){
 
     if (jackClient->observer.has_value()) { // Check if optional has a value
