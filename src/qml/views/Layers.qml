@@ -74,7 +74,7 @@ VSplitView {
                     RowLayout{
                         anchors.fill: parent
                         VLayerContainer {
-                               layerSetGlobal: MidiClient.Lower
+                            layerSetGlobal: MidiClient.Lower
                             selectedLayout:  quickSetSplit.toggled ? 1:0
                         }
                     }
@@ -87,7 +87,7 @@ VSplitView {
                     RowLayout{
                         anchors.fill: parent
                         VLayerContainer {
-                               layerSetGlobal: MidiClient.Pedal
+                            layerSetGlobal: MidiClient.Pedal
                             selectedLayout:  quickSetSplit.toggled ? 1:0
                         }
                     }
@@ -133,8 +133,10 @@ VSplitView {
                             Connections{
                                 target:reverbKnob.knob
                                 function onValueChanged(){
-                                    sm.setControlReverb(rootAppWindow.selectedControlIndex,reverbKnob.knob.value)
-                                    mc.setReverb(rootAppWindow.selectedControlIndex,reverbKnob.knob.value)
+                                    if(reverbKnob.knob.pressed){
+                                        sm.setControlReverb(rootAppWindow.selectedControlIndex,reverbKnob.knob.value)
+                                        mc.setReverb(rootAppWindow.selectedControlIndex,reverbKnob.knob.value)
+                                    }
                                 }
                             }
 
