@@ -138,9 +138,10 @@ Item {
                     onClicked: {
                         selectedSoundIndex = index
                         root.selectedIndex = index
+
                         var soundDetails = sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
                         if(soundDetails !== undefined){
-                            mc.sendMsbLsbPc(0,soundDetails.msb,soundDetails.lsb,soundDetails.pc)
+                            mc.sendMsbLsbPc(rootAppWindow.selectedControlIndex,soundDetails.msb,soundDetails.lsb,soundDetails.pc)
                             rootAppWindow.controlIndexSounds.voiceName=soundDetails.name
 
                         }
