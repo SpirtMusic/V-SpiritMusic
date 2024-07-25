@@ -1,7 +1,7 @@
 #include "jackclient.h"
 #include <QDebug>
 JackClient::JackClient(QObject *parent)
-    : QObject{parent}, midiin(nullptr),midiout(nullptr)
+    : QObject{parent}, midiin(nullptr),midiout(nullptr),midiout_raw(nullptr)
 {
     auto callback = [&](int port, const libremidi::message& message) {
         // qDebug() << message;
@@ -11,7 +11,7 @@ JackClient::JackClient(QObject *parent)
 
     // Create a JACK client which will be shared across objects
     jack_status_t status{};
-    handle.reset(jack_client_open("VSoneGX", JackNoStartServer, &status));
+    handle.reset(jack_client_open("VSpirtMusic", JackNoStartServer, &status));
 
     if (!handle)
         throw std::runtime_error("Could not start JACK client");
@@ -52,6 +52,12 @@ JackClient::JackClient(QObject *parent)
             midiout_callback = std::move(cb);
         }
     };
+    auto api_output_raw_config = libremidi::jack_output_configuration{
+        .context = handle.get(),
+        .set_process_func = [this](libremidi::jack_callback cb) {
+            midiout_callback_raw = std::move(cb);
+        }
+    };
 
 
     midiin = std::make_unique<libremidi::midi_in>(
@@ -66,6 +72,10 @@ JackClient::JackClient(QObject *parent)
         libremidi::output_configuration{},
         api_output_config
         );
+    midiout_raw = std::make_unique<libremidi::midi_out>(
+        libremidi::output_configuration{},
+        api_output_raw_config
+        );
     //  midiout->open_virtual_port("Output: 1");
 }
 int JackClient::jack_callback(jack_nframes_t cnt, void *ctx)
@@ -79,7 +89,7 @@ int JackClient::jack_callback(jack_nframes_t cnt, void *ctx)
 
     // Process the midi output
     self.midiout_callback.callback(cnt);
-
+    self.midiout_callback_raw.callback(cnt);
     return 0;
 }
 void JackClient::sendMidiMessage(int port, const libremidi::message& message)

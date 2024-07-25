@@ -29,7 +29,7 @@ ApplicationWindow {
     // maximumHeight: height
     //    flags: Qt.FramelessWindowHint | Qt.Window
     visible: true
-    title: qsTr("vsonegxapp")
+    title: qsTr("VSpirtMusic")
     color: Theme.colorBackground
     header:VTabBar{
         id:tabBar

@@ -6,6 +6,7 @@ MidiClient::MidiClient(QObject *parent)
     connect(jackClient, &JackClient::midiMessageReceived, this, &MidiClient::handleMidiMessage);
     m_inputPorts = new MidiPortModel(this);
     m_outputPorts = new MidiPortModel(this);
+    jackClient->midiout_raw->open_virtual_port("Raw Out");
     getIOPorts();
     QTimer *connectionCheckTimer = new QTimer(this);
     connect(connectionCheckTimer, &QTimer::timeout, this, &MidiClient::checkOutputPortConnection);
@@ -17,6 +18,7 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
     // Handle the received MIDI message here
     // e.g., update UI, process the message, etc.
     qDebug()<< message;
+    jackClient->midiout_raw->send_message(message);
     if (itsNote(message)) {
 
 
@@ -37,7 +39,7 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
             emit channelActivated(0);
             for (int ly : m_enabledLayersUpper) {
                 sendNoteOn(ly, note, velocity);
-                qDebug() << "Upper Channel";
+                //   qDebug() << "Upper Channel";
             }
         }
         else if(channel == 1){
@@ -45,7 +47,7 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
             emit channelActivated(1);
             for (int ly : m_enabledLayersLower) {
                 sendNoteOn(ly, note, velocity);
-                qDebug() << "Lower Channel";
+                //  qDebug() << "Lower Channel";
             }
         }
         else if(channel == 2){
@@ -53,7 +55,7 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
             emit channelActivated(2);
             for (int ly : m_enabledLayersPedal) {
                 sendNoteOn(ly, note, velocity);
-                qDebug() << "Pedal Channel";
+                //  qDebug() << "Pedal Channel";
             }
         }
         // if(channel==0){
@@ -91,7 +93,7 @@ bool MidiClient::itsNote(const libremidi::message& message)
 }
 void MidiClient::sendNoteOn(int channel, int note, int velocity)
 {
-    qDebug() << " Layer : "<<channel;
+    // qDebug() << " Layer : "<<channel;
     libremidi::message channelMessage = libremidi::channel_events::note_on(channel, note, velocity);
     jackClient->sendMidiMessage(0, channelMessage);
 }
@@ -116,7 +118,7 @@ void MidiClient::setVolume(int channel, int volume)
 
     // Map the volume from the range 0-99 to the MIDI range 0-127
     volume = qBound(0, (volume * 127) / 99, 127);
-    qDebug()<<"Channel : "<<channel+1<< volume;
+    //qDebug()<<"Channel : "<<channel+1<< volume;
     // Send a Control Change message for CC #7 (Volume)
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x07, volume));
 }
@@ -127,7 +129,7 @@ void MidiClient::setReverb(int channel, int reverb)
         return;
     // Map the reverb from the range 0-99 to the MIDI range 0-127
     reverb = qBound(0, (reverb * 127) / 99, 127);
-    qDebug()<<"Channel : "<<channel+1<< reverb;
+    //qDebug()<<"Channel : "<<channel+1<< reverb;
     // Send a Control Change message for CC #91 (reverb)
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x5B, reverb));
 }
@@ -135,7 +137,7 @@ void MidiClient::sendAllNotesOff(int channel)
 {
     // Send the "All Notes Off" message for the specified channel
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 123, 0));
-    qDebug()<<"sendAllNotesOff Channel : "<<channel+1;
+    //qDebug()<<"sendAllNotesOff Channel : "<<channel+1;
 }
 void MidiClient::sendMsbLsbPc(int channel, int msb, int lsb, int pc)
 {
@@ -152,7 +154,7 @@ void MidiClient::sendMsbLsbPc(int channel, int msb, int lsb, int pc)
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x00, msb));  // MSB (0x00)
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x20, lsb));  // LSB (0x20)
     jackClient->sendMidiMessage(0, libremidi::channel_events::program_change(channel+1, pc));         // PC
-    qDebug() << "Sent MSB:" << msb << "LSB:" << lsb << "PC:" << pc << "on channel:" << channel;
+    // qDebug() << "Sent MSB:" << msb << "LSB:" << lsb << "PC:" << pc << "on channel:" << channel;
 }
 
 void MidiClient::getIOPorts(){
@@ -161,7 +163,7 @@ void MidiClient::getIOPorts(){
         m_inputPorts->clear();
         libremidi::observer& obs = jackClient->observer.value(); // Dereference optional to get the underlying libremidi::observer object
         for(const libremidi::input_port& port : obs.get_input_ports()) {
-            qDebug()<< port.port_name;
+            //qDebug()<< port.port_name;
             //   jackClient->midiin->open_port(port,"In");
             m_inputPorts->addPort(QString::fromStdString(port.port_name), QVariant::fromValue(port));
         }
@@ -170,7 +172,7 @@ void MidiClient::getIOPorts(){
         m_outputPorts->clear();
         libremidi::observer& obs = jackClient->observer.value(); // Dereference optional to get the underlying libremidi::observer object
         for(const libremidi::output_port& port : obs.get_output_ports()) {
-            qDebug()<< port.port_name;
+            //  qDebug()<< port.port_name;
             m_outputPorts->addPort(QString::fromStdString(port.port_name), QVariant::fromValue(port));
             //   jackClient->midiout->open_port(port,"Out");
 
@@ -199,6 +201,7 @@ void MidiClient::makeConnection(QVariant inputPorts,QVariant outputPorts){
         // Handle case when no port is selected
         qDebug() << "No output port selected.";
     }
+
     emit outputPortConnectionChanged();
 }
 

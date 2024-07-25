@@ -19,6 +19,7 @@ public:
 
     std::unique_ptr<libremidi::midi_in> midiin;
     std::unique_ptr<libremidi::midi_out> midiout;
+    std::unique_ptr<libremidi::midi_out> midiout_raw;
 
 
 signals:
@@ -30,6 +31,7 @@ private:
 
     libremidi::jack_callback midiin_callback;
     libremidi::jack_callback midiout_callback;
+    libremidi::jack_callback midiout_callback_raw;
 };
 
 #endif // JACKCLIENT_H
