@@ -1,4 +1,4 @@
  cmake_minimum_required(VERSION 3.16)
-project(VSpirtMusic VERSION 0.1 LANGUAGES CXX)
+project(VSpiritMusic VERSION 0.1 LANGUAGES CXX)
 
 add_subdirectory(src)

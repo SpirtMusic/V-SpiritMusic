@@ -11,7 +11,7 @@ JackClient::JackClient(QObject *parent)
 
     // Create a JACK client which will be shared across objects
     jack_status_t status{};
-    handle.reset(jack_client_open("VSpirtMusic", JackNoStartServer, &status));
+    handle.reset(jack_client_open("VSpiritMusic", JackNoStartServer, &status));
 
     if (!handle)
         throw std::runtime_error("Could not start JACK client");

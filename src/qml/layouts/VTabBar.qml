@@ -11,7 +11,7 @@ TabBar {
         color:Theme.colorBackground
     }
     VTabButton{
-        text:"VSpirtMusic"
+        text:"VSpiritMusic"
         tabBarInstance: tabBar
         tabBarCurrentItem:tabBar.currentItem
         imageSource:"qrc:/vsonegx/qml/imgs/th.svg"
