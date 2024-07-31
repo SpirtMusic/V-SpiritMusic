@@ -10,6 +10,7 @@ Item {
     property real heightScale: rootAppWindow.height / baseHeight
     property real fontScale: Math.min(widthScale, heightScale)
     ColumnLayout{
+        id:channelsLayout
         anchors.top: parent.top
         anchors.left: parent.left
         anchors.bottom: parent.bottom
@@ -224,5 +225,36 @@ Item {
             }
         }
     }
+    ColumnLayout{
+        id:rawOutputsLayout
+        anchors.top: parent.top
+        anchors.left: channelsLayout.right
+        anchors.right:parent.right
+        anchors.bottom: parent.bottom
+        anchors.margins: 5
+
+        width: parent.width/2
+        VGroupBox{
+            title: qsTr("Raw outputs")
+            collapsable: false
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            ColumnLayout{
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right:parent.right
+                anchors.margins: 20
+                spacing: 20
+                VCheckBox{
+                text: "Send CC"
+                }
+                VCheckBox{
+                text: "Send PC"
+                }
+            }
+
+        }
+    }
+
 }
 
