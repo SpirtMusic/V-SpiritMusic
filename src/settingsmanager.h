@@ -18,6 +18,14 @@ public:
     Q_INVOKABLE void saveSelectedInput(const QString &name);
     Q_INVOKABLE void saveSelectedOutput(const QString &name);
     Q_INVOKABLE void saveLayerEnabled(int layerSet, int layerNumber, bool enabled);
+
+    Q_INVOKABLE void saveRawOutputCCEnabled(const QString &cc_id, bool enabled);
+    Q_INVOKABLE void saveRawOutputPCEnabled(const QString &pc_id, bool enabled);
+
+    Q_INVOKABLE bool getRawOutputCCEnabled(const QString &cc_id) const;
+    Q_INVOKABLE bool getRawOutputPCEnabled(const QString &pc_id) const;
+
+
     Q_INVOKABLE bool getLayerEnabled(int layerSet, int layerNumber) const;
     Q_INVOKABLE QString loadSelectedInput();
     Q_INVOKABLE QString loadSelectedOutput();

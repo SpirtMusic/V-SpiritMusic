@@ -207,6 +207,28 @@ QVariantMap SettingsManager::getSoundDetails(const QString &category, const QStr
     return soundDetails;
 }
 
+
+
+void  SettingsManager::saveRawOutputCCEnabled(const QString &cc_id, bool enabled){
+    QString key = QString("RawOutputSettings/CC_%1").arg(cc_id);
+    scheduleSettingSave(key, enabled);
+}
+void  SettingsManager::saveRawOutputPCEnabled(const QString &pc_id, bool enabled){
+    QString key = QString("RawOutputSettings/PC_%1").arg(pc_id);
+    scheduleSettingSave(key, enabled);
+}
+
+bool SettingsManager::getRawOutputCCEnabled(const QString &cc_id) const{
+    QString key = QString("RawOutputSettings/CC_%1").arg(cc_id);
+    return settings->value(key, false).toBool();
+}
+
+bool SettingsManager::getRawOutputPCEnabled(const QString &pc_id) const{
+    QString key = QString("RawOutputSettings/PC_%1").arg(pc_id);
+    return settings->value(key, false).toBool();
+}
+
+
 void SettingsManager::scheduleSettingSave(const QString &key, const QVariant &value)
 {
     pendingSettings[key] = value;
