@@ -6,13 +6,14 @@
 #include <backend/midiutils.h>
 #include <backend/midiportmodel.h>
 #include <QTimer>
-
 class MidiClient  : public QObject
 {
     Q_OBJECT  // Add this macro
     Q_PROPERTY(MidiPortModel* inputPorts READ inputPorts CONSTANT)
     Q_PROPERTY(MidiPortModel* outputPorts READ outputPorts CONSTANT)
     Q_PROPERTY(bool isOutputPortConnected READ isOutputPortConnected NOTIFY outputPortConnectionChanged)
+    Q_PROPERTY(bool cc READ cc WRITE setCc NOTIFY ccChanged)
+    Q_PROPERTY(bool pc READ pc WRITE setPc NOTIFY pcChanged)
 public:
 
     enum LayersSet {
@@ -32,6 +33,8 @@ public:
 signals:
     void outputPortConnectionChanged();
     void channelActivated(int channel);
+    void ccChanged();
+    void pcChanged();
 public slots:
     Q_INVOKABLE void sendNoteOn(int channel, int note, int velocity);
     Q_INVOKABLE void sendControlChange(int channel, int control, int value);
@@ -46,6 +49,11 @@ public slots:
     Q_INVOKABLE void  makeDisconnect();
     void checkOutputPortConnection();
     Q_INVOKABLE void setLayerEnabled(LayersSet set, int layer, bool enabled);
+    bool cc() const;
+    bool pc() const;
+    void setCc(bool cc);
+    void setPc(bool pc);
+
 private slots:
     void handleMidiMessage(const libremidi::message& message);
 private:
@@ -55,10 +63,12 @@ private:
     MidiPortModel *m_outputPorts;
     bool m_lastOutputPortStatus = false;
 
-    QList<int> m_enabledLayersUpper;
-    QList<int> m_enabledLayersLower;
-    QList<int> m_enabledLayersPedal;
+    bool m_cc;
+    bool m_pc;
 
+    QList<int> m_enabledLayersUpper;
+    QList<int> m_enabledLayersPedal;
+    QList<int> m_enabledLayersLower;
 };
 
 #endif // MIDICLIENT_H

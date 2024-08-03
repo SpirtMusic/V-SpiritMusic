@@ -17,11 +17,11 @@ qt_add_resources(VSpirtMusic
 
 
 )
-qt_add_executable(VSpirtMusic
+qt_add_executable(VSpiritMusic
     main.cpp
 )
 #set_source_files_properties(qml/themes/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
-qt_add_qml_module(VSpirtMusic
+qt_add_qml_module(VSpiritMusic
     URI vsonegx
     VERSION 1.0
     QML_FILES ${QML_FILES}
@@ -44,7 +44,7 @@ qt_add_qml_module(VSpirtMusic
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
 # If you are developing for iOS or macOS you should consider setting an
 # explicit, fixed bundle identifier manually though.
-set_target_properties(VSpirtMusic PROPERTIES
+set_target_properties(VSpiritMusic PROPERTIES
     #    MACOSX_BUNDLE_GUI_IDENTIFIER com.example.appvsonegx
     MACOSX_BUNDLE_BUNDLE_VERSION ${PROJECT_VERSION}
     MACOSX_BUNDLE_SHORT_VERSION_STRING ${PROJECT_VERSION_MAJOR}.${PROJECT_VERSION_MINOR}
@@ -52,13 +52,13 @@ set_target_properties(VSpirtMusic PROPERTIES
     WIN32_EXECUTABLE TRUE
 )
 
-target_link_libraries(VSpirtMusic
+target_link_libraries(VSpiritMusic
     PRIVATE Qt6::Quick
     jack
 )
 
 include(GNUInstallDirs)
-install(TARGETS VSpirtMusic
+install(TARGETS VSpiritMusic
     BUNDLE DESTINATION .
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}

@@ -246,10 +246,28 @@ Item {
                 anchors.margins: 20
                 spacing: 20
                 VCheckBox{
-                text: "Send CC"
+                    id:cc1
+                    text: "Send CC from VSpiritMusic"
+                    onCheckedChanged: {
+                        sm.saveRawOutputCCEnabled(1,cc1.checked)
+                        mc.setCc(cc1.checked)
+                    }
+                    Component.onCompleted:{
+                        checked = sm.getRawOutputCCEnabled(1);
+                        mc.setCc(checked)
+                    }
                 }
                 VCheckBox{
-                text: "Send PC"
+                    id:pc1
+                    text: "Send PC from VSpiritMusic"
+                    onCheckedChanged: {
+                        sm.saveRawOutputPCEnabled(1,pc1.checked)
+                        mc.setPc(pc1.checked)
+                    }
+                    Component.onCompleted:{
+                        checked = sm.getRawOutputPCEnabled(1);
+                        mc.setPc(checked)
+                    }
                 }
             }
 

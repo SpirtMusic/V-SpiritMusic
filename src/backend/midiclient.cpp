@@ -121,6 +121,9 @@ void MidiClient::setVolume(int channel, int volume)
     //qDebug()<<"Channel : "<<channel+1<< volume;
     // Send a Control Change message for CC #7 (Volume)
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x07, volume));
+    if(cc())
+        jackClient->midiout_raw->send_message(libremidi::channel_events::control_change(1, 0x07, volume));
+
 }
 void MidiClient::setReverb(int channel, int reverb)
 {
@@ -235,5 +238,23 @@ void MidiClient::setLayerEnabled(LayersSet set, int layer, bool enabled)
     } else if (!enabled) {
         targetList->removeAll(layer);
     }
+}
+void MidiClient::setCc(bool cc) {
+    if (m_cc != cc) {
+        m_cc = cc;
+        emit ccChanged();
+    }
+}
+void MidiClient::setPc(bool pc) {
+    if (m_pc != pc) {
+        m_pc = pc;
+        emit pcChanged();
+    }
+}
+bool MidiClient::cc() const {
+    return m_cc;
+}
+bool MidiClient::pc() const {
+    return m_pc;
 }
 
