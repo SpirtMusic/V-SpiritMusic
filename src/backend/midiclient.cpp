@@ -121,9 +121,16 @@ void MidiClient::setVolume(int channel, int volume)
     //qDebug()<<"Channel : "<<channel+1<< volume;
     // Send a Control Change message for CC #7 (Volume)
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x07, volume));
-    if(cc())
-        jackClient->midiout_raw->send_message(libremidi::channel_events::control_change(1, 0x07, volume));
+    if(cc()){
+        if(m_rowoutputchannel==17){
+            for(int i=1;i<=16;i++){
+                jackClient->midiout_raw->send_message(libremidi::channel_events::control_change(i, 0x07, volume));
+            }
+        }
+        else
+            jackClient->midiout_raw->send_message(libremidi::channel_events::control_change(m_rowoutputchannel, 0x07, volume));
 
+    }
 }
 void MidiClient::setReverb(int channel, int reverb)
 {
@@ -256,5 +263,16 @@ bool MidiClient::cc() const {
 }
 bool MidiClient::pc() const {
     return m_pc;
+}
+
+int MidiClient::rowOutputChannel() const {
+    return m_rowoutputchannel;
+}
+
+void MidiClient::setRowOutputChannel(int channel) {
+    if (m_rowoutputchannel != channel) {
+        m_rowoutputchannel = channel;
+        emit rowOutputChannelChanged();
+    }
 }
 

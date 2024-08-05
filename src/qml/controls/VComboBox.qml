@@ -20,6 +20,7 @@ ComboBox {
             color: control.highlightedIndex === index ? Theme.colorHover : Theme.colorBackgroundView
             Text {
                 anchors.fill:parent
+                anchors.margins: 5
                 id:portName
                 text: model.name
                 color: textColor

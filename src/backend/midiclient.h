@@ -14,6 +14,7 @@ class MidiClient  : public QObject
     Q_PROPERTY(bool isOutputPortConnected READ isOutputPortConnected NOTIFY outputPortConnectionChanged)
     Q_PROPERTY(bool cc READ cc WRITE setCc NOTIFY ccChanged)
     Q_PROPERTY(bool pc READ pc WRITE setPc NOTIFY pcChanged)
+    Q_PROPERTY(int rowOutputChannel READ rowOutputChannel WRITE setRowOutputChannel NOTIFY rowOutputChannelChanged)
 public:
 
     enum LayersSet {
@@ -35,6 +36,8 @@ signals:
     void channelActivated(int channel);
     void ccChanged();
     void pcChanged();
+    void rowOutputChannelChanged();
+
 public slots:
     Q_INVOKABLE void sendNoteOn(int channel, int note, int velocity);
     Q_INVOKABLE void sendControlChange(int channel, int control, int value);
@@ -54,6 +57,10 @@ public slots:
     void setCc(bool cc);
     void setPc(bool pc);
 
+    int rowOutputChannel() const;
+    void setRowOutputChannel(int channel);
+
+
 private slots:
     void handleMidiMessage(const libremidi::message& message);
 private:
@@ -65,6 +72,8 @@ private:
 
     bool m_cc;
     bool m_pc;
+
+    int m_rowoutputchannel;
 
     QList<int> m_enabledLayersUpper;
     QList<int> m_enabledLayersPedal;

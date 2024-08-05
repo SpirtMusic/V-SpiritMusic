@@ -276,14 +276,16 @@ Item {
                 VComboBox{
                     id:rawOutputsChannels
                     model: ListModel {
-                         id: channelsModel
-                         Component.onCompleted: {
-                             for (let i = 1; i <= 16; i++) {
-                                 append({name: i.toString()});
-                             }
-                             append({name: "ALL"});
-                         }
-                     }
+                        id: channelsModel
+                        Component.onCompleted: {
+                            for (let i = 1; i <= 16; i++) {
+                                append({name: i.toString()});
+                            }
+                            append({name: "ALL"});
+                            rawOutputsChannels.setIndexFromSavedValue();
+                        }
+
+                    }
                     onCurrentIndexChanged: {
                         var selectedValue = model.get(currentIndex).name
                         var valueToSave;
@@ -296,6 +298,23 @@ Item {
 
                         console.log("Selected value:", selectedValue, "Value to save:", valueToSave);
                         sm.saveRawOutputChannel(1, valueToSave);
+                        mc.setRowOutputChannel(valueToSave)
+                    }
+                    function setIndexFromSavedValue() {
+                        var savedValue = sm.getRawOutputChannel(1);
+                        var indexToSelect;
+
+                        if (savedValue === 17) {
+                            indexToSelect = channelsModel.count - 1; // Index of the last item ("ALL")
+                        } else if (savedValue >= 1 && savedValue <= 16) {
+                            indexToSelect = savedValue - 1; // Arrays are 0-indexed
+                        } else {
+                            indexToSelect = 0; // Default to first item if saved value is invalid
+                        }
+
+                        rawOutputsChannels.currentIndex = indexToSelect;
+                        mc.setRowOutputChannel(savedValue)
+                        console.log("Loaded saved value:", savedValue, "Selected index:", indexToSelect);
                     }
                 }
             }
