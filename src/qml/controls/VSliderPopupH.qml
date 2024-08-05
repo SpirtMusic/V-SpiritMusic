@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls
 import Qt5Compat.GraphicalEffects
 import QtQuick.Layouts
+import Theme
 Rectangle{
     id:sliderItem
     property int baseWidth: rootAppWindow.winBaseWidth
@@ -19,7 +20,7 @@ Rectangle{
     property alias control: control
     //    Layout.preferredWidth: sliderpreferredWidth
     anchors.fill:parent
-    color:"transparent"
+    color: Theme.colorBackgroundView
     height: sliderpreferredHeight
     width: sliderpreferredWidth  + ( 40* widthScale) // for text
     Row{
