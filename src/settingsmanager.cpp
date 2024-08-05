@@ -229,6 +229,19 @@ bool SettingsManager::getRawOutputPCEnabled(const QString &pc_id) const{
 }
 
 
+int SettingsManager::getRawOutputChannel(int port) const
+{
+    return settings->value(QString("RawOutputSettings/channel_%1").arg(port), 0).toInt();
+}
+
+void SettingsManager::saveRawOutputChannel(int port,int channel)
+{
+    scheduleSettingSave(QString("RawOutputSettings/channel_%1").arg(port), channel);
+}
+
+
+
+
 void SettingsManager::scheduleSettingSave(const QString &key, const QVariant &value)
 {
     pendingSettings[key] = value;

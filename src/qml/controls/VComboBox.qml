@@ -17,7 +17,7 @@ ComboBox {
         width: control.width
         contentItem: Rectangle {
             anchors.fill:parent
-            color: control.highlightedIndex === index ? Theme.colorHover : colorSelect
+            color: control.highlightedIndex === index ? Theme.colorHover : Theme.colorBackgroundView
             Text {
                 anchors.fill:parent
                 id:portName

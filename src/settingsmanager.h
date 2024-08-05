@@ -25,6 +25,8 @@ public:
     Q_INVOKABLE bool getRawOutputCCEnabled(const QString &cc_id) const;
     Q_INVOKABLE bool getRawOutputPCEnabled(const QString &pc_id) const;
 
+    Q_INVOKABLE int getRawOutputChannel(int port) const;
+    Q_INVOKABLE void saveRawOutputChannel(int port,int channel);
 
     Q_INVOKABLE bool getLayerEnabled(int layerSet, int layerNumber) const;
     Q_INVOKABLE QString loadSelectedInput();

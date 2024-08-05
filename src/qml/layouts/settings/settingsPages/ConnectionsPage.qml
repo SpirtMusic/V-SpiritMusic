@@ -269,6 +269,35 @@ Item {
                         mc.setPc(checked)
                     }
                 }
+                Label{
+                    text: "Channel"
+                    font.pixelSize: 12*fontScale
+                }
+                VComboBox{
+                    id:rawOutputsChannels
+                    model: ListModel {
+                         id: channelsModel
+                         Component.onCompleted: {
+                             for (let i = 1; i <= 16; i++) {
+                                 append({name: i.toString()});
+                             }
+                             append({name: "ALL"});
+                         }
+                     }
+                    onCurrentIndexChanged: {
+                        var selectedValue = model.get(currentIndex).name
+                        var valueToSave;
+
+                        if (selectedValue === "ALL") {
+                            valueToSave = 17;
+                        } else {
+                            valueToSave = parseInt(selectedValue, 10);
+                        }
+
+                        console.log("Selected value:", selectedValue, "Value to save:", valueToSave);
+                        sm.saveRawOutputChannel(1, valueToSave);
+                    }
+                }
             }
 
         }
