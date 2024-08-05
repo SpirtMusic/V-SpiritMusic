@@ -270,7 +270,7 @@ Item {
                     }
                 }
                 Label{
-                    text: "Channel"
+                    text: "Raw Output channel"
                     font.pixelSize: 12*fontScale
                 }
                 VComboBox{
@@ -296,7 +296,6 @@ Item {
                             valueToSave = parseInt(selectedValue, 10);
                         }
 
-                        console.log("Selected value:", selectedValue, "Value to save:", valueToSave);
                         sm.saveRawOutputChannel(1, valueToSave);
                         mc.setRowOutputChannel(valueToSave)
                     }
@@ -314,7 +313,6 @@ Item {
 
                         rawOutputsChannels.currentIndex = indexToSelect;
                         mc.setRowOutputChannel(savedValue)
-                        console.log("Loaded saved value:", savedValue, "Selected index:", indexToSelect);
                     }
                 }
             }
