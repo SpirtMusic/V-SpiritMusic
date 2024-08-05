@@ -15,14 +15,21 @@ ComboBox {
     model: ListModel {}  // Default empty model
     delegate: ItemDelegate {
         width: control.width
-        contentItem: Text {
-            text: model.name
-            color: textColor
-            font.pixelSize: 12*fontScale
-            elide: Text.ElideRight
-            verticalAlignment: Text.AlignVCenter
+        contentItem: Rectangle {
+            anchors.fill:parent
+            color: control.highlightedIndex === index ? Theme.colorHover : colorSelect
+            Text {
+                anchors.fill:parent
+                id:portName
+                text: model.name
+                color: textColor
+                font.pixelSize: 12*fontScale
+                elide: Text.ElideRight
+                verticalAlignment: Text.AlignVCenter
 
+            }
         }
+
         highlighted: control.highlightedIndex === index
     }
 
@@ -81,13 +88,10 @@ ComboBox {
             implicitHeight: contentHeight
             model: control.popup.visible ? control.delegateModel : null
             currentIndex: control.highlightedIndex
-
             ScrollIndicator.vertical: ScrollIndicator { }
-
         }
 
         background: Rectangle {
-
             border.color: colorSelect
             radius: 2
         }
