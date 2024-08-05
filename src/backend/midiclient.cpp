@@ -94,7 +94,7 @@ bool MidiClient::itsNote(const libremidi::message& message)
 void MidiClient::sendNoteOn(int channel, int note, int velocity)
 {
     // qDebug() << " Layer : "<<channel;
-    libremidi::message channelMessage = libremidi::channel_events::note_on(channel, note, velocity);
+    libremidi::message channelMessage = libremidi::channel_events::note_on(channel+1, note, velocity);
     jackClient->sendMidiMessage(0, channelMessage);
 }
 void MidiClient::sendControlChange(int channel, int control, int value)
