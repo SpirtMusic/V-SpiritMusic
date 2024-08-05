@@ -272,6 +272,7 @@ Item {
                 Label{
                     text: "Raw Output channel"
                     font.pixelSize: 12*fontScale
+                    color:  Theme.colorText
                 }
                 VComboBox{
                     id:rawOutputsChannels
