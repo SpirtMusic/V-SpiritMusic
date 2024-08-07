@@ -5,6 +5,9 @@
 #include <QSettings>
 #include <QTimer>
 #include <QMap>
+#include <QFile>
+#include <QTextStream>
+#include <QUrl>
 class SettingsManager : public QObject
 {
     Q_OBJECT
@@ -32,6 +35,9 @@ public:
     Q_INVOKABLE QString loadSelectedInput();
     Q_INVOKABLE QString loadSelectedOutput();
 
+    Q_INVOKABLE bool importSounds(const QString &category, const QString &fileContent);
+    Q_INVOKABLE QString exportSounds(const QString &category) const;
+    Q_INVOKABLE bool saveSoundsToFile(const QString &filePath, const QString &content);
     // Categories
     Q_INVOKABLE QStringList getCategories() const;
     Q_INVOKABLE int saveCategory(const QString &name, int mode, const QString &oldName = QString());

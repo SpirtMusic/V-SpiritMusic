@@ -20,9 +20,9 @@ VSplitView {
     VSoundsCategories{
         SplitView.fillWidth :true
         z:3
-        SplitView.minimumHeight: 127 *heightScale
-        SplitView.preferredHeight: 127 *heightScale
-        SplitView.maximumHeight: 127 * heightScale
+        SplitView.minimumHeight: 140 *heightScale
+        SplitView.preferredHeight: 140 *heightScale
+        SplitView.maximumHeight: 140 * heightScale
     }
     VSoundsContainer {
           SplitView.fillWidth :true

@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 import Theme
+import QtQuick.Dialogs
 import "../../controls"
 Item {
     id: root
@@ -119,9 +120,9 @@ Item {
                 anchors.fill: parent
                 z:-1
                 anchors.margins: 2
-                border.color:Theme.colorBackgroundView
+                border.color:index === root.selectedIndex  ? "transparent" :Theme.colorListBorder
                 color:Theme.colorBackgroundView
-                border.width: 2
+                border.width: 1
                 radius: 4
                 Text {
                     anchors.fill: parent
@@ -166,8 +167,8 @@ Item {
             enabled: currentCategory !== ""
             onClicked: soundDialog.openSoundDialog({name: "", msb: 0, lsb: 0, pc: 0})
             iconSource: "qrc:/vsonegx/qml/imgs/cil-plus.svg"
-            fontPixelSize:9
             implicitHeightPadding:10
+            Layout.preferredHeight: 30 * heightScale
         }
         VButton {
             text: "Edit"
@@ -177,21 +178,111 @@ Item {
                 soundDialog.openSoundDialog(soundDetails)
             }
             iconSource: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
-            fontPixelSize:9
             implicitHeightPadding:10
+            Layout.preferredHeight: 30 * heightScale
+        }
+        VButton {
+            text: "Import"
+            enabled: currentCategory !== ""
+            onClicked: importDialog.open()
+            iconSource: "qrc:/vsonegx/qml/imgs/file-export.svg"
+            implicitHeightPadding:10
+            Layout.preferredHeight: 30 * heightScale
         }
         VButton {
             text: "Delete"
             enabled: selectedSoundIndex !== -1
             onClicked: deleteSoundDialog.open()
             iconSource: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
-            fontPixelSize:9
             implicitHeightPadding:10
+            Layout.preferredHeight: 30 * heightScale
         }
 
     }
 
+    Dialog {
+        id: importDialog
+        title: "Import Sounds"
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        parent: rootAppWindow
+        anchors.centerIn: parent
+        modal: true
+        width: 400 * widthScale
+        height: 300 * heightScale
+        property string resultMessage: ""
+        background: Rectangle {
+            color: Theme.colorBackgroundView
+        }
 
+        contentItem: ColumnLayout {
+            spacing: 10
+            TextArea {
+                id: importTextArea
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                placeholderText: "Paste your sound data here..."
+                wrapMode: TextArea.Wrap
+            }
+            VButton {
+                text: "Select File"
+                onClicked: fileDialog.open()
+            }
+        }
+
+        onAccepted: {
+            if (importTextArea.text.trim() !== "") {
+                var success = sm.importSounds(currentCategory, importTextArea.text.trim())
+                if (success) {
+                    importDialog.resultMessage = "Sounds imported successfully"
+                    console.log("Sounds imported successfully")
+                    refreshSoundModel()
+                    msgDlg.text="Sounds imported successfully !"
+                    msgDlg.open()
+                } else {
+                    importDialog.resultMessage = "Error importing sounds. Check console for details."
+                    console.error("Error importing sounds")
+                    msgDlg.text="Error importing sounds !"
+                    msgDlg.open()
+                }
+            }
+        }
+        function clearAndReset() {
+            importTextArea.text = ""
+            resultMessage = ""
+        }
+
+        // Call clearAndReset when the dialog is opened
+        onAboutToShow: {
+            clearAndReset()
+        }
+
+        // Also call clearAndReset when the dialog is closed
+        onClosed: {
+            clearAndReset()
+        }
+    }
+    FileDialog {
+        id: fileDialog
+        title: "Select sound data file"
+        nameFilters: ["Text files (*.txt)"]
+        onAccepted: {
+            var request = new XMLHttpRequest();
+            request.open("GET", fileDialog.selectedFile, false);
+            request.send(null);
+            if (request.status === 200) {
+                importTextArea.text = request.responseText;
+
+            } else {
+                console.error("Failed to load file");
+
+            }
+        }
+    }
+    MessageDialog {
+        id:msgDlg
+        buttons: MessageDialog.Ok
+        text: "The document has been modified."
+    }
     // Sound Add/Edit Dialog
     Dialog {
         id: soundDialog
@@ -240,21 +331,21 @@ Item {
             }
 
             Label { text: "MSB:" }
-            SpinBox { id: soundMSB; from: 1; to: 128
+            SpinBox { id: soundMSB; from: 0; to: 127
                 Layout.fillWidth: true
                 editable: true
 
             }
 
             Label { text: "LSB:" }
-            SpinBox { id: soundLSB; from: 1; to: 128
+            SpinBox { id: soundLSB; from: 0; to: 127
                 Layout.fillWidth: true
                 editable: true
 
             }
 
             Label { text: "PC:" }
-            SpinBox { id: soundPC; from: 1; to: 128
+            SpinBox { id: soundPC; from: 0; to: 127
                 Layout.fillWidth: true
                 editable: true
 

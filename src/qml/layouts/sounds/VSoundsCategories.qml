@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import Qt5Compat.GraphicalEffects
 import Theme
+import QtQuick.Dialogs
 import "../../controls"
 Item {
     id: root
@@ -107,9 +108,9 @@ Item {
                 anchors.fill: parent
                 z:-1
                 anchors.margins: 2
-                border.color:Theme.colorBackgroundView
+                border.color: index === root.selectedIndex  ? "transparent" :Theme.colorListBorder
                 color:Theme.colorBackgroundView
-                border.width: 2
+                border.width: 1
                 radius: 4
                 Text {
                     anchors.fill: parent
@@ -155,8 +156,8 @@ Item {
                 categoryDialog.open()
             }
             iconSource: "qrc:/vsonegx/qml/imgs/cil-plus.svg"
-            fontPixelSize:9
             implicitHeightPadding:10
+            Layout.preferredHeight: 30 * heightScale
         }
 
         VButton {
@@ -168,8 +169,16 @@ Item {
                 categoryDialog.open()
             }
             iconSource: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
-            fontPixelSize:9
             implicitHeightPadding:10
+            Layout.preferredHeight: 30 * heightScale
+        }
+        VButton {
+            text: "Export"
+            enabled: root.selectedCategory !== ""
+            onClicked: exportDialog.open()
+            iconSource: "qrc:/vsonegx/qml/imgs/file-export.svg"
+            implicitHeightPadding: 10
+            Layout.preferredHeight: 30 * heightScale
         }
 
         VButton {
@@ -177,11 +186,78 @@ Item {
             enabled: root.selectedCategory !== ""
             onClicked: deleteCategoryDialog.open()
             iconSource: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
-            fontPixelSize:9
             implicitHeightPadding:10
+            Layout.preferredHeight: 30 * heightScale
         }
     }
+    Dialog {
+        id: exportDialog
+        title: "Export Sounds"
+        standardButtons: Dialog.Ok | Dialog.Cancel
+        parent: rootAppWindow
+        anchors.centerIn: parent
+        modal: true
+        width: 400 * widthScale
+        height: 300 * heightScale
+        background: Rectangle {
+            color: Theme.colorBackgroundView
+        }
 
+        property string exportedContent: ""
+
+        contentItem: ColumnLayout {
+            spacing: 10
+            TextArea {
+                id: exportTextArea
+                Layout.fillWidth: true
+                Layout.fillHeight: true
+                readOnly: true
+                wrapMode: TextArea.Wrap
+                text: exportDialog.exportedContent
+            }
+            RowLayout {
+                Layout.alignment: Qt.AlignRight
+                VButton {
+                    text: "Copy to Clipboard"
+                    onClicked: {
+                        exportTextArea.selectAll()
+                        exportTextArea.copy()
+                        exportTextArea.deselect()
+                    }
+                }
+                VButton {
+                    text: "Save to File"
+                    onClicked: saveFileDialog.open()
+                }
+            }
+        }
+
+        onAboutToShow: {
+            exportedContent = sm.exportSounds(currentCategory)
+        }
+    }
+    MessageDialog {
+        id:msgDlg
+        buttons: MessageDialog.Ok
+        text: "The document has been modified."
+    }
+    FileDialog {
+        id: saveFileDialog
+        title: "Save exported sounds"
+        nameFilters: ["Text files (*.txt)"]
+        fileMode: FileDialog.SaveFile
+        onAccepted: {
+            if (sm.saveSoundsToFile(saveFileDialog.selectedFile, exportDialog.exportedContent)) {
+                console.log("File saved successfully");
+                msgDlg.text="Category exported successfully!"
+                msgDlg.open()
+            } else {
+                console.error("Failed to save file");
+                msgDlg.text="Failed to export Category!"
+                msgDlg.open()
+            }
+        }
+    }
     Dialog {
         id: categoryDialog
         property string mode: "add"

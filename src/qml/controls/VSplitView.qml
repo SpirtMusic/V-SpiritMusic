@@ -23,14 +23,14 @@ SplitView {
         color: SplitHandle.pressed ? "#a33e19"
                                    : (SplitHandle.hovered ? Qt.lighter(vSplitView.colorBorder, 1.1) : vSplitView.colorBorder)
 
-        layer.enabled: true
-        layer.effect: Glow {
-            radius: 64
-            spread: 0.2
-            samples: 128
-            color: Theme.colorSelect
-            visible: true
-        }
+        // layer.enabled: true
+        // layer.effect: Glow {
+        //     radius: 46
+        //     spread: 0.08
+        //     samples: 64
+        //     color: Theme.colorSelect
+        //     visible: true
+        // }
         Loader {
             width: 30 * widthScale
             height: 16 * heightScale

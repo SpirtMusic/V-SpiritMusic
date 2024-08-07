@@ -6,14 +6,17 @@ import Theme
 
 Button {
     id: control
+
     property int baseWidth: rootAppWindow.winBaseWidth
     property int baseHeight: rootAppWindow.winBaseHeight
     property real widthScale: rootAppWindow.width / baseWidth
     property real heightScale: rootAppWindow.height / baseHeight
     property real fontScale: Math.min(widthScale, heightScale)
+
     property color textColor: Theme.colorText
     property color colorSelect: Theme.colorSelect
     property color colorBorder: Theme.colorBorder
+
     property string iconSource: ""
     property real iconSizeRatio: 0.6
     property real implicitHeightPadding: 20
@@ -21,11 +24,12 @@ Button {
 
     text: qsTr("Button")
 
-    implicitWidth: contentItem.implicitWidth + 20  // Add some padding
-    implicitHeight: contentItem.implicitHeight + implicitHeightPadding  // Add some padding
+    implicitWidth: contentItem.implicitWidth * widthScale + 20 * widthScale
+    implicitHeight: contentItem.implicitHeight * heightScale + implicitHeightPadding * heightScale
 
-    contentItem: RowLayout {
-        spacing: 1
+    contentItem:RowLayout {
+        anchors.centerIn: parent
+        spacing: 2 * widthScale
         Image {
             id: buttonIcon
             source: control.iconSource
@@ -35,31 +39,33 @@ Button {
             Layout.alignment: Qt.AlignVCenter
             Layout.preferredWidth: sourceSize.width
             Layout.preferredHeight: sourceSize.height
+            opacity: enabled ? 1 : 0.3
             ColorOverlay {
-                color:control.down ? Theme.colorHover : colorSelect
+                color: control.down ? Theme.colorHover : colorSelect
                 anchors.fill: parent
                 source: parent
-
                 antialiasing: true
                 // cached: true
             }
         }
+
         Text {
             text: control.text
-            font.pixelSize: fontPixelSize*fontScale
+            font.pixelSize:  fontPixelSize
             opacity: enabled ? 1.0 : 0.3
             color: control.down ? Theme.colorHover : colorSelect
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
             Layout.fillWidth: true
+            Layout.fillHeight: true
         }
     }
 
     background: Rectangle {
         opacity: enabled ? 1 : 0.3
-        implicitWidth: 100
-        implicitHeight: 40
+        implicitWidth: 100 * widthScale
+        implicitHeight: 40 * heightScale
         border.color: control.down ? Theme.colorHover : colorSelect
         color: "transparent"
         border.width: 1

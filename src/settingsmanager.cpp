@@ -61,7 +61,7 @@ bool SettingsManager::getLayerEnabled(int layerSet, int layerNumber) const{
 
 QStringList SettingsManager::getCategories() const
 {
-    return settings->value("Categories").toStringList();
+    return settings->value("Categories/Categories").toStringList();
 }
 
 // int SettingsManager::saveCategory(const QString &name, int mode, const QString &oldName)
@@ -108,7 +108,7 @@ int SettingsManager::saveCategory(const QString &name, int mode, const QString &
         // Add mode
         if (!categories.contains(name)) {
             categories.append(name);
-            scheduleSettingSave("Categories", categories);
+            scheduleSettingSave("Categories/Categories", categories);
             return 0; // Success
         } else {
             return 1; // Category already exists
@@ -134,7 +134,7 @@ int SettingsManager::saveCategory(const QString &name, int mode, const QString &
 
             // Update category name in the list
             categories[index] = name;
-            scheduleSettingSave("Categories", categories);
+            scheduleSettingSave("Categories/Categories", categories);
 
             // Rename the category section
             settings->beginGroup("Sounds");
@@ -158,7 +158,7 @@ void SettingsManager::deleteCategory(const QString &name)
 {
     QStringList categories = getCategories();
     if (categories.removeOne(name)) {
-        scheduleSettingSave("Categories", categories);
+        scheduleSettingSave("Categories/Categories", categories);
         settings->remove("Sounds/" + name);
     }
 }
@@ -240,8 +240,67 @@ void SettingsManager::saveRawOutputChannel(int port,int channel)
 }
 
 
+bool SettingsManager::importSounds(const QString &category, const QString &fileContent)
+{
+    QStringList lines = fileContent.split('\n', Qt::SkipEmptyParts);
+    bool success = true;
 
+    for (const QString &line : lines) {
+        QStringList parts = line.split(' ');
+        if (parts.size() >= 4) {
+            QString name = parts.mid(0, parts.size() - 3).join(' ').trimmed();
+            int msb = parts[parts.size() - 3].toInt();
+            int lsb = parts[parts.size() - 2].toInt();
+            int pc = parts[parts.size() - 1].toInt();
 
+            if (saveSound(category, name, msb, lsb, pc) != 0) {
+                success = false;
+            }
+        } else {
+            success = false;
+        }
+    }
+
+    return success;
+}
+QString SettingsManager::exportSounds(const QString &category) const
+{
+    QStringList sounds = getSoundsForCategory(category);
+    QStringList exportLines;
+
+    for (const QString &sound : sounds) {
+        QVariantMap details = getSoundDetails(category, sound);
+        if (details.contains("name") && details.contains("msb") && details.contains("lsb") && details.contains("pc")) {
+            QString line = QString("%1 %2 %3 %4")
+                               .arg(details["name"].toString())
+                               .arg(details["msb"].toInt())
+                               .arg(details["lsb"].toInt())
+                               .arg(details["pc"].toInt());
+            exportLines.append(line);
+        }
+    }
+
+    return exportLines.join("\n");
+}
+bool SettingsManager::saveSoundsToFile(const QString &filePath, const QString &content) {
+    const QUrl url(filePath);
+    QString localFilePath;
+    if (url.isLocalFile()) {
+        localFilePath = url.toLocalFile();
+    } else {
+        localFilePath=filePath;
+    }
+
+    QFile file(localFilePath);
+
+    if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+        return false;
+    }
+    QTextStream out(&file);
+    out << content;
+    file.close();
+    return true;
+}
 void SettingsManager::scheduleSettingSave(const QString &key, const QVariant &value)
 {
     pendingSettings[key] = value;
