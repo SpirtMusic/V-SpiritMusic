@@ -19,6 +19,16 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
     // e.g., update UI, process the message, etc.
     qDebug()<< message;
     jackClient->midiout_raw->send_message(message);
+    if(itsVolumeCC(message))
+    {
+        int statusByte = message[0];
+        int channel = statusByte & 0x0F; // Mask the lowest 4 bits
+        int midivolume=message[2];
+        int volume=( midivolume * 100) / 127;
+        qDebug()<<volume;
+        if(channel==15)
+            setMasterVolume(volume);
+    }
     if (itsNote(message)) {
 
 
@@ -278,4 +288,22 @@ void MidiClient::setRowOutputChannel(int channel) {
 void MidiClient::setMasterVolume(int volume){
     float mappedVolume = volume / 100.0f;
     jackClient->setVolume(mappedVolume);
+}
+
+bool MidiClient::itsVolumeCC(const libremidi::message& message)
+{
+    if (!message.empty()) {
+        int statusByte = message[0];
+        int messageType = statusByte & 0xF0; // Mask the highest 4 bits
+
+        // Check if the message is a Control Change (CC) message
+        if (messageType == 0xB0 && message.size() > 1) {
+            int controlNumber = message[1]; // The second byte is the control number
+
+            // Check if the control number is 7 (which is the standard for volume)
+            return (controlNumber == 7);
+        }
+    }
+
+    return false;
 }

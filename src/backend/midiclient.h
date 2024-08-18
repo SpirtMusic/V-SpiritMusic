@@ -67,6 +67,7 @@ private slots:
 private:
     JackClient *jackClient;
     bool itsNote(const libremidi::message& message);
+    bool itsVolumeCC(const libremidi::message& message);
     MidiPortModel *m_inputPorts;
     MidiPortModel *m_outputPorts;
     bool m_lastOutputPortStatus = false;
