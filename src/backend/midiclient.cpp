@@ -25,9 +25,11 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
         int channel = statusByte & 0x0F; // Mask the lowest 4 bits
         int midivolume=message[2];
         int volume=( midivolume * 100) / 127;
-        qDebug()<<volume;
-        if(channel==15)
+
+        if(channel==15){
             setMasterVolume(volume);
+            qDebug()<<"SEND MIDI VOLUME "<<volume;
+        }
     }
     if (itsNote(message)) {
 
@@ -153,11 +155,12 @@ void MidiClient::setReverb(int channel, int reverb)
     // Send a Control Change message for CC #91 (reverb)
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x5B, reverb));
 }
-void MidiClient::sendAllNotesOff(int channel)
+void MidiClient::sendAllNotesOff()
 {
     // Send the "All Notes Off" message for the specified channel
-    jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 123, 0));
-    //qDebug()<<"sendAllNotesOff Channel : "<<channel+1;
+    for(int i=1;i<=16;i++){
+        jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(i, 123, 0));
+    }
 }
 void MidiClient::sendMsbLsbPc(int channel, int msb, int lsb, int pc)
 {
@@ -288,8 +291,13 @@ void MidiClient::setRowOutputChannel(int channel) {
 void MidiClient::setMasterVolume(int volume){
     float mappedVolume = volume / 100.0f;
     jackClient->setVolume(mappedVolume);
+    emit masterVolumeChanged();
 }
-
+int MidiClient::masterVolume(){
+    float volume = jackClient->volume();
+    int intVolume = static_cast<int>(volume * 100.0f);
+    return intVolume;
+}
 bool MidiClient::itsVolumeCC(const libremidi::message& message)
 {
     if (!message.empty()) {

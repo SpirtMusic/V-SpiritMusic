@@ -166,14 +166,31 @@ VSplitView {
                         anchors.fill: parent
                         anchors.margins: 15
                         VSlider{
-                            id:masterVolume
+                            id:masterVolumeSLider
                             sliderLabel:"Master Volume"
-                            sliderValue:100
+                            sliderValue: mc.masterVolume
                             Connections{
-                                target: masterVolume.control
+                                target: masterVolumeSLider.control
                                 function onValueChanged(){
-                                    mc.setMasterVolume(masterVolume.control.value)
+                                    if (masterVolumeSLider.control.value !== mc.masterVolume && masterVolumeSLider.control.pressed) {
+                                        mc.setMasterVolume(masterVolumeSLider.control.value)
+                                        console.log(masterVolumeSLider.control.value )
+                                    }
                                 }
+                            }
+                            Connections{
+                                target: mc
+                                function onMasterVolumeChanged(){
+                                    if (mc.masterVolume !== masterVolumeSLider.sliderValue && !masterVolumeSLider.control.pressed) {
+                                        masterVolumeSLider.sliderValue = mc.masterVolume
+                                    }
+                                }
+                            }
+                        }
+                        VButton{
+                            text:"P A N I C"
+                            onClicked: {
+                                mc.sendAllNotesOff()
                             }
                         }
 

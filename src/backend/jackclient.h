@@ -23,7 +23,7 @@ public:
 
     void setVolume(float newVolume);
     void setPan(float newPan);
-
+    float volume();
 signals:
     void midiMessageReceived(const libremidi::message& message);
 public slots:
@@ -37,7 +37,7 @@ private:
 
 
     jack_port_t *input_left, *input_right, *output_left, *output_right;
-    float volume;
+    float m_volume;
     float pan;
 
     void setupAudioPorts();

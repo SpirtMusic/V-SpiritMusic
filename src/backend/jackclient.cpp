@@ -2,7 +2,7 @@
 #include <QDebug>
 JackClient::JackClient(QObject *parent)
     : QObject{parent}, midiin(nullptr),midiout(nullptr),midiout_raw(nullptr),
-    volume(1.0f), pan(0.0f)
+    m_volume(1.0f), pan(0.0f)
 {
     auto callback = [&](int port, const libremidi::message& message) {
         // qDebug() << message;
@@ -107,10 +107,9 @@ int JackClient::jack_callback(jack_nframes_t cnt, void *ctx)
     float rightGain = std::min(1.0f, 1.0f + self.pan);
 
     for (jack_nframes_t i = 0; i < cnt; i++) {
-        out_left[i] = in_left[i] * self.volume * leftGain;
-        out_right[i] = in_right[i] * self.volume * rightGain;
+        out_left[i] = in_left[i] * self.m_volume * leftGain;
+        out_right[i] = in_right[i] * self.m_volume * rightGain;
     }
-
 
     // Process the midi output
     self.midiout_callback.callback(cnt);
@@ -123,10 +122,14 @@ void JackClient::sendMidiMessage(int port, const libremidi::message& message)
 }
 void JackClient::setVolume(float newVolume)
 {
-    volume = newVolume;
+    m_volume = newVolume;
 }
 
 void JackClient::setPan(float newPan)
 {
     pan = newPan;
+}
+float JackClient::volume()
+{
+    return m_volume;
 }

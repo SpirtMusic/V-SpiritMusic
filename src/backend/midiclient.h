@@ -15,6 +15,7 @@ class MidiClient  : public QObject
     Q_PROPERTY(bool cc READ cc WRITE setCc NOTIFY ccChanged)
     Q_PROPERTY(bool pc READ pc WRITE setPc NOTIFY pcChanged)
     Q_PROPERTY(int rowOutputChannel READ rowOutputChannel WRITE setRowOutputChannel NOTIFY rowOutputChannelChanged)
+    Q_PROPERTY(int masterVolume READ masterVolume WRITE setMasterVolume NOTIFY masterVolumeChanged)
 public:
 
     enum LayersSet {
@@ -37,16 +38,16 @@ signals:
     void ccChanged();
     void pcChanged();
     void rowOutputChannelChanged();
-
+    void masterVolumeChanged();
 public slots:
     Q_INVOKABLE void sendNoteOn(int channel, int note, int velocity);
     Q_INVOKABLE void sendControlChange(int channel, int control, int value);
     Q_INVOKABLE void sendPitchBend(int channel, int value);
     Q_INVOKABLE void sendRawMessage(const libremidi::message& message);
-    Q_INVOKABLE void sendAllNotesOff(int channel);
+    Q_INVOKABLE void sendAllNotesOff();
     Q_INVOKABLE void sendMsbLsbPc(int channel, int msb, int lsb, int pc);
     Q_INVOKABLE void setVolume(int channel, int volume);
-    Q_INVOKABLE void setMasterVolume(int volume);
+
     Q_INVOKABLE void setReverb(int channel, int reverb);
     Q_INVOKABLE void getIOPorts();
     Q_INVOKABLE void makeConnection(QVariant inputPorts,QVariant outputPorts);
@@ -57,10 +58,11 @@ public slots:
     bool pc() const;
     void setCc(bool cc);
     void setPc(bool pc);
-
     int rowOutputChannel() const;
     void setRowOutputChannel(int channel);
 
+    int masterVolume();
+    void setMasterVolume(int volume);
 
 private slots:
     void handleMidiMessage(const libremidi::message& message);
@@ -74,7 +76,7 @@ private:
 
     bool m_cc;
     bool m_pc;
-
+    int m_masterVolume;
     int m_rowoutputchannel;
 
     QList<int> m_enabledLayersUpper;
