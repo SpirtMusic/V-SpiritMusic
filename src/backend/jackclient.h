@@ -21,6 +21,8 @@ public:
     std::unique_ptr<libremidi::midi_out> midiout;
     std::unique_ptr<libremidi::midi_out> midiout_raw;
 
+    void setVolume(float newVolume);
+    void setPan(float newPan);
 
 signals:
     void midiMessageReceived(const libremidi::message& message);
@@ -32,6 +34,13 @@ private:
     libremidi::jack_callback midiin_callback;
     libremidi::jack_callback midiout_callback;
     libremidi::jack_callback midiout_callback_raw;
+
+
+    jack_port_t *input_left, *input_right, *output_left, *output_right;
+    float volume;
+    float pan;
+
+    void setupAudioPorts();
 };
 
 #endif // JACKCLIENT_H

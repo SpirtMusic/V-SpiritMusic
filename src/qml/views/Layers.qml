@@ -166,26 +166,16 @@ VSplitView {
                         anchors.fill: parent
                         anchors.margins: 15
                         VSlider{
-
-                            sliderValue:60
-                        }
-                        VSlider{
-
-                        }
-                        VSlider{
-                            sliderValue:77
-                        }
-                        VSlider{
+                            id:masterVolume
+                            sliderLabel:"Master Volume"
                             sliderValue:100
+                            Connections{
+                                target: masterVolume.control
+                                function onValueChanged(){
+                                    mc.setMasterVolume(masterVolume.control.value)
+                                }
+                            }
                         }
-                        VSlider{
-                            sliderValue:33
-                        }
-                        VSlider{
-                            sliderValue:70
-                        }
-
-
 
                     }
                 }

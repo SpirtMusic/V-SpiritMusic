@@ -1,7 +1,8 @@
 #include "jackclient.h"
 #include <QDebug>
 JackClient::JackClient(QObject *parent)
-    : QObject{parent}, midiin(nullptr),midiout(nullptr),midiout_raw(nullptr)
+    : QObject{parent}, midiin(nullptr),midiout(nullptr),midiout_raw(nullptr),
+    volume(1.0f), pan(0.0f)
 {
     auto callback = [&](int port, const libremidi::message& message) {
         // qDebug() << message;
@@ -33,7 +34,7 @@ JackClient::JackClient(QObject *parent)
 
     // Create an observer using the configuration
     observer = libremidi::observer{conf, libremidi::jack_observer_configuration{.context = handle.get()}};
-
+    setupAudioPorts();
     jack_set_process_callback(handle.get(), jack_callback, this);
     jack_activate(handle.get());
 
@@ -78,6 +79,18 @@ JackClient::JackClient(QObject *parent)
         );
     //  midiout->open_virtual_port("Output: 1");
 }
+
+void JackClient::setupAudioPorts() {
+    input_left = jack_port_register(handle.get(), "input_L", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+    input_right = jack_port_register(handle.get(), "input_R", JACK_DEFAULT_AUDIO_TYPE, JackPortIsInput, 0);
+    output_left = jack_port_register(handle.get(), "output_L", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+    output_right = jack_port_register(handle.get(), "output_R", JACK_DEFAULT_AUDIO_TYPE, JackPortIsOutput, 0);
+
+    if (!input_left || !input_right || !output_left || !output_right) {
+        throw std::runtime_error("Failed to register JACK audio ports");
+    }
+}
+
 int JackClient::jack_callback(jack_nframes_t cnt, void *ctx)
 {
     auto& self = *(JackClient*)ctx;
@@ -85,7 +98,19 @@ int JackClient::jack_callback(jack_nframes_t cnt, void *ctx)
     // Process the midi input
     self.midiin_callback.callback(cnt);
 
-    // Do some other things
+    jack_default_audio_sample_t *in_left = (jack_default_audio_sample_t*)jack_port_get_buffer(self.input_left, cnt);
+    jack_default_audio_sample_t *in_right = (jack_default_audio_sample_t*)jack_port_get_buffer(self.input_right, cnt);
+    jack_default_audio_sample_t *out_left = (jack_default_audio_sample_t*)jack_port_get_buffer(self.output_left, cnt);
+    jack_default_audio_sample_t *out_right = (jack_default_audio_sample_t*)jack_port_get_buffer(self.output_right, cnt);
+
+    float leftGain = std::min(1.0f, 1.0f - self.pan);
+    float rightGain = std::min(1.0f, 1.0f + self.pan);
+
+    for (jack_nframes_t i = 0; i < cnt; i++) {
+        out_left[i] = in_left[i] * self.volume * leftGain;
+        out_right[i] = in_right[i] * self.volume * rightGain;
+    }
+
 
     // Process the midi output
     self.midiout_callback.callback(cnt);
@@ -95,4 +120,13 @@ int JackClient::jack_callback(jack_nframes_t cnt, void *ctx)
 void JackClient::sendMidiMessage(int port, const libremidi::message& message)
 {
     midiout->send_message(message);
+}
+void JackClient::setVolume(float newVolume)
+{
+    volume = newVolume;
+}
+
+void JackClient::setPan(float newPan)
+{
+    pan = newPan;
 }

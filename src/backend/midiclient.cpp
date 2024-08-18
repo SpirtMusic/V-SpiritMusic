@@ -275,4 +275,7 @@ void MidiClient::setRowOutputChannel(int channel) {
         emit rowOutputChannelChanged();
     }
 }
-
+void MidiClient::setMasterVolume(int volume){
+    float mappedVolume = volume / 100.0f;
+    jackClient->setVolume(mappedVolume);
+}
