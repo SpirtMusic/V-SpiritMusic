@@ -18,18 +18,19 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
     // Handle the received MIDI message here
     // e.g., update UI, process the message, etc.
     qDebug()<< message;
-    jackClient->midiout_raw->send_message(message);
     if(itsVolumeCC(message))
     {
         int statusByte = message[0];
         int channel = statusByte & 0x0F; // Mask the lowest 4 bits
         int midivolume=message[2];
         int volume=( midivolume * 100) / 127;
-
         if(channel==15){
             setMasterVolume(volume);
             qDebug()<<"SEND MIDI VOLUME "<<volume;
         }
+    }
+    if(!itsVolumeCC(message)){
+        jackClient->midiout_raw->send_message(message);
     }
     if (itsNote(message)) {
 
@@ -70,25 +71,6 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
                 //  qDebug() << "Pedal Channel";
             }
         }
-        // if(channel==0){
-        //     qDebug()<<"CHHHHHHHHHHH 1 " <<channel;
-        //      emit channelActivated(0);
-        //     for (int ch : enabledChannels) {
-        //         sendNoteOn(ch, note, velocity);
-
-
-        //     }
-        // }
-        // else if(channel==1){
-        //     qDebug()<<"CHHHHHHHHHHH 2 " <<channel;
-        //           emit channelActivated(1);
-        //     for (int ch : enabledChannels_lower) {
-        //         sendNoteOn(ch, note, velocity);
-
-
-        //     }
-        // }
-
     }
 }
 bool MidiClient::itsNote(const libremidi::message& message)
