@@ -1,7 +1,7 @@
 #include "settingsmanager.h"
 SettingsManager::SettingsManager(QObject *parent)
     : QObject(parent),
-    settings(new QSettings(QSettings::IniFormat, QSettings::UserScope, "SonegGX", "VSoneGX")),
+    settings(new QSettings(QSettings::IniFormat, QSettings::UserScope, "SpiritMusic", "VSpiritMusic")),
     saveTimer(new QTimer(this))
 {
     connect(saveTimer, &QTimer::timeout, this, &SettingsManager::saveSettings);
@@ -63,42 +63,6 @@ QStringList SettingsManager::getCategories() const
 {
     return settings->value("Categories/Categories").toStringList();
 }
-
-// int SettingsManager::saveCategory(const QString &name, int mode, const QString &oldName)
-// {
-//     // mode 0: add
-//     // mode 1: edit
-//     QStringList categories = getCategories();
-
-//     if (mode == 0) {
-//         // Add mode
-//         if (!categories.contains(name)) {
-//             categories.append(name);
-//             scheduleSettingSave("Categories", categories);
-//             return 0; // Success
-//         } else {
-//             return 1; // Category already exists
-//         }
-//     } else if (mode == 1) {
-//         // Edit mode
-//         int index = categories.indexOf(oldName);
-//         if (index != -1) {
-//             if (name != oldName && categories.contains(name)) {
-//                 return 2; // New name already exists
-//             }
-//             categories[index] = name;
-//             scheduleSettingSave("Categories", categories);
-//             return 0; // Success
-//         } else {
-//             return 3; // Old category not found
-//         }
-//     }
-
-//     return 4; // Invalid mode
-// }
-
-
-
 
 int SettingsManager::saveCategory(const QString &name, int mode, const QString &oldName)
 {
@@ -163,10 +127,6 @@ void SettingsManager::deleteCategory(const QString &name)
     }
 }
 
-
-
-
-
 QStringList SettingsManager::getSoundsForCategory(const QString &category) const {
     return settings->value("Sounds/" + category).toStringList();
 }
@@ -227,7 +187,6 @@ bool SettingsManager::getRawOutputPCEnabled(const QString &pc_id) const{
     QString key = QString("RawOutputSettings/PC_%1").arg(pc_id);
     return settings->value(key, false).toBool();
 }
-
 
 int SettingsManager::getRawOutputChannel(int port) const
 {
