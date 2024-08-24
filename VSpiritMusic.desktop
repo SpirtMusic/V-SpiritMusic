@@ -1,0 +1,9 @@
+#!/usr/bin/env xdg-open
+[Desktop Entry]
+Type=Application
+Name=VSpiritMusic
+Comment=Midi Multi layer
+Exec=VSpiritMusic
+Icon=/usr/share/icons/hicolor/128x128/apps/VSpiritMusic.png
+Terminal=false
+Categories=AudioVideo

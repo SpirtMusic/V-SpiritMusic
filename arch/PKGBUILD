@@ -1,0 +1,38 @@
+# Maintainer: Akram Abdeslem Chaima  <akram@riseup.net>
+pkgname=VSpiritMusic
+pkgver=r121.a36653a
+pkgrel=1
+pkgdesc="Midi Multi layer"
+arch=('x86_64')
+url="https://github.com/SpirtMusic/V-SpiritMusic"
+license=('GPL3')
+depends=('qt6-base' 'qt6-5compat' 'qt6-multimedia' 'cmake')
+makedepends=('git')
+source=("git+https://github.com/SpirtMusic/V-SpiritMusic.git")
+sha256sums=('SKIP')
+
+pkgver() {
+    cd "$srcdir/V-SpiritMusic"
+    printf "r%s.%s" "$(git rev-list --count HEAD)" "$(git rev-parse --short HEAD)"
+}
+
+build() {
+    cd "$srcdir/V-SpiritMusic"
+    mkdir -p build
+    cd build
+    cmake .. \
+          -DCMAKE_BUILD_TYPE=Release \
+          -DCMAKE_INSTALL_PREFIX=/usr \
+          -DCMAKE_INSTALL_LIBDIR=lib \
+          -DQT_QMAKE_EXECUTABLE=$(which qmake6)
+    make
+}
+
+package() {
+    cd "$srcdir/V-SpiritMusic/build"
+    make DESTDIR="${pkgdir}" install
+    install -Dm644 "$srcdir/V-SpiritMusic/VSpiritMusic.desktop" \
+            "${pkgdir}/usr/share/applications/VSpiritMusic.desktop"
+    install -Dm644 "$srcdir/V-SpiritMusic/src/qml/imgs/VSpiritMusic.png" \
+            "${pkgdir}/usr/share/icons/hicolor/128x128/apps/VSpiritMusic.png"
+}
