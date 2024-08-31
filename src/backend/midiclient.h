@@ -47,7 +47,7 @@ public slots:
     Q_INVOKABLE void sendAllNotesOff();
     Q_INVOKABLE void sendMsbLsbPc(int channel, int msb, int lsb, int pc);
     Q_INVOKABLE void setVolume(int channel, int volume);
-
+    Q_INVOKABLE void  sendNotesOff(int channel);
     Q_INVOKABLE void setReverb(int channel, int reverb);
     Q_INVOKABLE void getIOPorts();
     Q_INVOKABLE void makeConnection(QVariant inputPorts,QVariant outputPorts);

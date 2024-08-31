@@ -39,6 +39,9 @@ Rectangle {
         if (mc) {
             mc.setLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
             sm.saveLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
+            if(!checked){
+                mc.sendNotesOff(layerNumber)
+            }
         }
     }
 

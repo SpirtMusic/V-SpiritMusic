@@ -1,6 +1,6 @@
 # Maintainer: Akram Abdeslem Chaima  <akram@riseup.net>
 pkgname=VSpiritMusic
-pkgver=r121.a36653a
+pkgver=r122.2d4ee5b
 pkgrel=1
 pkgdesc="Midi Multi layer"
 arch=('x86_64')
