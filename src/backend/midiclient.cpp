@@ -160,11 +160,12 @@ void MidiClient::sendMsbLsbPc(int channel, int msb, int lsb, int pc)
     lsb = qBound(0, lsb, 127);
     pc = qBound(0, pc, 127);
 
+
     // Send the MSB, LSB, and PC messages
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x00, msb));  // MSB (0x00)
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x20, lsb));  // LSB (0x20)
-    jackClient->sendMidiMessage(0, libremidi::channel_events::program_change(channel+1, pc));         // PC
-    // qDebug() << "Sent MSB:" << msb << "LSB:" << lsb << "PC:" << pc << "on channel:" << channel;
+    jackClient->sendMidiMessage(0, libremidi::channel_events::program_change(channel+1, pc-1));         // PC
+     qDebug() << "Sent MSB:" << msb << "LSB:" << lsb << "PC:" << pc -1<< "on channel:" << channel;
 }
 
 void MidiClient::getIOPorts(){

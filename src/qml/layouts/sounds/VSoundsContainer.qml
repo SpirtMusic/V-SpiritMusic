@@ -143,6 +143,9 @@ Item {
                         var soundDetails = sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
                         if(soundDetails !== undefined){
                             mc.sendMsbLsbPc(rootAppWindow.selectedControlIndex,soundDetails.msb,soundDetails.lsb,soundDetails.pc)
+                             console.log("msb    :", soundDetails.msb)
+                             console.log("lsb    :", soundDetails.lsb)
+                             console.log("pc     :", soundDetails.pc)
                             rootAppWindow.controlIndexSounds.voiceName=soundDetails.name
 
                         }
