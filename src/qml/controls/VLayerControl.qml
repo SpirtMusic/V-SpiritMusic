@@ -59,7 +59,22 @@ Rectangle{
         GradientStop { position: 0.55; color: backgroundColor }
         GradientStop { position: 1.0; color: backgroundColor }
     }
-
+    Text {
+        text: controlIndex + 1
+        anchors.left: parent.left
+        anchors.top: parent.top
+        anchors.leftMargin: voiceControl.font.pixelSize * 0.5
+        anchors.bottom: parent.bottom
+        // anchors.fill:parent
+        font.pixelSize: voiceControl.font.pixelSize * 1.1
+        color: textColor
+        font.bold: true
+        fontSizeMode: Text.Fit
+        horizontalAlignment: Text.AlignHCenter
+        verticalAlignment: Text.AlignVCenter
+        z:99
+        opacity: 0.3
+    }
     Rectangle{
         color: layerControl.backgroundColor
         anchors.left: parent.left
@@ -77,6 +92,7 @@ Rectangle{
             anchors.top:parent.top
             color:layerControl.backgroundColor
             z:2
+
             MouseArea {
                 property real previousPosition: 0
                 property real direction: 0
@@ -429,6 +445,7 @@ Rectangle{
         source: glowRec
         visible: selected
     }
-
+    Component.onCompleted:{
+    }
 }
 

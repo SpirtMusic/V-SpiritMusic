@@ -36,6 +36,13 @@ Rectangle {
     color:  colorBorder
 
     onCheckedChanged: {
+        if (rootAppWindow.vLayersControlContainerGlobal.selectedControl) {
+            rootAppWindow.vLayersControlContainerGlobal.selectedControl.selected = false
+        }
+        rootAppWindow.vLayersControlContainerGlobal.selectedControl = rootAppWindow.vControlLayers[layerNumber]
+        rootAppWindow.vControlLayers[layerNumber].selected = true
+
+
         if (mc) {
             mc.setLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
             sm.saveLayerEnabled(vLayerButton.layerSet, layerNumber, checked)

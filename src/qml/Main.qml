@@ -4,6 +4,7 @@ import QtQuick.Layouts
 import Theme
 import Qt5Compat.GraphicalEffects
 import "layouts"
+import "layouts/layers"
 import "controls"
 import "views"
 import com.sonegx.settingsmanager
@@ -16,6 +17,8 @@ ApplicationWindow {
     property int selectedControlIndex:0
     property string currentCategory: ""
     property VLayerControl controlIndexSounds:null
+    property  var vControlLayers:[]
+    property VLayersControlContainer vLayersControlContainerGlobal : null
     // width: 1024
     // height: 768
 

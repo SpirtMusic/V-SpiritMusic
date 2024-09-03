@@ -19,14 +19,15 @@ Rectangle{
     property alias vPopupEmitterControl: popupInfo.emitterControl
 
     property var itemCoordinates: []
+    property var vLayers: []
 
     color: Theme.colorBackgroundView
     z:-99
 
     onSelectedControlChanged: {
-          rootAppWindow.selectedControlIndex = selectedControl.controlIndex
-         rootAppWindow.controlIndexSounds = selectedControl
-      }
+        rootAppWindow.selectedControlIndex = selectedControl.controlIndex
+        rootAppWindow.controlIndexSounds = selectedControl
+    }
     VPopup{
         id:popupInfo
         sliderpreferredWidth : 120 * widthScale
@@ -75,7 +76,11 @@ Rectangle{
         VLayerControl { id: layerControl13; controlIndex: 12 }
         VLayerControl { id: layerControl14; controlIndex: 13 }
         VLayerControl { id: layerControl15; controlIndex: 14 }
-        VLayerControl { id: layerControl16; controlIndex: 15 }
+        VLayerControl {
+            id: layerControl16
+            controlIndex: 15
+        }
+
     }
 
     function storeItemCoordinates() {
@@ -98,8 +103,23 @@ Rectangle{
                     { item: layerControl16, x: layerControl16.x, y: layerControl16.y, right: layerControl16.right, left: layerControl16.left, top: layerControl16.top }
                 ]
     }
+    function populateVLayers() {
+        vLayers = []
+        for (var i = 0; i < soundsLayout.children.length; i++) {
+            var child = soundsLayout.children[i]
+            if (child instanceof VLayerControl) {
+                vLayers.push(child)
+            }
+        }
+    }
+
     Component.onCompleted: {
         storeItemCoordinates()
+        populateVLayers()
+        console.log("vLayers.length ", vLayers.length)
+        console.log("vLayers ", vLayers.map(control => control.id))
+        rootAppWindow.vControlLayers = vLayers
+        rootAppWindow.vLayersControlContainerGlobal =vLayersControlContainer
 
     }
     onWidthChanged: {
@@ -108,4 +128,5 @@ Rectangle{
     onHeightChanged: {
         storeItemCoordinates()
     }
+
 }
