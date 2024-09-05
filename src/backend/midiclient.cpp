@@ -142,6 +142,7 @@ void MidiClient::sendAllNotesOff()
     // Send the "All Notes Off" message for the specified channel
     for(int i=1;i<=16;i++){
         jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(i, 123, 0));
+        jackClient->midiout_raw->send_message(libremidi::channel_events::control_change(i, 123, 0));
     }
 }
 void MidiClient::sendNotesOff(int channel)
@@ -165,7 +166,7 @@ void MidiClient::sendMsbLsbPc(int channel, int msb, int lsb, int pc)
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x00, msb));  // MSB (0x00)
     jackClient->sendMidiMessage(0, libremidi::channel_events::control_change(channel+1, 0x20, lsb));  // LSB (0x20)
     jackClient->sendMidiMessage(0, libremidi::channel_events::program_change(channel+1, pc-1));         // PC
-     qDebug() << "Sent MSB:" << msb << "LSB:" << lsb << "PC:" << pc -1<< "on channel:" << channel;
+    qDebug() << "Sent MSB:" << msb << "LSB:" << lsb << "PC:" << pc -1<< "on channel:" << channel;
 }
 
 void MidiClient::getIOPorts(){

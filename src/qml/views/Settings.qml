@@ -3,6 +3,7 @@ import QtQuick.Controls
 import QtQuick.Layouts
 import "../layouts/settings"
 import "../layouts/settings/settingsPages"
+import "../layouts/settings/aboutPages"
 import "../controls"
 import Theme
 import Qt5Compat.GraphicalEffects
@@ -52,7 +53,10 @@ Item {
 
 
         ConnectionsPage{}
-
+        Item{}
+        Item{}
+        Item{}
+        AboutPage{}
         Item{}
 
     }

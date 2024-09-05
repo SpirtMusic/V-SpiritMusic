@@ -1,7 +1,9 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include <settingsmanager.h>
 #include <backend/midiclient.h>
+#include <version.h>
 int main(int argc, char *argv[])
 {
     QGuiApplication app(argc, argv);
@@ -9,7 +11,10 @@ int main(int argc, char *argv[])
     QQmlApplicationEngine engine;
     qputenv("QML_XHR_ALLOW_FILE_READ", QByteArray("1"));
     qputenv("QML_XHR_ALLOW_FILE_WRITE", QByteArray("1"));
-     qputenv("QML_XHR_DUMP", QByteArray("1"));
+    qputenv("QML_XHR_DUMP", QByteArray("1"));
+
+    qDebug()<<" Vesrion : "<<GIT_COMMIT_HASH;
+    engine.rootContext()->setContextProperty("appVersion", GIT_COMMIT_HASH);
     qmlRegisterType<SettingsManager>("com.sonegx.settingsmanager", 1, 0, "SettingsManager");
     qmlRegisterType<MidiClient>("com.sonegx.midiclient", 1, 0, "MidiClient");
     qmlRegisterSingletonType( QUrl(QStringLiteral("qrc:/vsonegx/qml/themes/Theme.qml")), "Theme", 1, 0, "Theme" );

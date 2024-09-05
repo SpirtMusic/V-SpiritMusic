@@ -13,6 +13,7 @@ set(LIBREMIDI_NO_WINUWP 0)
 find_package(libremidi REQUIRED)
 add_definitions(-DLIBREMIDI_HEADER_ONLY=1)
 add_definitions(-DLIBREMIDI_JACK=1)
+include_directories(${CMAKE_BINARY_DIR}/export)
 qt_add_resources(VSpirtMusic
 
 
@@ -40,6 +41,7 @@ qt_add_qml_module(VSpiritMusic
     QML_FILES qml/controls/VCheckBox.qml
     QML_FILES qml/controls/VSwitch.qml
     RESOURCES qml/imgs/file-import.svg qml/imgs/file-export.svg
+    QML_FILES qml/layouts/settings/aboutPages/AboutPage.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
