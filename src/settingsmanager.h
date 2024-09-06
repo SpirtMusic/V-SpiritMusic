@@ -40,13 +40,26 @@ public:
     Q_INVOKABLE bool saveSoundsToFile(const QString &filePath, const QString &content);
     // Categories
     Q_INVOKABLE QStringList getCategories() const;
-    Q_INVOKABLE int saveCategory(const QString &name, int mode, const QString &oldName = QString());
+    Q_INVOKABLE int saveCategory(const QString &name, int mode, const QString &oldName = QString(),bool isMain = false);
     Q_INVOKABLE void deleteCategory(const QString &name);
+
+    Q_INVOKABLE bool isMainCategory(const QString &name);
 
     Q_INVOKABLE QStringList getSoundsForCategory(const QString &category) const;
     Q_INVOKABLE int saveSound(const QString &category, const QString &name, int msb, int lsb, int pc) ;
     Q_INVOKABLE QVariantMap getSoundDetails(const QString &category, const QString &name) const ;
     Q_INVOKABLE bool deleteSound(const QString &category, const QString &name);
+
+
+    Q_INVOKABLE QStringList getSubCategories(const QString &main_name) const;
+    Q_INVOKABLE int saveSubCategory(const QString &main_name,const QString &name, int mode, const QString &oldName);
+    Q_INVOKABLE void deleteSubCategory(const QString &main_name,const QString &name);
+    Q_INVOKABLE int  saveSubSound(const QString &main_name,const QString &category, const QString &name, int msb, int lsb, int pc);
+    Q_INVOKABLE QStringList getSoundsForSubCategory(const QString &main_name ,const QString &category) const;
+    Q_INVOKABLE bool deleteSubSound(const QString &main_name,const QString &category, const QString &name);
+    Q_INVOKABLE QVariantMap getSoundSubDetails(const QString &main_name,const QString &category, const QString &name) const;
+
+
 
 signals:
     void categoriesLoaded();

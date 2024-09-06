@@ -63,8 +63,13 @@ QStringList SettingsManager::getCategories() const
 {
     return settings->value("Categories/Categories").toStringList();
 }
+QStringList SettingsManager::getSubCategories(const QString &main_name) const
+{
+    QString category = QString("Categories/%1").arg(main_name);
 
-int SettingsManager::saveCategory(const QString &name, int mode, const QString &oldName)
+    return settings->value(category).toStringList();
+}
+int SettingsManager::saveCategory(const QString &name, int mode, const QString &oldName, bool isMain)
 {
     QStringList categories = getCategories();
 
@@ -73,6 +78,8 @@ int SettingsManager::saveCategory(const QString &name, int mode, const QString &
         if (!categories.contains(name)) {
             categories.append(name);
             scheduleSettingSave("Categories/Categories", categories);
+            QString mode = QString("Categories/%1_isMain").arg(name);
+            scheduleSettingSave(mode, isMain);
             return 0; // Success
         } else {
             return 1; // Category already exists
@@ -116,6 +123,61 @@ int SettingsManager::saveCategory(const QString &name, int mode, const QString &
 
     return 4; // Invalid mode
 }
+int SettingsManager::saveSubCategory(const QString &main_name,const QString &name, int mode, const QString &oldName)
+{
+    QStringList categories = getSubCategories(main_name);
+
+    if (mode == 0) {
+        // Add mode
+        if (!categories.contains(name)) {
+            categories.append(name);
+            QString category = QString("Categories/%1").arg(main_name);
+            scheduleSettingSave(category, categories);
+            return 0; // Success
+        } else {
+            return 1; // Category already exists
+        }
+    } else if (mode == 1) {
+        // Edit mode
+        qDebug()<<categories;
+        int index = categories.indexOf(oldName);
+        if (index != -1) {
+            if (name != oldName && categories.contains(name)) {
+                return 2; // New name already exists
+            }
+
+            // Rename sounds associated with the old category
+            QStringList sounds = getSoundsForSubCategory(main_name,oldName);
+            for (const QString &sound : sounds) {
+                QVariantMap soundDetails = getSoundSubDetails(main_name,oldName, sound);
+                settings->remove("Sounds/" +main_name+"/"+ oldName + "/" + sound);
+                settings->setValue("Sounds/" +main_name+"/"+ name + "/" + sound, soundDetails);
+            }
+
+            // Remove old category key
+            settings->remove("Sounds/"+main_name+"/"+ oldName);
+
+            // Update category name in the list
+            categories[index] = name;
+            QString category = QString("Categories/%1").arg(main_name);
+            scheduleSettingSave(category, categories);
+
+            // Rename the category section
+            settings->beginGroup("Sounds");
+            settings->remove(oldName);
+            settings->endGroup();
+            settings->beginGroup("Sounds");
+            settings->setValue(name, sounds);
+            settings->endGroup();
+
+            return 0; // Success
+        } else {
+            return 3; // Old category not found
+        }
+    }
+
+    return 4; // Invalid mode
+}
 
 
 void SettingsManager::deleteCategory(const QString &name)
@@ -126,11 +188,26 @@ void SettingsManager::deleteCategory(const QString &name)
         settings->remove("Sounds/" + name);
     }
 }
+void SettingsManager::deleteSubCategory(const QString &main_name,const QString &name)
+{
+    QStringList categories = getSubCategories(main_name);
+    if (categories.removeOne(name)) {
+        QString category = QString("Categories/%1").arg(main_name);
 
+        scheduleSettingSave(category, categories);
+        settings->remove("Sounds/"+main_name+"/"+name);
+    }
+}
+bool SettingsManager::isMainCategory(const QString &name){
+    QString key = QString("Categories/%1_isMain").arg(name);
+    return settings->value(key, false).toBool();
+}
 QStringList SettingsManager::getSoundsForCategory(const QString &category) const {
     return settings->value("Sounds/" + category).toStringList();
 }
-
+QStringList SettingsManager::getSoundsForSubCategory(const QString &main_name ,const QString &category) const {
+    return settings->value("Sounds/"+main_name+"/"+ category).toStringList();
+}
 int SettingsManager::saveSound(const QString &category, const QString &name, int msb, int lsb, int pc) {
     QStringList sounds = getSoundsForCategory(category);
     QVariantMap soundDetails;
@@ -145,6 +222,20 @@ int SettingsManager::saveSound(const QString &category, const QString &name, int
     settings->setValue("Sounds/" + category + "/" + name, soundDetails);
     return 0; // Success
 }
+int SettingsManager::saveSubSound(const QString &main_name,const QString &category, const QString &name, int msb, int lsb, int pc) {
+    QStringList sounds = getSoundsForSubCategory(main_name,category);
+    QVariantMap soundDetails;
+    soundDetails["msb"] = msb;
+    soundDetails["lsb"] = lsb;
+    soundDetails["pc"] = pc;
+
+    if (!sounds.contains(name)) {
+        sounds.append(name);
+        settings->setValue("Sounds/" +main_name+"/" + category, sounds);
+    }
+    settings->setValue("Sounds/" +main_name+"/" + category + "/" + name, soundDetails);
+    return 0; // Success
+}
 
 bool SettingsManager::deleteSound(const QString &category, const QString &name) {
     QStringList sounds = getSoundsForCategory(category);
@@ -155,7 +246,15 @@ bool SettingsManager::deleteSound(const QString &category, const QString &name) 
     }
     return false;
 }
-
+bool SettingsManager::deleteSubSound(const QString &main_name,const QString &category, const QString &name) {
+    QStringList sounds = getSoundsForSubCategory(main_name,category);
+    if (sounds.removeOne(name)) {
+        settings->setValue("Sounds/"  +main_name+"/"+ category, sounds);
+        settings->remove("Sounds/"  +main_name+"/"+ category + "/" + name);
+        return true;
+    }
+    return false;
+}
 QVariantMap SettingsManager::getSoundDetails(const QString &category, const QString &name) const {
     QVariantMap soundDetails = settings->value("Sounds/" + category + "/" + name).toMap();
     if (soundDetails.isEmpty()) {
@@ -166,7 +265,16 @@ QVariantMap SettingsManager::getSoundDetails(const QString &category, const QStr
     }
     return soundDetails;
 }
-
+QVariantMap SettingsManager::getSoundSubDetails(const QString &main_name,const QString &category, const QString &name) const {
+    QVariantMap soundDetails = settings->value("Sounds/"+main_name+"/"+ category + "/" + name).toMap();
+    if (soundDetails.isEmpty()) {
+        qWarning() << "Sound details not found for category" << category << "and name" << name;
+    }
+    if (!soundDetails.contains("name")) {
+        soundDetails["name"] = name;
+    }
+    return soundDetails;
+}
 
 
 void  SettingsManager::saveRawOutputCCEnabled(const QString &cc_id, bool enabled){

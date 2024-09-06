@@ -16,6 +16,7 @@ ApplicationWindow {
     property alias sm: settingsmanager
     property int selectedControlIndex:0
     property string currentCategory: ""
+    property string currentCategoryMain:""
     property VLayerControl controlIndexSounds:null
     property  var vControlLayers:[]
     property VLayersControlContainer vLayersControlContainerGlobal : null

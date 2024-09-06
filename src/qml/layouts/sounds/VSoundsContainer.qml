@@ -20,6 +20,7 @@ Item {
     property bool isEditing: false
 
     property string currentCategory: rootAppWindow.currentCategory
+    property string currentCategoryMain : rootAppWindow.currentCategoryMain
     property var soundModel: []
     property int selectedSoundIndex: -1
 
@@ -38,10 +39,19 @@ Item {
 
     }
     function refreshSoundModel() {
-        if (currentCategory !== "") {
-            soundModel = sm.getSoundsForCategory(currentCategory)
-        } else {
-            soundModel = []
+        if(rootAppWindow.currentCategoryMain==""){
+            if (currentCategory !== "") {
+                soundModel = sm.getSoundsForCategory(currentCategory)
+            } else {
+                soundModel = []
+            }
+        }
+        else{
+            if (currentCategory !== "") {
+                soundModel = sm.getSoundsForSubCategory(currentCategoryMain,currentCategory)
+            } else {
+                soundModel = []
+            }
         }
     }
 
@@ -78,7 +88,7 @@ Item {
                     verticalOffset: 1
                 }
             }
-            property var soundDetails: sm.getSoundDetails(currentCategory, modelData)
+            property var soundDetails: currentCategoryMain!="" ? sm.getSoundSubDetails(currentCategoryMain,currentCategory, modelData): sm.getSoundDetails(currentCategory, modelData)
             Image {
                 id: mask
                 source: "qrc:/vsonegx/qml/controls/resource/texture/button_texture.png"
@@ -140,12 +150,13 @@ Item {
                         selectedSoundIndex = index
                         root.selectedIndex = index
 
-                        var soundDetails = sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
+                        // var soundDetails = sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
+                        var soundDetails= currentCategoryMain!=""?sm.getSoundSubDetails(currentCategoryMain,currentCategory, soundModel[selectedSoundIndex]): sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
                         if(soundDetails !== undefined){
                             mc.sendMsbLsbPc(rootAppWindow.selectedControlIndex,soundDetails.msb,soundDetails.lsb,soundDetails.pc)
-                             console.log("msb    :", soundDetails.msb)
-                             console.log("lsb    :", soundDetails.lsb)
-                             console.log("pc     :", soundDetails.pc)
+                            console.log("msb    :", soundDetails.msb)
+                            console.log("lsb    :", soundDetails.lsb)
+                            console.log("pc     :", soundDetails.pc)
                             rootAppWindow.controlIndexSounds.voiceName=soundDetails.name
 
                         }
@@ -177,7 +188,8 @@ Item {
             text: "Edit"
             enabled: selectedSoundIndex !== -1
             onClicked: {
-                var soundDetails = sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
+                //  var soundDetails = sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
+                var soundDetails =currentCategoryMain!=""?sm.getSoundSubDetails(currentCategoryMain,currentCategory, soundModel[selectedSoundIndex]): sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
                 soundDialog.openSoundDialog(soundDetails)
             }
             iconSource: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
@@ -356,10 +368,20 @@ Item {
         }
 
         onAccepted: {
-            sm.saveSound(currentCategory, soundNameField.text, soundMSB.value, soundLSB.value, soundPC.value)
 
-            if (originalName !== "" && originalName !== soundNameField.text) {
-                sm.deleteSound(currentCategory, originalName)
+            if(currentCategoryMain==""){
+                sm.saveSound(currentCategory, soundNameField.text, soundMSB.value, soundLSB.value, soundPC.value)
+
+                if (originalName !== "" && originalName !== soundNameField.text) {
+                    sm.deleteSound(currentCategory, originalName)
+                }
+            }
+            else {
+                sm.saveSubSound(currentCategoryMain,currentCategory, soundNameField.text, soundMSB.value, soundLSB.value, soundPC.value)
+
+                if (originalName !== "" && originalName !== soundNameField.text) {
+                    sm.deleteSubSound(currentCategoryMain,currentCategory, originalName)
+                }
             }
 
             refreshSoundModel()
@@ -393,9 +415,17 @@ Item {
         }
 
         onAccepted: {
-            sm.deleteSound(currentCategory, soundModel[selectedSoundIndex])
+            if(currentCategoryMain==""){
+                sm.deleteSound(currentCategory, soundModel[selectedSoundIndex])
+
+            }
+            else{
+                sm.deleteSubSound(currentCategoryMain,currentCategory, soundModel[selectedSoundIndex])
+
+            }
             refreshSoundModel()
             selectedSoundIndex = -1
+
         }
     }
 

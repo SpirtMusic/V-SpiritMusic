@@ -22,11 +22,21 @@ Item {
 
     property var model: sm.getCategories()
     property string selectedCategory: ""
+    property string selectedCategoryMainName: ""
+    property bool isSelectedCategoryMain: false
     property int selectedIndex: -1
     property bool isLoading: false  // Add this property to control BusyIndicator visibility
     function refreshModel() {
-        model = sm.getCategories()
-        isLoading=true
+        if(root.isSelectedCategoryMain){
+            model=sm.getSubCategories(root.selectedCategoryMainName)
+        }
+        else{
+            model = sm.getCategories()
+            //  isLoading=true
+        }
+    }
+    onSelectedCategoryMainNameChanged:{
+        rootAppWindow.currentCategoryMain=selectedCategoryMainName
     }
     onSelectedCategoryChanged: {
         rootAppWindow.currentCategory=selectedCategory
@@ -116,7 +126,7 @@ Item {
                     anchors.fill: parent
                     text: modelData
                     font.pointSize: 10 *fontScale
-                    color:Theme.colorText
+                    color:sm.isMainCategory(modelData) ? "green" :Theme.colorText
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -127,13 +137,21 @@ Item {
                     onClicked: {
                         root.selectedIndex = index
                         root.selectedCategory = modelData
-                        console.log("Clicked category:", modelData)
+
+                        if(!root.isSelectedCategoryMain)
+                            root.isSelectedCategoryMain=sm.isMainCategory(modelData)
+                        if(sm.isMainCategory(modelData))
+                        {
+                            root.selectedCategoryMainName=root.selectedCategory
+                            root.model=sm.getSubCategories(root.selectedCategory)
+                        }
+                        //      console.log("is Main ", sm.isMainCategory(modelData))
+                        //  console.log("Clicked category:", modelData)
                     }
                 }
             }
         }
         BusyIndicator {
-
             anchors.centerIn: parent
             running: root.isLoading
             visible: root.isLoading
@@ -146,9 +164,33 @@ Item {
     RowLayout {
         id:rowToolBtns
         anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
+        //anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left:parent.left
+        anchors.right: parent.right
         spacing: 10
         anchors.topMargin: 8
+        anchors.leftMargin: 4
+        anchors.rightMargin: 4
+        VButton {
+            text: "Back"
+            visible: root.isSelectedCategoryMain
+            onClicked: {
+                root.isSelectedCategoryMain=false
+                root.selectedCategoryMainName=""
+                root.refreshModel()
+            }
+            iconSource: "qrc:/vsonegx/qml/imgs/cil-plus.svg"
+            implicitHeightPadding:10
+            Layout.preferredHeight: 30 * heightScale
+        }
+        Text {
+            id: name
+            text: root.isSelectedCategoryMain ? selectedCategoryMainName : qsTr("Categories")
+            color:Theme.colorText
+        }
+        Item {
+            Layout.fillWidth: true
+        }
         VButton {
             text: "Add"
             onClicked: {
@@ -274,6 +316,12 @@ Item {
         }
         contentItem: ColumnLayout {
             spacing: 10
+            VCheckBox{
+                id:isMainCategoryCheckBox
+                text:"Main Category"
+                checked: false
+                visible: !root.isSelectedCategoryMain
+            }
             TextField {
                 id: categoryName
                 Layout.fillWidth: true
@@ -293,27 +341,54 @@ Item {
         }
 
         onAccepted: {
-            let result = sm.saveCategory(categoryName.text, mode === "add" ? 0 : 1, oldCategoryName)
-            switch(result) {
-            case 0:
-                console.log("Category saved successfully")
-                root.refreshModel()
-                if (mode === "edit") {
-                    root.selectedCategory = categoryName.text
+            if(isSelectedCategoryMain){
+                let result = sm.saveSubCategory(root.selectedCategoryMainName,categoryName.text, mode === "add" ? 0 : 1, oldCategoryName)
+                switch(result) {
+                case 0:
+                    console.log("Category saved successfully")
+                    root.refreshModel()
+                    if (mode === "edit") {
+                        root.selectedCategory = categoryName.text
+                    }
+                    break
+                case 1:
+                    console.log("Category already exists")
+                    break
+                case 2:
+                    console.log("New category name already exists")
+                    break
+                case 3:
+                    console.log("Old category not found")
+                    break
+                case 4:
+                    console.log("Invalid mode")
+                    break
                 }
-                break
-            case 1:
-                console.log("Category already exists")
-                break
-            case 2:
-                console.log("New category name already exists")
-                break
-            case 3:
-                console.log("Old category not found")
-                break
-            case 4:
-                console.log("Invalid mode")
-                break
+
+            }
+            else{
+                let result = sm.saveCategory(categoryName.text, mode === "add" ? 0 : 1, oldCategoryName,isMainCategoryCheckBox.checked)
+                switch(result) {
+                case 0:
+                    console.log("Category saved successfully")
+                    root.refreshModel()
+                    if (mode === "edit") {
+                        root.selectedCategory = categoryName.text
+                    }
+                    break
+                case 1:
+                    console.log("Category already exists")
+                    break
+                case 2:
+                    console.log("New category name already exists")
+                    break
+                case 3:
+                    console.log("Old category not found")
+                    break
+                case 4:
+                    console.log("Invalid mode")
+                    break
+                }
             }
         }
     }
@@ -341,16 +416,24 @@ Item {
         }
 
         onAccepted: {
-            sm.deleteCategory(root.selectedCategory)
-            root.refreshModel()
-            root.selectedCategory = ""
-            root.selectedIndex = -1
+            if(root.isSelectedCategoryMain){
+                sm.deleteSubCategory(root.selectedCategoryMainName,root.selectedCategory)
+                root.refreshModel()
+                root.selectedCategory = ""
+                root.selectedIndex = -1
+            }
+            else {
+                sm.deleteCategory(root.selectedCategory)
+                root.refreshModel()
+                root.selectedCategory = ""
+                root.selectedIndex = -1
+            }
         }
     }
     Connections {
-        target: sm  // Assuming 'sm' is your C++ object
+        target: sm
         function onCategoriesLoaded() {
-            root.model = sm.getCategories()
+            root.refreshModel()
             root.isLoading = false
         }
     }
