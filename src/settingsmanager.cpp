@@ -188,6 +188,23 @@ void SettingsManager::deleteCategory(const QString &name)
         settings->remove("Sounds/" + name);
     }
 }
+void SettingsManager::deleteMainCategory(const QString &main_name)
+{
+    QStringList subCategories = getSubCategories(main_name);
+    for (const QString& name : subCategories) {
+        settings->remove("Sounds/"+main_name+"/"+name);
+    }
+    QStringList categories = getCategories();
+    if (categories.removeOne(main_name)) {
+        QString category_mode = QString("Categories/%1_isMain").arg(main_name);
+        QString mainCategory = QString("Categories/%1").arg(main_name);
+        settings->remove(category_mode);
+        settings->remove(mainCategory);
+        scheduleSettingSave("Categories/Categories", categories);
+    }
+
+
+}
 void SettingsManager::deleteSubCategory(const QString &main_name,const QString &name)
 {
     QStringList categories = getSubCategories(main_name);

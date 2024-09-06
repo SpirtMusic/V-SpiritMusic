@@ -24,6 +24,7 @@ Item {
     property string selectedCategory: ""
     property string selectedCategoryMainName: ""
     property bool isSelectedCategoryMain: false
+    property bool isCurrentSelectedCategoryMain: false
     property int selectedIndex: -1
     property bool isLoading: false  // Add this property to control BusyIndicator visibility
     function refreshModel() {
@@ -187,6 +188,17 @@ Item {
             id: name
             text: root.isSelectedCategoryMain ? selectedCategoryMainName : qsTr("Categories")
             color:Theme.colorText
+        }
+        VButton {
+            text: "Delete"
+            visible: root.isSelectedCategoryMain
+            onClicked: {
+                root.isCurrentSelectedCategoryMain=true
+                 deleteCategoryDialog.open()
+            }
+            iconSource: "qrc:/vsonegx/qml/imgs/cil-plus.svg"
+            implicitHeightPadding:10
+            Layout.preferredHeight: 30 * heightScale
         }
         Item {
             Layout.fillWidth: true
@@ -415,23 +427,24 @@ Item {
                 wrapMode: Text.WordWrap
                 font.pointSize: 10* fontScale
                 color:Theme.colorText
-                text: "Are you sure you want to delete the category '" + root.selectedCategory + "'?"
+                text: "Are you sure you want to delete the category '" + root.isCurrentSelectedCategoryMain? root.selectedCategoryMainName : root.selectedCategory + "'?"
             }
         }
 
         onAccepted: {
-            if(root.isSelectedCategoryMain){
+            if(root.isCurrentSelectedCategoryMain){
+                sm.deleteMainCategory(root.selectedCategoryMainName)
+                root.isCurrentSelectedCategoryMain=false
+            }
+            else if(root.isSelectedCategoryMain){
                 sm.deleteSubCategory(root.selectedCategoryMainName,root.selectedCategory)
-                root.refreshModel()
-                root.selectedCategory = ""
-                root.selectedIndex = -1
             }
             else {
                 sm.deleteCategory(root.selectedCategory)
-                root.refreshModel()
-                root.selectedCategory = ""
-                root.selectedIndex = -1
             }
+            root.refreshModel()
+            root.selectedCategory = ""
+            root.selectedIndex = -1
         }
     }
     Connections {
