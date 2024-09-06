@@ -246,7 +246,15 @@ Item {
 
         onAccepted: {
             if (importTextArea.text.trim() !== "") {
-                var success = sm.importSounds(currentCategory, importTextArea.text.trim())
+                var success
+                if(currentCategoryMain==""){
+                    success = sm.importSounds(currentCategory, importTextArea.text.trim())
+                }
+                else
+                {
+                    success = sm.importSubSounds(currentCategoryMain,currentCategory, importTextArea.text.trim())
+                }
+
                 if (success) {
                     importDialog.resultMessage = "Sounds imported successfully"
                     console.log("Sounds imported successfully")

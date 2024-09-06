@@ -275,7 +275,11 @@ Item {
         }
 
         onAboutToShow: {
-            exportedContent = sm.exportSounds(currentCategory)
+            console.log("root.selectedCategoryMainName",root.selectedCategoryMainName)
+            if(root.isSelectedCategoryMain)
+                exportedContent=sm.exportSubSounds(root.selectedCategoryMainName,currentCategory)
+            else
+                exportedContent = sm.exportSounds(currentCategory)
         }
     }
     MessageDialog {

@@ -60,6 +60,8 @@ public:
     Q_INVOKABLE QVariantMap getSoundSubDetails(const QString &main_name,const QString &category, const QString &name) const;
 
 
+    Q_INVOKABLE bool importSubSounds(const QString &main_name,const QString &category, const QString &fileContent);
+    Q_INVOKABLE QString exportSubSounds(const QString &main_name ,const QString &category) const;
 
 signals:
     void categoriesLoaded();

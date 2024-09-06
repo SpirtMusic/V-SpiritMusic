@@ -330,6 +330,30 @@ bool SettingsManager::importSounds(const QString &category, const QString &fileC
 
     return success;
 }
+
+bool SettingsManager::importSubSounds(const QString &main_name,const QString &category, const QString &fileContent)
+{
+    QStringList lines = fileContent.split('\n', Qt::SkipEmptyParts);
+    bool success = true;
+
+    for (const QString &line : lines) {
+        QStringList parts = line.split(' ');
+        if (parts.size() >= 4) {
+            QString name = parts.mid(0, parts.size() - 3).join(' ').trimmed();
+            int msb = parts[parts.size() - 3].toInt();
+            int lsb = parts[parts.size() - 2].toInt();
+            int pc = parts[parts.size() - 1].toInt();
+
+            if (saveSubSound(main_name,category, name, msb, lsb, pc) != 0) {
+                success = false;
+            }
+        } else {
+            success = false;
+        }
+    }
+
+    return success;
+}
 QString SettingsManager::exportSounds(const QString &category) const
 {
     QStringList sounds = getSoundsForCategory(category);
@@ -337,6 +361,25 @@ QString SettingsManager::exportSounds(const QString &category) const
 
     for (const QString &sound : sounds) {
         QVariantMap details = getSoundDetails(category, sound);
+        if (details.contains("name") && details.contains("msb") && details.contains("lsb") && details.contains("pc")) {
+            QString line = QString("%1 %2 %3 %4")
+                               .arg(details["name"].toString())
+                               .arg(details["msb"].toInt())
+                               .arg(details["lsb"].toInt())
+                               .arg(details["pc"].toInt());
+            exportLines.append(line);
+        }
+    }
+
+    return exportLines.join("\n");
+}
+QString SettingsManager::exportSubSounds(const QString &main_name ,const QString &category) const
+{
+    QStringList sounds = getSoundsForSubCategory(main_name,category);
+    QStringList exportLines;
+
+    for (const QString &sound : sounds) {
+        QVariantMap details = getSoundSubDetails(main_name,category, sound);
         if (details.contains("name") && details.contains("msb") && details.contains("lsb") && details.contains("pc")) {
             QString line = QString("%1 %2 %3 %4")
                                .arg(details["name"].toString())
