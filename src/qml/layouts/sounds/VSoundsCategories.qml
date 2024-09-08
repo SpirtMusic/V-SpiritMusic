@@ -139,10 +139,11 @@ Item {
                         root.selectedIndex = index
                         root.selectedCategory = modelData
 
-                        if(!root.isSelectedCategoryMain)
-                            root.isSelectedCategoryMain=sm.isMainCategory(modelData)
+
+
                         if(sm.isMainCategory(modelData))
                         {
+                            root.isSelectedCategoryMain=true
                             root.selectedCategoryMainName=root.selectedCategory
                             root.model=sm.getSubCategories(root.selectedCategory)
                         }
@@ -180,7 +181,7 @@ Item {
                 root.selectedCategoryMainName=""
                 root.refreshModel()
             }
-            iconSource: "qrc:/vsonegx/qml/imgs/cil-plus.svg"
+            iconSource: "qrc:/vsonegx/qml/imgs/cil-arrow-left.svg"
             implicitHeightPadding:10
             Layout.preferredHeight: 30 * heightScale
         }
@@ -188,15 +189,16 @@ Item {
             id: name
             text: root.isSelectedCategoryMain ? selectedCategoryMainName : qsTr("Categories")
             color:Theme.colorText
+            Layout.leftMargin: 5
         }
         VButton {
-            text: "Delete"
+            text: "Delete Main"
             visible: root.isSelectedCategoryMain
             onClicked: {
                 root.isCurrentSelectedCategoryMain=true
-                 deleteCategoryDialog.open()
+                deleteCategoryDialog.open()
             }
-            iconSource: "qrc:/vsonegx/qml/imgs/cil-plus.svg"
+            iconSource: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
             implicitHeightPadding:10
             Layout.preferredHeight: 30 * heightScale
         }
@@ -228,7 +230,7 @@ Item {
         }
         VButton {
             text: "Export"
-            enabled: root.selectedCategory !== ""
+            enabled: root.selectedCategory !== "" && selectedCategory!=selectedCategoryMainName
             onClicked: exportDialog.open()
             iconSource: "qrc:/vsonegx/qml/imgs/file-export.svg"
             implicitHeightPadding: 10
@@ -237,8 +239,10 @@ Item {
 
         VButton {
             text: "Delete"
-            enabled: root.selectedCategory !== ""
-            onClicked: deleteCategoryDialog.open()
+            enabled: root.selectedCategory !== "" && selectedCategory!=selectedCategoryMainName
+            onClicked: {
+                deleteCategoryDialog.open()
+            }
             iconSource: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
             implicitHeightPadding:10
             Layout.preferredHeight: 30 * heightScale
@@ -423,11 +427,12 @@ Item {
         contentItem: ColumnLayout {
             spacing: 10
             Text {
+                property string  nameCategory:  root.isCurrentSelectedCategoryMain ? root.selectedCategoryMainName +", This will also delete all sub-categories " : root.selectedCategory
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 font.pointSize: 10* fontScale
                 color:Theme.colorText
-                text: "Are you sure you want to delete the category '" + root.isCurrentSelectedCategoryMain? root.selectedCategoryMainName : root.selectedCategory + "'?"
+                text: "Are you sure you want to delete the category '" +  nameCategory + "'?"
             }
         }
 
@@ -435,6 +440,10 @@ Item {
             if(root.isCurrentSelectedCategoryMain){
                 sm.deleteMainCategory(root.selectedCategoryMainName)
                 root.isCurrentSelectedCategoryMain=false
+                root.isSelectedCategoryMain=false
+                root.selectedCategoryMainName=""
+                root.refreshModel()
+
             }
             else if(root.isSelectedCategoryMain){
                 sm.deleteSubCategory(root.selectedCategoryMainName,root.selectedCategory)
