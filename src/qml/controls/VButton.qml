@@ -24,12 +24,12 @@ Button {
 
     text: qsTr("Button")
 
-    implicitWidth: contentItem.implicitWidth * widthScale + 20 * widthScale
+    implicitWidth: contentItem.implicitWidth  + 20 //* widthScale //* widthScale
     implicitHeight: contentItem.implicitHeight * heightScale + implicitHeightPadding * heightScale
 
     contentItem:RowLayout {
         anchors.centerIn: parent
-        spacing: 2 * widthScale
+        spacing: 2 //* widthScale
         Image {
             id: buttonIcon
             source: control.iconSource
@@ -64,7 +64,7 @@ Button {
 
     background: Rectangle {
         opacity: enabled ? 1 : 0.3
-        implicitWidth: 100 * widthScale
+        implicitWidth: 100 //* widthScale
         implicitHeight: 40 * heightScale
         border.color: control.down ? Theme.colorHover : colorSelect
         color: "transparent"
