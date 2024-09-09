@@ -40,11 +40,11 @@ public:
     Q_INVOKABLE bool saveSoundsToFile(const QString &filePath, const QString &content);
     // Categories
     Q_INVOKABLE QStringList getCategories() const;
-    Q_INVOKABLE int saveCategory(const QString &name, int mode, const QString &oldName = QString(),bool isMain = false);
+    Q_INVOKABLE int saveCategory(const QString &name, int mode, const QString &oldName = QString(),bool isMain = false,int level=0);
     Q_INVOKABLE void deleteCategory(const QString &name);
 
     Q_INVOKABLE bool isMainCategory(const QString &name);
-
+    Q_INVOKABLE int getCategoryLevel(const QString &name);
     Q_INVOKABLE QStringList getSoundsForCategory(const QString &category) const;
     Q_INVOKABLE int saveSound(const QString &category, const QString &name, int msb, int lsb, int pc) ;
     Q_INVOKABLE QVariantMap getSoundDetails(const QString &category, const QString &name) const ;

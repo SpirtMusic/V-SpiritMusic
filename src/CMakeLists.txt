@@ -43,6 +43,10 @@ qt_add_qml_module(VSpiritMusic
     RESOURCES qml/imgs/file-import.svg qml/imgs/file-export.svg
     QML_FILES qml/layouts/settings/aboutPages/AboutPage.qml
     RESOURCES qml/imgs/cil-arrow-left.svg
+    RESOURCES qml/imgs/yamaha_logo.png
+    RESOURCES qml/imgs/yamaha.svg
+    RESOURCES qml/imgs/VSpiritMusic.png
+    RESOURCES qml/imgs/cil-list.svg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

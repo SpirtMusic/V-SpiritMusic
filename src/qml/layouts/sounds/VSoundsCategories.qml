@@ -43,7 +43,7 @@ Item {
         rootAppWindow.currentCategory=selectedCategory
     }
     property int cellWidth: 120 * widthScale
-    property int cellHeight: 40 * heightScale
+    property int cellHeight: 47 * heightScale
 
     GridView {
         id: gridView
@@ -120,17 +120,120 @@ Item {
                 z:-1
                 anchors.margins: 2
                 border.color: index === root.selectedIndex  ? "transparent" :Theme.colorListBorder
-                color:Theme.colorBackgroundView
+                color:Theme.colorBackground
                 border.width: 1
                 radius: 4
                 Text {
-                    anchors.fill: parent
+                    id:categoryLabel
+                    // anchors.fill: parent
+                    anchors.top:parent.top
+                    anchors.bottom: parent.bottom
+                    anchors.right : categoryLevel.visible || categoryMain.visible?  categoryLevel.left : parent.right
+                    anchors.left : parent.left
+                    anchors.leftMargin: 4
                     text: modelData
                     font.pointSize: 10 *fontScale
-                    color:sm.isMainCategory(modelData) ? "green" :Theme.colorText
+                    color:Theme.colorText
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
+                    layer.enabled: true
+                    layer.effect: OpacityMask {
+                        maskSource: Item {
+                            width: categoryLevel.width
+                            height: categoryLevel.height
+
+                            LinearGradient {
+                                anchors.fill: parent
+                                start: Qt.point(width/1.5, 0)
+                                end: Qt.point(width, 0)
+                                gradient: Gradient {
+                                    GradientStop { position: 0.0; color: "white" }
+                                    GradientStop { position: 1.0; color: "transparent" }
+                                }
+                            }
+                        }
+                    }
+                }
+                Image {
+                    id:categoryMain
+                    anchors.right : parent.right
+                    anchors.rightMargin: 4
+                    anchors.top:parent.top
+                    anchors.topMargin: 2
+                    anchors.bottomMargin: 1
+                    height:  parent.height/2.5
+                    width: height
+                    opacity: 0.7
+                    source:"qrc:/vsonegx/qml/imgs/cil-list.svg"
+                    // anchors.margins: 2
+                    sourceSize.height: height
+                    sourceSize.width: height
+                    visible: false
+                    //  antialiasing: true
+                    Component.onCompleted: {
+                        checkCategoryIsMain()
+                    }
+                    ColorOverlay {
+                        color: Theme.colorText
+                        anchors.fill: parent
+                        source: parent
+                        //  antialiasing: true
+                        // cached: true
+                    }
+                    function checkCategoryIsMain(){
+                        var isMain = sm.isMainCategory(modelData)
+                        if(isMain){
+                            visible=true
+                        }
+                        else{
+                            visible=false
+                        }
+                    }
+                }
+                Image {
+                    id:categoryLevel
+                    anchors.right : parent.right
+                    anchors.rightMargin: 4
+                    anchors.top:categoryMain.bottom
+                    anchors.bottom: parent.bottom
+                    anchors.topMargin: 1 // parent.height/2.5
+                    anchors.bottomMargin:  2
+                    height:  parent.height/2
+                    width: height
+                    opacity: 0.7
+                    // anchors.margins: 2
+                    sourceSize.height: height
+                    sourceSize.width: height
+                    //  antialiasing: true
+                    Component.onCompleted: {
+                        checkCategoryLevel()
+                    }
+                    ColorOverlay {
+                        color: Theme.colorText
+                        anchors.fill: parent
+                        source: parent
+                        //  antialiasing: true
+                        // cached: true
+                    }
+                    function checkCategoryLevel(){
+                        var level = sm.getCategoryLevel(modelData)
+                        switch(level){
+                        case 0:
+                            categoryLevel.visible=false
+                            break
+                        case 1:
+                            categoryLevel.source="qrc:/vsonegx/qml/imgs/yamaha.svg"
+                            break
+                        case 2:
+                            categoryLevel.source="qrc:/vsonegx/qml/imgs/VSpiritMusic.png"
+                            break
+                        default:
+
+                            categoryLevel.visible=false
+
+                        }
+                    }
                 }
 
                 MouseArea {
@@ -138,9 +241,6 @@ Item {
                     onClicked: {
                         root.selectedIndex = index
                         root.selectedCategory = modelData
-
-
-
                         if(sm.isMainCategory(modelData))
                         {
                             root.isSelectedCategoryMain=true
@@ -387,7 +487,7 @@ Item {
 
             }
             else{
-                let result = sm.saveCategory(categoryName.text, mode === "add" ? 0 : 1, oldCategoryName,isMainCategoryCheckBox.checked)
+                let result = sm.saveCategory(categoryName.text, mode === "add" ? 0 : 1, oldCategoryName,isMainCategoryCheckBox.checked,1)
                 switch(result) {
                 case 0:
                     console.log("Category saved successfully")

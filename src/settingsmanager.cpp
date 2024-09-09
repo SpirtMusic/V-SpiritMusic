@@ -69,7 +69,7 @@ QStringList SettingsManager::getSubCategories(const QString &main_name) const
 
     return settings->value(category).toStringList();
 }
-int SettingsManager::saveCategory(const QString &name, int mode, const QString &oldName, bool isMain)
+int SettingsManager::saveCategory(const QString &name, int mode, const QString &oldName, bool isMain,int level)
 {
     QStringList categories = getCategories();
 
@@ -79,7 +79,9 @@ int SettingsManager::saveCategory(const QString &name, int mode, const QString &
             categories.append(name);
             scheduleSettingSave("Categories/Categories", categories);
             QString mode = QString("Categories/%1_isMain").arg(name);
+            QString level_category = QString("Categories/%1_level").arg(name);
             scheduleSettingSave(mode, isMain);
+            scheduleSettingSave(level_category, level);
             return 0; // Success
         } else {
             return 1; // Category already exists
@@ -186,6 +188,7 @@ void SettingsManager::deleteCategory(const QString &name)
     if (categories.removeOne(name)) {
         scheduleSettingSave("Categories/Categories", categories);
         settings->remove("Sounds/" + name);
+        settings->remove("Categories/" + name+"_level");
     }
 }
 void SettingsManager::deleteMainCategory(const QString &main_name)
@@ -198,8 +201,10 @@ void SettingsManager::deleteMainCategory(const QString &main_name)
     if (categories.removeOne(main_name)) {
         QString category_mode = QString("Categories/%1_isMain").arg(main_name);
         QString mainCategory = QString("Categories/%1").arg(main_name);
+        QString mainCategory_level = QString("Categories/%1_level").arg(main_name);
         settings->remove(category_mode);
         settings->remove(mainCategory);
+        settings->remove(mainCategory_level);
         scheduleSettingSave("Categories/Categories", categories);
     }
 
@@ -218,6 +223,9 @@ void SettingsManager::deleteSubCategory(const QString &main_name,const QString &
 bool SettingsManager::isMainCategory(const QString &name){
     QString key = QString("Categories/%1_isMain").arg(name);
     return settings->value(key, false).toBool();
+}
+int SettingsManager::getCategoryLevel(const QString &name){
+    return settings->value(QString("Categories/%1_level").arg(name), 0).toInt();
 }
 QStringList SettingsManager::getSoundsForCategory(const QString &category) const {
     return settings->value("Sounds/" + category).toStringList();
