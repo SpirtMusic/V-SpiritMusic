@@ -45,11 +45,13 @@ Item {
         if(root.isSelectedCategoryMain){
             var main_level=sm.getCategoryLevel(selectedCategoryMainName)
             if(main_level===1||main_level===2){
+                rootAppWindow.currentCategoryLevel=main_level
                 isSelectedCategoryEditable=false
                 rootAppWindow.isCurrentCategoryEditable=false
             }
             else{
                 isSelectedCategoryEditable=true
+                rootAppWindow.currentCategoryLevel=0
                 rootAppWindow.isCurrentCategoryEditable=true
             }
         }
@@ -57,10 +59,12 @@ Item {
             var level=sm.getCategoryLevel(selectedCategory)
             if(level===1||level===2){
                 isSelectedCategoryEditable=false
+                rootAppWindow.currentCategoryLevel=level
                 rootAppWindow.isCurrentCategoryEditable=false
             }
             else{
                 isSelectedCategoryEditable=true
+                rootAppWindow.currentCategoryLevel=0
                 rootAppWindow.isCurrentCategoryEditable=true
             }
         }

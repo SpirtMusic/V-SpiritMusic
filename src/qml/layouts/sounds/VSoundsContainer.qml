@@ -153,10 +153,18 @@ Item {
                         // var soundDetails = sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
                         var soundDetails= currentCategoryMain!=""?sm.getSoundSubDetails(currentCategoryMain,currentCategory, soundModel[selectedSoundIndex]): sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
                         if(soundDetails !== undefined){
-                            mc.sendMsbLsbPc(rootAppWindow.selectedControlIndex,soundDetails.msb,soundDetails.lsb,soundDetails.pc)
+                            var pc_value=soundDetails.pc
+
+                            if(rootAppWindow.currentCategoryLevel==1){
+                                pc_value=pc_value-1
+                            }
+
+                            mc.sendMsbLsbPc(rootAppWindow.selectedControlIndex,soundDetails.msb,soundDetails.lsb,pc_value)
+
                             console.log("msb    :", soundDetails.msb)
                             console.log("lsb    :", soundDetails.lsb)
                             console.log("pc     :", soundDetails.pc)
+                            console.log("pc_value     :", pc_value)
                             rootAppWindow.controlIndexSounds.voiceName=soundDetails.name
 
                         }
@@ -174,7 +182,6 @@ Item {
         anchors.horizontalCenter: parent.horizontalCenter
         spacing: 10
         anchors.topMargin: 8
-
 
         VButton {
             text: "Add"
