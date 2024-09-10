@@ -18,7 +18,7 @@ Item {
     Layout.fillHeight: true
     property int columns: 6
     property int rows: 2
-
+    property bool isSelectedCategoryEditable: true
 
     property var model: sm.getCategories()
     property string selectedCategory: ""
@@ -41,6 +41,30 @@ Item {
     }
     onSelectedCategoryChanged: {
         rootAppWindow.currentCategory=selectedCategory
+
+        if(root.isSelectedCategoryMain){
+            var main_level=sm.getCategoryLevel(selectedCategoryMainName)
+            if(main_level===1||main_level===2){
+                isSelectedCategoryEditable=false
+                rootAppWindow.isCurrentCategoryEditable=false
+            }
+            else{
+                isSelectedCategoryEditable=true
+                rootAppWindow.isCurrentCategoryEditable=true
+            }
+        }
+        else{
+            var level=sm.getCategoryLevel(selectedCategory)
+            if(level===1||level===2){
+                isSelectedCategoryEditable=false
+                rootAppWindow.isCurrentCategoryEditable=false
+            }
+            else{
+                isSelectedCategoryEditable=true
+                rootAppWindow.isCurrentCategoryEditable=true
+            }
+        }
+        console.log("  root.categoryLevel : ",  root.categoryLevel)
     }
     property int cellWidth: 120 * widthScale
     property int cellHeight: 47 * heightScale
@@ -217,21 +241,25 @@ Item {
                         // cached: true
                     }
                     function checkCategoryLevel(){
-                        var level = sm.getCategoryLevel(modelData)
-                        switch(level){
-                        case 0:
-                            categoryLevel.visible=false
-                            break
-                        case 1:
-                            categoryLevel.source="qrc:/vsonegx/qml/imgs/yamaha.svg"
-                            break
-                        case 2:
-                            categoryLevel.source="qrc:/vsonegx/qml/imgs/VSpiritMusic.png"
-                            break
-                        default:
+                        if(!root.isSelectedCategoryMain){
+                            var level = sm.getCategoryLevel(modelData)
 
+                            switch(level){
+                            case 0:
+                                categoryLevel.visible=false
+                                break
+                            case 1:
+                                categoryLevel.source="qrc:/vsonegx/qml/imgs/yamaha.svg"
+                                break
+                            case 2:
+                                categoryLevel.source="qrc:/vsonegx/qml/imgs/VSpiritMusic.png"
+                                break
+                            default:
+                                categoryLevel.visible=false
+                            }
+                        }
+                        else{
                             categoryLevel.visible=false
-
                         }
                     }
                 }
@@ -278,7 +306,9 @@ Item {
             visible: root.isSelectedCategoryMain
             onClicked: {
                 root.isSelectedCategoryMain=false
+                root.selectedCategory=""
                 root.selectedCategoryMainName=""
+                root.isSelectedCategoryEditable=true
                 root.refreshModel()
             }
             iconSource: "qrc:/vsonegx/qml/imgs/cil-arrow-left.svg"
@@ -290,10 +320,12 @@ Item {
             text: root.isSelectedCategoryMain ? selectedCategoryMainName : qsTr("Categories")
             color:Theme.colorText
             Layout.leftMargin: 5
+            font.pointSize: 14 *fontScale
+
         }
         VButton {
             text: "Delete Main"
-            visible: root.isSelectedCategoryMain
+            visible: root.isSelectedCategoryMain && isSelectedCategoryEditable
             onClicked: {
                 root.isCurrentSelectedCategoryMain=true
                 deleteCategoryDialog.open()
@@ -311,6 +343,7 @@ Item {
                 categoryDialog.mode = "add"
                 categoryDialog.open()
             }
+            enabled:  isSelectedCategoryEditable &&  root.isSelectedCategoryMain || !root.isSelectedCategoryMain
             iconSource: "qrc:/vsonegx/qml/imgs/cil-plus.svg"
             implicitHeightPadding:10
             Layout.preferredHeight: 30 * heightScale
@@ -318,7 +351,7 @@ Item {
 
         VButton {
             text: "Edit"
-            enabled: root.selectedCategory !== ""
+            enabled: root.selectedCategory !== "" && isSelectedCategoryEditable &&  selectedCategory!=selectedCategoryMainName
             onClicked: {
                 categoryDialog.mode = "edit"
                 categoryName.text = root.selectedCategory
@@ -330,7 +363,7 @@ Item {
         }
         VButton {
             text: "Export"
-            enabled: root.selectedCategory !== "" && selectedCategory!=selectedCategoryMainName
+            enabled: root.selectedCategory !== "" && selectedCategory!=selectedCategoryMainName && isSelectedCategoryEditable
             onClicked: exportDialog.open()
             iconSource: "qrc:/vsonegx/qml/imgs/file-export.svg"
             implicitHeightPadding: 10
@@ -339,7 +372,7 @@ Item {
 
         VButton {
             text: "Delete"
-            enabled: root.selectedCategory !== "" && selectedCategory!=selectedCategoryMainName
+            enabled: root.selectedCategory !== "" && selectedCategory!=selectedCategoryMainName && isSelectedCategoryEditable
             onClicked: {
                 deleteCategoryDialog.open()
             }
@@ -487,7 +520,7 @@ Item {
 
             }
             else{
-                let result = sm.saveCategory(categoryName.text, mode === "add" ? 0 : 1, oldCategoryName,isMainCategoryCheckBox.checked,1)
+                let result = sm.saveCategory(categoryName.text, mode === "add" ? 0 : 1, oldCategoryName,isMainCategoryCheckBox.checked,0)
                 switch(result) {
                 case 0:
                     console.log("Category saved successfully")

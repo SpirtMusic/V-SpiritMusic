@@ -178,7 +178,7 @@ Item {
 
         VButton {
             text: "Add"
-            enabled: currentCategory !== ""
+            enabled: currentCategory !== "" && rootAppWindow.isCurrentCategoryEditable
             onClicked: soundDialog.openSoundDialog({name: "", msb: 0, lsb: 0, pc: 0})
             iconSource: "qrc:/vsonegx/qml/imgs/cil-plus.svg"
             implicitHeightPadding:10
@@ -186,7 +186,7 @@ Item {
         }
         VButton {
             text: "Edit"
-            enabled: selectedSoundIndex !== -1
+            enabled: selectedSoundIndex !== -1 && rootAppWindow.isCurrentCategoryEditable
             onClicked: {
                 //  var soundDetails = sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
                 var soundDetails =currentCategoryMain!=""?sm.getSoundSubDetails(currentCategoryMain,currentCategory, soundModel[selectedSoundIndex]): sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
@@ -198,7 +198,7 @@ Item {
         }
         VButton {
             text: "Import"
-            enabled: currentCategory !== ""
+            enabled: currentCategory !== ""  && rootAppWindow.isCurrentCategoryEditable
             onClicked: importDialog.open()
             iconSource: "qrc:/vsonegx/qml/imgs/file-export.svg"
             implicitHeightPadding:10
@@ -206,7 +206,7 @@ Item {
         }
         VButton {
             text: "Delete"
-            enabled: selectedSoundIndex !== -1
+            enabled: selectedSoundIndex !== -1  && rootAppWindow.isCurrentCategoryEditable
             onClicked: deleteSoundDialog.open()
             iconSource: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
             implicitHeightPadding:10

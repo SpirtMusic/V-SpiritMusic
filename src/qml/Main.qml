@@ -18,6 +18,7 @@ ApplicationWindow {
     property string currentCategory: ""
     property string currentCategoryMain:""
     property VLayerControl controlIndexSounds:null
+    property bool isCurrentCategoryEditable: true
     property  var vControlLayers:[]
     property VLayersControlContainer vLayersControlContainerGlobal : null
     // width: 1024
