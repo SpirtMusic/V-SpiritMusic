@@ -13,7 +13,7 @@ Item {
         id:aboutlayout
         anchors.centerIn: parent
         Text{
-            text: "DEV version : " +appVersion
+            text: "DEV version : ("+appVersion +")  0.2 V"
             color:"white"
         }
     }
