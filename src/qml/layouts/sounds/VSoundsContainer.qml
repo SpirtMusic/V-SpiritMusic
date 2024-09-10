@@ -179,9 +179,16 @@ Item {
     RowLayout {
         id:rowToolBtns
         anchors.top: parent.top
-        anchors.horizontalCenter: parent.horizontalCenter
+        //anchors.horizontalCenter: parent.horizontalCenter
+        anchors.left:parent.left
+        anchors.right: parent.right
         spacing: 10
         anchors.topMargin: 8
+        anchors.leftMargin: 4
+        anchors.rightMargin: 4
+        Item{
+            Layout.fillWidth: true
+        }
 
         VButton {
             text: "Add"
