@@ -41,9 +41,13 @@ Item {
     }
     onSelectedCategoryChanged: {
         rootAppWindow.currentCategory=selectedCategory
-
+        rootAppWindow.controlIndexSounds.chCatgeoryIndex = selectedIndex
+        rootAppWindow.controlIndexSounds.chCategory = selectedCategory
+        console.log(" root.selectedIndex " ,  root.selectedIndex)
         if(root.isSelectedCategoryMain){
             var main_level=sm.getCategoryLevel(selectedCategoryMainName)
+            rootAppWindow.controlIndexSounds.chIsInMain=true
+            rootAppWindow.controlIndexSounds.chMainCategory =selectedCategoryMainName
             if(main_level===1||main_level===2){
                 rootAppWindow.currentCategoryLevel=main_level
                 isSelectedCategoryEditable=false
@@ -56,6 +60,8 @@ Item {
             }
         }
         else{
+            rootAppWindow.controlIndexSounds.chIsInMain=false
+            rootAppWindow.controlIndexSounds.chMainCategory = ""
             var level=sm.getCategoryLevel(selectedCategory)
             if(level===1||level===2){
                 isSelectedCategoryEditable=false
@@ -291,9 +297,6 @@ Item {
             visible: root.isLoading
         }
     }
-
-
-
 
     RowLayout {
         id:rowToolBtns
@@ -598,6 +601,35 @@ Item {
         function onCategoriesLoaded() {
             root.refreshModel()
             root.isLoading = false
+        }
+    }
+    Connections {
+        target: rootAppWindow
+        function onControlIndexSoundsChanged() {
+            var chCategoryIndex = rootAppWindow.controlIndexSounds.chCatgeoryIndex
+            var isMainCategory =  rootAppWindow.controlIndexSounds.chIsInMain
+            var chCategory =  rootAppWindow.controlIndexSounds.chCategory
+            var currentCategoryMain =  rootAppWindow.controlIndexSounds.chMainCategory
+            if(isMainCategory){
+                root.isSelectedCategoryMain=true
+                root.selectedCategoryMainName=currentCategoryMain
+                root.model= sm.getSubCategories(currentCategoryMain)
+            }
+            else{
+                root.isSelectedCategoryMain=false
+                root.selectedCategoryMainName=""
+                root.model= sm.getCategories()
+            }
+            root.selectedIndex = chCategoryIndex
+            root.selectedCategory = chCategory
+
+        }
+    }
+    Connections {
+        target: root
+        function onSelectedIndexChanged() {
+            gridView.positionViewAtIndex(root.selectedIndex,GridView.Center)
+
         }
     }
 

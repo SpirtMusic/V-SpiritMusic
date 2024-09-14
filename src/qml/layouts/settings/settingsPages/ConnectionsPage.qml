@@ -117,6 +117,10 @@ Item {
                             var outputPort = outputs.model.data(outputs.model.index(outputs.currentIndex, 0), Qt.UserRole + 2)
                             mc.makeConnection(inputPort, outputPort)
                         }
+                        Component.onCompleted: {
+                            mc.makeDisconnect()
+                            disconnectTimer.start()
+                        }
 
                     }
                     Timer {
@@ -320,6 +324,5 @@ Item {
 
         }
     }
-
 }
 

@@ -436,6 +436,33 @@ bool SettingsManager::saveSoundsToFile(const QString &filePath, const QString &c
     file.close();
     return true;
 }
+void SettingsManager::saveChannelSound(int channel, bool chIsInMain, const QString &chMainCategory, int chCategoryIndex, int chSoundIndex)
+{
+    QString key = QString("ChannelSounds/Channel_%1").arg(channel);
+    QVariantMap channelData;
+    channelData["isInMain"] = chIsInMain;
+    channelData["mainCategory"] = chMainCategory;
+    channelData["categoryIndex"] = chCategoryIndex;
+    channelData["soundIndex"] = chSoundIndex;
+
+    scheduleSettingSave(key, channelData);
+}
+
+void SettingsManager::saveOctave(int channel, int octave){
+    QString key = QString("ChannelOctave/Channel_%1").arg(channel);
+    scheduleSettingSave(key, octave);
+}
+int SettingsManager::getOctave(int channel) const
+{
+    QString key = QString("ChannelOctave/Channel_%1").arg(channel);
+    return settings->value(key, 0).toInt();
+}
+
+QVariantMap SettingsManager::getChannelSound(int channel) const
+{
+    QString key = QString("ChannelSounds/Channel_%1").arg(channel);
+    return settings->value(key).toMap();
+}
 void SettingsManager::scheduleSettingSave(const QString &key, const QVariant &value)
 {
     pendingSettings[key] = value;

@@ -63,6 +63,12 @@ public:
     Q_INVOKABLE bool importSubSounds(const QString &main_name,const QString &category, const QString &fileContent);
     Q_INVOKABLE QString exportSubSounds(const QString &main_name ,const QString &category) const;
 
+    Q_INVOKABLE void saveChannelSound(int channel, bool chIsInMain, const QString &chMainCategory, int chCategoryIndex, int chSoundIndex);
+    Q_INVOKABLE QVariantMap getChannelSound(int channel) const;
+    Q_INVOKABLE void saveOctave(int channel, int octave);
+    Q_INVOKABLE int getOctave(int channel) const;
+
+
 signals:
     void categoriesLoaded();
 

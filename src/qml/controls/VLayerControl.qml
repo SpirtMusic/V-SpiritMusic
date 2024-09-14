@@ -16,12 +16,24 @@ Rectangle{
     property color backgroundColor: Theme.colorButtonBackground
     property color selectColor: Theme.colorSelect
     property int controlIndex: 0
-    property string voiceName: "voice name"
-    property bool selected: false
 
+    property string voiceName: "voice name"
+    property string chCategory: "Category name"
+    property bool chIsInMain: false
+    property string chMainCategory: ""
+    property int chCatgeoryIndex: -1
+    property int chSoundIndex: -1
+
+    property bool selected: false
+    property bool firstLaunch : true
     property int spinBoxValue: 0
     color:Theme.colorBackgroundView
     border.color: selected ? selectColor : backgroundColor
+    onVoiceNameChanged: {
+        if(selected && !firstLaunch)
+            sm.saveChannelSound(controlIndex,chIsInMain,chMainCategory,chCatgeoryIndex,chSoundIndex)
+        console.log("Saved CONTROL  : ",controlIndex , chIsInMain , chMainCategory,chCatgeoryIndex)
+    }
 
     radius: 4
     height: 50 * heightScale
@@ -253,6 +265,14 @@ Rectangle{
                             layerControl.selected = true
                         }
                     }
+                    onDoubleClicked: {
+                        if (vLayersControlContainer.selectedControl) {
+                            vLayersControlContainer.selectedControl.selected = false
+                        }
+                        vLayersControlContainer.selectedControl = layerControl
+                        layerControl.selected = true
+                        rootAppWindow.globalTabIndex=1
+                    }
 
                 }
             }
@@ -268,6 +288,7 @@ Rectangle{
             }
             Component.onCompleted: {
                 value=sm.getControlVolume(controlIndex)
+
             }
 
         }
@@ -426,6 +447,15 @@ Rectangle{
                 layerControl.selected = true
             }
         }
+        onDoubleClicked: {
+            if (vLayersControlContainer.selectedControl) {
+                vLayersControlContainer.selectedControl.selected = false
+            }
+            vLayersControlContainer.selectedControl = layerControl
+            layerControl.selected = true
+            rootAppWindow.globalTabIndex=1
+        }
+
 
     }
     Rectangle {
@@ -434,7 +464,6 @@ Rectangle{
         color:"transparent"
         border.color:  selected ? selectColor :Theme.colorButtonBackground
         z:9999
-
     }
     Glow {
         anchors.fill: glowRec
@@ -446,6 +475,66 @@ Rectangle{
         visible: selected
     }
     Component.onCompleted:{
+
+    }
+    function getChannelSound(){
+
+        var channelInfo = sm.getChannelSound(controlIndex)
+        // console.log("mainCategory ",channelInfo.mainCategory)
+        // console.log("isInMain ",channelInfo.isInMain)
+        // console.log("soundIndex ",channelInfo.soundIndex)
+        var catgeoryIndex = channelInfo.categoryIndex
+        var isMainCategory = channelInfo.isInMain
+        var selectedSoundIndex = channelInfo.soundIndex
+        var soundModel
+        var currentCategoryMain = channelInfo.mainCategory
+        var categoryName=""
+
+        if(isMainCategory)
+            categoryName= sm.getSubCategories(currentCategoryMain)
+        else
+            categoryName= sm.getCategories()
+
+        var currentCategory =""
+        currentCategory=categoryName[channelInfo.categoryIndex]
+
+        if(currentCategoryMain==""){
+            if (currentCategory !== "") {
+                soundModel = sm.getSoundsForCategory(currentCategory)
+            } else {
+                soundModel = []
+            }
+        }
+        else{
+            if (currentCategory !== "") {
+                soundModel = sm.getSoundsForSubCategory(currentCategoryMain,currentCategory)
+            } else {
+                soundModel = []
+            }
+        }
+        var soundDetails= currentCategoryMain!=""?
+                    sm.getSoundSubDetails(currentCategoryMain,currentCategory, soundModel[selectedSoundIndex]):
+                    sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
+        if(soundDetails !== undefined){
+            var pc_value=soundDetails.pc
+
+            if(rootAppWindow.currentCategoryLevel==1){
+                pc_value=pc_value-1
+            }
+            mc.sendMsbLsbPc(controlIndex,soundDetails.msb,soundDetails.lsb,pc_value)
+            voiceName=soundDetails.name
+        }
+        if(currentCategory!==undefined)
+            chCategory= currentCategory
+        if(isMainCategory!==undefined)
+            chIsInMain= isMainCategory
+        if(currentCategoryMain!==undefined)
+            chMainCategory= currentCategoryMain
+        if(catgeoryIndex!==undefined)
+            chCatgeoryIndex= catgeoryIndex
+        if(selectedSoundIndex!==undefined)
+            chSoundIndex= selectedSoundIndex
+        firstLaunch=false
     }
 }
 

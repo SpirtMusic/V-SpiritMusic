@@ -164,7 +164,7 @@ VSplitView {
 
                     RowLayout{
                         anchors.fill: parent
-                        anchors.margins: 15
+                        anchors.margins: 10
                         VSlider{
                             id:masterVolumeSLider
                             sliderLabel:"Master Volume"
@@ -174,7 +174,7 @@ VSplitView {
                                 function onValueChanged(){
                                     if (masterVolumeSLider.control.value !== mc.masterVolume && masterVolumeSLider.control.pressed) {
                                         mc.setMasterVolume(masterVolumeSLider.control.value)
-                                        console.log(masterVolumeSLider.control.value )
+                                        console.log(masterVolumeSLider.control.value)
                                     }
                                 }
                             }
@@ -187,10 +187,40 @@ VSplitView {
                                 }
                             }
                         }
+
+
                         VButton{
                             text:"P A N I C"
                             onClicked: {
                                 mc.sendAllNotesOff()
+                            }
+                        }
+                        VSpinBox{
+                            id:octaveSpinbBox
+                            Layout.preferredHeight: 40
+                            Layout.preferredWidth: 120
+
+                            Connections {
+                                target:rootAppWindow
+                                function  onSelectedControlIndexChanged(){
+                                    octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
+                                    mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                                }
+
+                            }
+                            Connections{
+                                target:octaveSpinbBox.control
+                                function onValueChanged(){
+                                    mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                                    sm.saveOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                                    mc.sendAllNotesOff()
+
+                                }
+                            }
+                            Component.onCompleted: {
+                                octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
+                                mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+
                             }
                         }
 

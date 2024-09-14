@@ -60,25 +60,85 @@ Rectangle{
             Component.onCompleted: {
                 vLayersControlContainer.selectedControl = layerControl1
                 selected = true
+                getChannelSound()
             }
         }
-        VLayerControl { id: layerControl2; controlIndex: 1 }
-        VLayerControl { id: layerControl3; controlIndex: 2 }
-        VLayerControl { id: layerControl4; controlIndex: 3 }
-        VLayerControl { id: layerControl5; controlIndex: 4 }
-        VLayerControl { id: layerControl6; controlIndex: 5 }
-        VLayerControl { id: layerControl7; controlIndex: 6 }
-        VLayerControl { id: layerControl8; controlIndex: 7 }
-        VLayerControl { id: layerControl9; controlIndex: 8 }
-        VLayerControl { id: layerControl10; controlIndex: 9 }
-        VLayerControl { id: layerControl11; controlIndex: 10 }
-        VLayerControl { id: layerControl12; controlIndex: 11 }
-        VLayerControl { id: layerControl13; controlIndex: 12 }
-        VLayerControl { id: layerControl14; controlIndex: 13 }
-        VLayerControl { id: layerControl15; controlIndex: 14 }
+        VLayerControl { id: layerControl2; controlIndex: 1
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl3; controlIndex: 2
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl4; controlIndex: 3
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl5; controlIndex: 4
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl6; controlIndex: 5
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl7; controlIndex: 6
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl8; controlIndex: 7
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl9; controlIndex: 8
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl10; controlIndex: 9
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl11; controlIndex: 10
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl12; controlIndex: 11
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl13; controlIndex: 12
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl14; controlIndex: 13
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
+        VLayerControl { id: layerControl15; controlIndex: 14
+            Component.onCompleted: {
+                getChannelSound()
+            }
+        }
         VLayerControl {
             id: layerControl16
             controlIndex: 15
+            Component.onCompleted: {
+                getChannelSound()
+            }
         }
 
     }

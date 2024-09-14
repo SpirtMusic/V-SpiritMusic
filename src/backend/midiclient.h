@@ -16,6 +16,7 @@ class MidiClient  : public QObject
     Q_PROPERTY(bool pc READ pc WRITE setPc NOTIFY pcChanged)
     Q_PROPERTY(int rowOutputChannel READ rowOutputChannel WRITE setRowOutputChannel NOTIFY rowOutputChannelChanged)
     Q_PROPERTY(int masterVolume READ masterVolume WRITE setMasterVolume NOTIFY masterVolumeChanged)
+    Q_PROPERTY(QMap<int, int> octaves READ octaves NOTIFY octavesChanged)
 public:
 
     enum LayersSet {
@@ -32,6 +33,7 @@ public:
         return jackClient && jackClient->midiout && jackClient->midiout->is_port_connected();
     }
 
+
 signals:
     void outputPortConnectionChanged();
     void channelActivated(int channel);
@@ -39,6 +41,7 @@ signals:
     void pcChanged();
     void rowOutputChannelChanged();
     void masterVolumeChanged();
+    void octavesChanged();
 public slots:
     Q_INVOKABLE void sendNoteOn(int channel, int note, int velocity);
     Q_INVOKABLE void sendControlChange(int channel, int control, int value);
@@ -58,11 +61,16 @@ public slots:
     bool pc() const;
     void setCc(bool cc);
     void setPc(bool pc);
+    int setNoteOctave(int channel,int note);
     int rowOutputChannel() const;
     void setRowOutputChannel(int channel);
 
     int masterVolume();
     void setMasterVolume(int volume);
+
+    Q_INVOKABLE int octave(int channel) const;
+    Q_INVOKABLE void setOctave(int channel, int octave);
+    QMap<int, int> octaves() const;
 
 private slots:
     void handleMidiMessage(const libremidi::message& message);
@@ -82,6 +90,8 @@ private:
     QList<int> m_enabledLayersUpper;
     QList<int> m_enabledLayersPedal;
     QList<int> m_enabledLayersLower;
+
+     QMap<int, int> m_octaves;
 };
 
 #endif // MIDICLIENT_H

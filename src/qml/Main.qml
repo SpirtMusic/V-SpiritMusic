@@ -22,14 +22,15 @@ ApplicationWindow {
     property int currentCategoryLevel: 0
     property  var vControlLayers:[]
     property VLayersControlContainer vLayersControlContainerGlobal : null
+    property int globalTabIndex: 0
     // width: 1024
     // height: 768
 
     width: winBaseWidth
     height: winBaseHeight
 
-    minimumWidth: width
-    minimumHeight: height
+    // minimumWidth: width
+    // minimumHeight: height
 
     // maximumWidth:width
     // maximumHeight: height
@@ -44,6 +45,9 @@ ApplicationWindow {
             anchors.fill: parent
             color : Theme.colorBackgroundView
         }
+        // Bind the TabBar's currentIndex to the global property
+        currentIndex: rootAppWindow.globalTabIndex
+        onCurrentIndexChanged: rootAppWindow.globalTabIndex = currentIndex
     }
     Rectangle {
         id : decorator;

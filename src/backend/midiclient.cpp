@@ -38,7 +38,6 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
         // Extract the note and velocity from the message
         int note = message[1];
         int velocity = message[2];
-
         // Check if the message is a note-off
         int statusByte = message[0];
         int channel = statusByte & 0x0F; // Mask the lowest 4 bits
@@ -87,8 +86,10 @@ bool MidiClient::itsNote(const libremidi::message& message)
 }
 void MidiClient::sendNoteOn(int channel, int note, int velocity)
 {
-    // qDebug() << " Layer : "<<channel;
-    libremidi::message channelMessage = libremidi::channel_events::note_on(channel+1, note, velocity);
+    qDebug() << " CHANNEL : "<<channel << "NOTE : "   << note  <<"VELOCITY : " <<velocity;
+    int adjustedNote = setNoteOctave(channel,note);
+    qDebug() << " CHANNEL : "<<channel << "NOTE adjustedNote  : "   << adjustedNote  <<"VELOCITY : " <<velocity;
+    libremidi::message channelMessage = libremidi::channel_events::note_on(channel+1, adjustedNote, velocity);
     jackClient->sendMidiMessage(0, channelMessage);
 }
 void MidiClient::sendControlChange(int channel, int control, int value)
@@ -303,4 +304,35 @@ bool MidiClient::itsVolumeCC(const libremidi::message& message)
     }
 
     return false;
+}
+
+
+int MidiClient::octave(int channel) const
+{
+    return m_octaves.value(channel, 0);
+}
+
+void MidiClient::setOctave(int channel, int octave)
+{
+    if (m_octaves.value(channel, 0) != octave) {
+        m_octaves[channel] = octave;
+        emit octavesChanged();
+    }
+}
+QMap<int, int> MidiClient::octaves() const
+{
+    return m_octaves;
+}
+int MidiClient::setNoteOctave(int channel, int note){
+    int octave = this->octave(channel);
+
+    // Calculate the adjustment
+    int adjustment = octave * 12;
+
+    // Apply the adjustment to the note
+    int adjustedNote = note + adjustment;
+
+    // Return the adjusted note
+    return adjustedNote;
+
 }

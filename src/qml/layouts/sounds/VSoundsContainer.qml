@@ -28,15 +28,25 @@ Item {
     property int selectedIndex: -1
     property int cellWidth: 150 * widthScale
     property int cellHeight: 40 * heightScale
+    property bool setPosition: false
     Connections{
         target:rootAppWindow
         function onCurrentCategoryChanged(){
+            setPosition=true
+            var chSoundIndex = rootAppWindow.controlIndexSounds.chSoundIndex
             root.currentCategory=rootAppWindow.currentCategory
             root.refreshSoundModel()
-            selectedSoundIndex=-1
-            selectedIndex= -1
-        }
+            selectedSoundIndex=chSoundIndex
+            selectedIndex= chSoundIndex
 
+        }
+    }
+    Connections {
+        target: root
+        function onSelectedIndexChanged() {
+            if(setPosition)
+                gridView.positionViewAtIndex(root.selectedIndex,GridView.Center)
+        }
     }
     function refreshSoundModel() {
         if(rootAppWindow.currentCategoryMain==""){
@@ -146,6 +156,9 @@ Item {
 
                 MouseArea {
                     anchors.fill: parent
+                    onEntered:{
+                        root.setPosition=false
+                    }
                     onClicked: {
                         selectedSoundIndex = index
                         root.selectedIndex = index
@@ -165,6 +178,7 @@ Item {
                             console.log("lsb    :", soundDetails.lsb)
                             console.log("pc     :", soundDetails.pc)
                             console.log("pc_value     :", pc_value)
+                            rootAppWindow.controlIndexSounds.chSoundIndex=selectedSoundIndex
                             rootAppWindow.controlIndexSounds.voiceName=soundDetails.name
 
                         }
