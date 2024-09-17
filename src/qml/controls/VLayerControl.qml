@@ -32,7 +32,6 @@ Rectangle{
     onVoiceNameChanged: {
         if(selected && !firstLaunch)
             sm.saveChannelSound(controlIndex,chIsInMain,chMainCategory,chCatgeoryIndex,chSoundIndex)
-        console.log("Saved CONTROL  : ",controlIndex , chIsInMain , chMainCategory,chCatgeoryIndex)
     }
 
     radius: 4

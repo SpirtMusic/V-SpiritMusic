@@ -46,7 +46,21 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
             // It's a note-off message, send note-off with velocity 0
             velocity = 0;
         }
-        // Send the note-off message to all enabled channels
+        // Handle note capture for range setting
+        if (m_capturingLowNote) {
+            m_lowNote = note;
+            setCapturingLowNote(false);
+            setChannelRange(m_currentChannel, m_lowNote, m_highNote);
+            //   updateNoteRange();
+            return; // Exit after capturing low note
+        } else if (m_capturingHighNote) {
+            m_highNote = note;
+            setCapturingHighNote(false);
+            setChannelRange(m_currentChannel, m_lowNote, m_highNote);
+            //   updateNoteRange();
+            return; // Exit after capturing high note
+        }
+
         if(channel == 0){
             emit channelActivated(0);
             for (int ly : m_enabledLayersUpper) {
@@ -87,6 +101,10 @@ bool MidiClient::itsNote(const libremidi::message& message)
 void MidiClient::sendNoteOn(int channel, int note, int velocity)
 {
     qDebug() << " CHANNEL : "<<channel << "NOTE : "   << note  <<"VELOCITY : " <<velocity;
+    if (!isNoteInRange(channel, note)) {
+        qDebug() << "Note" << note << "is out of range for channel" << channel << ". Skipping.";
+        return;
+    }
     int adjustedNote = setNoteOctave(channel,note);
     qDebug() << " CHANNEL : "<<channel << "NOTE adjustedNote  : "   << adjustedNote  <<"VELOCITY : " <<velocity;
     libremidi::message channelMessage = libremidi::channel_events::note_on(channel+1, adjustedNote, velocity);
@@ -335,4 +353,99 @@ int MidiClient::setNoteOctave(int channel, int note){
     // Return the adjusted note
     return adjustedNote;
 
+}
+
+void MidiClient::setChannelRange(int channel, int lowNote, int highNote)
+{
+    // Ensure the notes are within the valid MIDI range (0-127)
+    lowNote = qBound(0, lowNote, 127);
+    highNote = qBound(0, highNote, 127);
+    // Ensure lowNote is not greater than highNote
+    if (lowNote > highNote) {
+        qSwap(lowNote, highNote);
+    }
+
+    m_channelRanges[channel] = qMakePair(lowNote, highNote);
+    m_lowNote = lowNote;
+    m_highNote = highNote;
+    updateNoteRange();
+}
+
+bool MidiClient::isNoteInRange(int channel, int note)
+{
+    if (!m_channelRanges.contains(channel)) {
+        return true;  // If no range set for this channel, allow all notes
+    }
+
+    QPair<int, int> range = m_channelRanges[channel];
+    return note >= range.first && note <= range.second;
+}
+
+void MidiClient::updateNoteRange()
+{
+    // if (m_lowNote != -1 && m_highNote != -1) {
+    //     m_noteRange = QString("%1-%2").arg(m_lowNote).arg(m_highNote);
+    //     emit noteRangeChanged();
+    // }
+    if (m_lowNote != -1 && m_highNote != -1) {
+        QString lowNoteName = noteNumberToName(m_lowNote);
+        QString highNoteName = noteNumberToName(m_highNote);
+        m_noteRange = QString("%1-%2").arg(lowNoteName).arg(highNoteName);
+        emit noteRangeChanged();
+    }
+}
+void MidiClient::setCapturingLowNote(bool capturing)
+{
+    if (m_capturingLowNote != capturing) {
+        m_capturingLowNote = capturing;
+        if (capturing) {
+            m_capturingHighNote = false;
+            emit capturingHighNoteChanged();
+        }
+        emit capturingLowNoteChanged();
+    }
+}
+
+void MidiClient::setCapturingHighNote(bool capturing)
+{
+    if (m_capturingHighNote != capturing) {
+        m_capturingHighNote = capturing;
+        if (capturing) {
+            m_capturingLowNote = false;
+            emit capturingLowNoteChanged();
+        }
+        emit capturingHighNoteChanged();
+    }
+}
+void MidiClient::setCurrentChannel(int channel){
+    if (m_currentChannel != channel) {
+        setCapturingLowNote(false);
+        setCapturingHighNote(false);
+        m_currentChannel = channel;
+        emit currentChannelChanged();
+    }
+}
+
+QVariantMap MidiClient::channelRanges() const
+{
+    QVariantMap result;
+    for (auto it = m_channelRanges.cbegin(); it != m_channelRanges.cend(); ++it) {
+        QVariantMap range;
+        range["lowNote"] = it.value().first;
+        range["highNote"] = it.value().second;
+        result[QString::number(it.key())] = range;
+    }
+    return result;
+}
+QString MidiClient::noteNumberToName(int noteNumber) const
+{
+    if (noteNumber < 0 || noteNumber > 127) {
+        return "Invalid"; // Handle out of range notes
+    }
+
+    const QStringList noteNames = {"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"};
+    int octave = noteNumber / 12 - 1;
+    QString note = noteNames[noteNumber % 12];
+
+    return QString("%1%2").arg(note).arg(octave);
 }

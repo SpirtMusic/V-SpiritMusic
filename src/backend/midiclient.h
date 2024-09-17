@@ -17,6 +17,12 @@ class MidiClient  : public QObject
     Q_PROPERTY(int rowOutputChannel READ rowOutputChannel WRITE setRowOutputChannel NOTIFY rowOutputChannelChanged)
     Q_PROPERTY(int masterVolume READ masterVolume WRITE setMasterVolume NOTIFY masterVolumeChanged)
     Q_PROPERTY(QMap<int, int> octaves READ octaves NOTIFY octavesChanged)
+
+    Q_PROPERTY(bool capturingLowNote READ isCapturingLowNote WRITE setCapturingLowNote NOTIFY capturingLowNoteChanged)
+    Q_PROPERTY(bool capturingHighNote READ isCapturingHighNote WRITE setCapturingHighNote NOTIFY capturingHighNoteChanged)
+    Q_PROPERTY(QString noteRange READ noteRange NOTIFY noteRangeChanged)
+    Q_PROPERTY(int currentChannel READ currentChannel WRITE setCurrentChannel NOTIFY currentChannelChanged)
+    Q_PROPERTY(QVariantMap channelRanges READ channelRanges NOTIFY channelRangesChanged)
 public:
 
     enum LayersSet {
@@ -42,6 +48,12 @@ signals:
     void rowOutputChannelChanged();
     void masterVolumeChanged();
     void octavesChanged();
+
+    void capturingLowNoteChanged();
+    void capturingHighNoteChanged();
+    void noteRangeChanged();
+    void currentChannelChanged();
+    void channelRangesChanged();
 public slots:
     Q_INVOKABLE void sendNoteOn(int channel, int note, int velocity);
     Q_INVOKABLE void sendControlChange(int channel, int control, int value);
@@ -72,8 +84,23 @@ public slots:
     Q_INVOKABLE void setOctave(int channel, int octave);
     QMap<int, int> octaves() const;
 
+    Q_INVOKABLE void setChannelRange(int channel, int lowNote, int highNote);
+    bool isCapturingLowNote() const { return m_capturingLowNote; }
+    void setCapturingLowNote(bool capturing);
+    bool isCapturingHighNote() const { return m_capturingHighNote; }
+    void setCapturingHighNote(bool capturing);
+    QString noteRange() const { return m_noteRange; }
+    Q_INVOKABLE void updateNoteRange();
+    Q_INVOKABLE void setCurrentChannel(int channel);
+    Q_INVOKABLE int currentChannel() const { return m_currentChannel; }
+
+    Q_INVOKABLE QVariantMap channelRanges() const;
+
+
+
 private slots:
     void handleMidiMessage(const libremidi::message& message);
+
 private:
     JackClient *jackClient;
     bool itsNote(const libremidi::message& message);
@@ -91,7 +118,19 @@ private:
     QList<int> m_enabledLayersPedal;
     QList<int> m_enabledLayersLower;
 
-     QMap<int, int> m_octaves;
+    QMap<int, int> m_octaves;
+
+    QMap<int, QPair<int, int>> m_channelRanges;  // Maps channel to (lowNote, highNote) pair
+
+    bool isNoteInRange(int channel, int note);
+    QString noteNumberToName(int noteNumber) const;
+
+    bool m_capturingLowNote = false;
+    bool m_capturingHighNote = false;
+    int m_lowNote = -1;
+    int m_highNote = -1;
+    QString m_noteRange;
+    int m_currentChannel = 0;  // Added to keep track of the current channel
 };
 
 #endif // MIDICLIENT_H

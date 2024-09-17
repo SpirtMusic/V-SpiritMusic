@@ -65,8 +65,12 @@ public:
 
     Q_INVOKABLE void saveChannelSound(int channel, bool chIsInMain, const QString &chMainCategory, int chCategoryIndex, int chSoundIndex);
     Q_INVOKABLE QVariantMap getChannelSound(int channel) const;
+
     Q_INVOKABLE void saveOctave(int channel, int octave);
     Q_INVOKABLE int getOctave(int channel) const;
+
+    Q_INVOKABLE void saveChannelRange(int channel, int lowNote, int highNote);
+    Q_INVOKABLE QVariantMap getChannelRange(int channel) const;
 
 
 signals:

@@ -165,66 +165,214 @@ VSplitView {
                     RowLayout{
                         anchors.fill: parent
                         anchors.margins: 10
-                        VSlider{
-                            id:masterVolumeSLider
-                            sliderLabel:"Master Volume"
-                            sliderValue: mc.masterVolume
-                            Connections{
-                                target: masterVolumeSLider.control
-                                function onValueChanged(){
-                                    if (masterVolumeSLider.control.value !== mc.masterVolume && masterVolumeSLider.control.pressed) {
-                                        mc.setMasterVolume(masterVolumeSLider.control.value)
-                                        console.log(masterVolumeSLider.control.value)
+
+                        Layout.fillHeight: true
+                        Layout.fillWidth: true
+                        Layout.margins: 10
+
+                        ColumnLayout{
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+
+                            VSpinBox{
+                                id:octaveSpinbBox
+                                Layout.preferredHeight: 40
+                                Layout.preferredWidth: 120
+
+                                Connections {
+                                    target:rootAppWindow
+                                    function  onSelectedControlIndexChanged(){
+                                        octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
+                                        mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                                    }
+
+                                }
+                                Connections{
+                                    target:octaveSpinbBox.control
+                                    function onValueChanged(){
+                                        mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                                        sm.saveOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                                        mc.sendAllNotesOff()
+
                                     }
                                 }
-                            }
-                            Connections{
-                                target: mc
-                                function onMasterVolumeChanged(){
-                                    if (mc.masterVolume !== masterVolumeSLider.sliderValue && !masterVolumeSLider.control.pressed) {
-                                        masterVolumeSLider.sliderValue = mc.masterVolume
-                                    }
-                                }
-                            }
-                        }
-
-
-                        VButton{
-                            text:"P A N I C"
-                            onClicked: {
-                                mc.sendAllNotesOff()
-                            }
-                        }
-                        VSpinBox{
-                            id:octaveSpinbBox
-                            Layout.preferredHeight: 40
-                            Layout.preferredWidth: 120
-
-                            Connections {
-                                target:rootAppWindow
-                                function  onSelectedControlIndexChanged(){
+                                Component.onCompleted: {
                                     octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
                                     mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
-                                }
 
+                                }
                             }
-                            Connections{
-                                target:octaveSpinbBox.control
-                                function onValueChanged(){
-                                    mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
-                                    sm.saveOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                            Item{}
+                            Item{}
+                            Item{ Layout.fillHeight: true}
+                            VButton{
+                                text:"P A N I C"
+                                onClicked: {
                                     mc.sendAllNotesOff()
-
                                 }
                             }
-                            Component.onCompleted: {
-                                octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
-                                mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                            VMidiRange{
+                                Connections {
+                                    target:mc
+                                    function  onNoteRangeChanged(){
+                                        var chRange= mc.channelRanges
+                                        var lNote=chRange[rootAppWindow.selectedControlIndex].lowNote
+                                        var hNote=chRange[rootAppWindow.selectedControlIndex].highNote
+                                        console.log("LLLLL NOTE : ",lNote )
+                                        console.log("HHHH NOTE : ", hNote)
+                                        sm.saveChannelRange(rootAppWindow.selectedControlIndex,lNote,hNote)
+                                    }
+                                }
+                                Connections {
+                                    target:rootAppWindow
+                                    function  onSelectedControlIndexChanged(){
+                                        mc.setCurrentChannel(rootAppWindow.selectedControlIndex)
+                                        var range = sm.getChannelRange(rootAppWindow.selectedControlIndex);
+                                        mc.setChannelRange(rootAppWindow.selectedControlIndex,range.lowNote,range.highNote);
+                                    }
+                                    // onIsFlashingChanged: {
+                                    //     if(!mc.capturingHighNote){
+                                    //             var chRange= mc.channelRanges()
+                                    //                 var hNote=chRange[]
+                                    //     }
+
+                                    // }
+                                }
+                                Component.onCompleted: {
+                                    // Retrieve the range for channel 1
+                                    var range = sm.getChannelRange(rootAppWindow.selectedControlIndex);
+                                    console.log("Low Note: " + range.lowNote);
+                                    console.log("High Note: " + range.highNote);
+                                    mc.setChannelRange(rootAppWindow.selectedControlIndex,range.lowNote,range.highNote);
+
+                                }
+
 
                             }
+                            Item{ Layout.fillHeight: true}
+                        }
+                        RowLayout{
+                            anchors.margins: 10
+                            Layout.fillHeight: true
+                            Layout.fillWidth: true
+                            VSlider{
+                                id:masterVolumeSLider
+                                sliderLabel:"Master Volume"
+                                sliderValue: mc.masterVolume
+                                Connections{
+                                    target: masterVolumeSLider.control
+                                    function onValueChanged(){
+                                        if (masterVolumeSLider.control.value !== mc.masterVolume && masterVolumeSLider.control.pressed) {
+                                            mc.setMasterVolume(masterVolumeSLider.control.value)
+                                            console.log(masterVolumeSLider.control.value)
+                                        }
+                                    }
+                                }
+                                Connections{
+                                    target: mc
+                                    function onMasterVolumeChanged(){
+                                        if (mc.masterVolume !== masterVolumeSLider.sliderValue && !masterVolumeSLider.control.pressed) {
+                                            masterVolumeSLider.sliderValue = mc.masterVolume
+                                        }
+                                    }
+                                }
+                            }
+
+                            // VSpinBox{
+                            //     id:octaveSpinbBox
+                            //     Layout.preferredHeight: 40
+                            //     Layout.preferredWidth: 120
+
+                            //     Connections {
+                            //         target:rootAppWindow
+                            //         function  onSelectedControlIndexChanged(){
+                            //             octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
+                            //             mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                            //         }
+
+                            //     }
+                            //     Connections{
+                            //         target:octaveSpinbBox.control
+                            //         function onValueChanged(){
+                            //             mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                            //             sm.saveOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                            //             mc.sendAllNotesOff()
+
+                            //         }
+                            //     }
+                            //     Component.onCompleted: {
+                            //         octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
+                            //         mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+
+                            //     }
+                            // }
+
                         }
 
                     }
+                    // RowLayout{
+                    //     anchors.fill: parent
+                    //     anchors.margins: 10
+                    //     VSlider{
+                    //         id:masterVolumeSLider
+                    //         sliderLabel:"Master Volume"
+                    //         sliderValue: mc.masterVolume
+                    //         Connections{
+                    //             target: masterVolumeSLider.control
+                    //             function onValueChanged(){
+                    //                 if (masterVolumeSLider.control.value !== mc.masterVolume && masterVolumeSLider.control.pressed) {
+                    //                     mc.setMasterVolume(masterVolumeSLider.control.value)
+                    //                     console.log(masterVolumeSLider.control.value)
+                    //                 }
+                    //             }
+                    //         }
+                    //         Connections{
+                    //             target: mc
+                    //             function onMasterVolumeChanged(){
+                    //                 if (mc.masterVolume !== masterVolumeSLider.sliderValue && !masterVolumeSLider.control.pressed) {
+                    //                     masterVolumeSLider.sliderValue = mc.masterVolume
+                    //                 }
+                    //             }
+                    //         }
+                    //     }
+
+
+                    //     VButton{
+                    //         text:"P A N I C"
+                    //         onClicked: {
+                    //             mc.sendAllNotesOff()
+                    //         }
+                    //     }
+                    //     VSpinBox{
+                    //         id:octaveSpinbBox
+                    //         Layout.preferredHeight: 40
+                    //         Layout.preferredWidth: 120
+
+                    //         Connections {
+                    //             target:rootAppWindow
+                    //             function  onSelectedControlIndexChanged(){
+                    //                 octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
+                    //                 mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                    //             }
+
+                    //         }
+                    //         Connections{
+                    //             target:octaveSpinbBox.control
+                    //             function onValueChanged(){
+                    //                 mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                    //                 sm.saveOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+                    //                 mc.sendAllNotesOff()
+
+                    //             }
+                    //         }
+                    //         Component.onCompleted: {
+                    //             octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
+                    //             mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
+
+                    //         }
+                    //     }
+
+                    // }
                 }
 
 

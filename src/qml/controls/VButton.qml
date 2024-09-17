@@ -22,6 +22,9 @@ Button {
     property real implicitHeightPadding: 20
     property real fontPixelSize: 12
 
+    property bool isFlashing: false
+    property color flashColor: "red" // Color to flash
+
     text: qsTr("Button")
 
     implicitWidth: contentItem.implicitWidth  + 20 //* widthScale //* widthScale
@@ -62,13 +65,47 @@ Button {
         }
     }
 
+    // background: Rectangle {
+    //     opacity: enabled ? 1 : 0.3
+    //     implicitWidth: 100 //* widthScale
+    //     implicitHeight: 40 * heightScale
+    //     border.color: control.down ? Theme.colorHover : colorSelect
+    //     color: "transparent"
+    //     border.width: 1
+    //     radius: 2
+
+    // }
     background: Rectangle {
+        id: buttonBackground
         opacity: enabled ? 1 : 0.3
-        implicitWidth: 100 //* widthScale
+        implicitWidth: 100
         implicitHeight: 40 * heightScale
-        border.color: control.down ? Theme.colorHover : colorSelect
+        border.color: control.isFlashing ? (timer.running ? flashingColor : colorSelect) : (control.down ? Theme.colorHover : colorSelect)
         color: "transparent"
         border.width: 1
         radius: 2
+
+        Timer {
+            id: timer
+            interval: 500 // 1 second
+            running: control.isFlashing
+            repeat: true
+            onTriggered: {
+                // Toggle the state between flashingColor and colorSelect
+                buttonBackground.border.color = (buttonBackground.border.color === control.flashColor) ? colorSelect : control.flashColor
+            }
+        }
+
+
+    }
+    // Update the timer based on the isFlashing property
+
+    onIsFlashingChanged: {
+        if (control.isFlashing) {
+            timer.start()
+        } else {
+            timer.stop()
+            buttonBackground.border.color = colorSelect // Ensure it returns to normal color when flashing is off
+        }
     }
 }

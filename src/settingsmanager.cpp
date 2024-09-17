@@ -463,6 +463,30 @@ QVariantMap SettingsManager::getChannelSound(int channel) const
     QString key = QString("ChannelSounds/Channel_%1").arg(channel);
     return settings->value(key).toMap();
 }
+
+void SettingsManager::saveChannelRange(int channel, int lowNote, int highNote)
+{
+    QString key = QString("ChannelRange/Channel_%1").arg(channel);
+    QString value = QString("%1,%2").arg(lowNote).arg(highNote);
+    scheduleSettingSave(key, value);
+}
+
+QVariantMap SettingsManager::getChannelRange(int channel) const
+{
+    QString key = QString("ChannelRange/Channel_%1").arg(channel);
+    QString value = settings->value(key, "0,127").toString(); // Default range 0 to 127
+    QStringList range = value.split(",");
+
+    QVariantMap result;
+    if (range.size() == 2) {
+        result["lowNote"] = range[0].toInt();
+        result["highNote"] = range[1].toInt();
+    } else {
+        result["lowNote"] = 0;
+        result["highNote"] = 127; // Default range if parsing fails
+    }
+    return  result;
+}
 void SettingsManager::scheduleSettingSave(const QString &key, const QVariant &value)
 {
     pendingSettings[key] = value;
