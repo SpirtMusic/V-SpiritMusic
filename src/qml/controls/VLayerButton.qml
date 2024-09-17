@@ -141,6 +141,7 @@ Rectangle {
 
     Component.onCompleted: {
         checked = sm.getLayerEnabled(layerSet, layerNumber)
+        mc.setLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
     }
 
 
