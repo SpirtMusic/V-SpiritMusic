@@ -72,7 +72,7 @@ QStringList SettingsManager::getSubCategories(const QString &main_name) const
 int SettingsManager::saveCategory(const QString &name, int mode, const QString &oldName, bool isMain,int level)
 {
     QStringList categories = getCategories();
-
+ qDebug()<<"C++ saveCategory";
     if (mode == 0) {
         // Add mode
         if (!categories.contains(name)) {
@@ -127,6 +127,7 @@ int SettingsManager::saveCategory(const QString &name, int mode, const QString &
 }
 int SettingsManager::saveSubCategory(const QString &main_name,const QString &name, int mode, const QString &oldName)
 {
+    qDebug()<<"C++ saveSubCategory";
     QStringList categories = getSubCategories(main_name);
 
     if (mode == 0) {
@@ -169,7 +170,7 @@ int SettingsManager::saveSubCategory(const QString &main_name,const QString &nam
             settings->remove(oldName);
             settings->endGroup();
             settings->beginGroup("Sounds");
-            settings->setValue(name, sounds);
+            settings->setValue(main_name+"/"+name, sounds);
             settings->endGroup();
 
             return 0; // Success
