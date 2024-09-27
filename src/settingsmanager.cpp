@@ -181,8 +181,63 @@ int SettingsManager::saveSubCategory(const QString &main_name,const QString &nam
 
     return 4; // Invalid mode
 }
+int SettingsManager::renameMainCategory(const QString &oldName, const QString &newName) {
 
+    // Check if the new name already exists
+    QStringList categories = getCategories();
+    if (categories.contains(newName)) {
+        return 1; // New category name already exists
+    }
 
+    // Rename main category
+    int index = categories.indexOf(oldName);
+    if (index == -1) {
+        return 2; // Old category not found
+    }
+    categories[index] = newName;
+    scheduleSettingSave("Categories/Categories", categories);
+
+    // Update isMain and level settings
+    QString oldModeKey = QString("Categories/%1_isMain").arg(oldName);
+    QString newModeKey = QString("Categories/%1_isMain").arg(newName);
+    QString oldLevelKey = QString("Categories/%1_level").arg(oldName);
+    QString newLevelKey = QString("Categories/%1_level").arg(newName);
+
+    QVariant isMain = settings->value(oldModeKey);
+    QVariant level = settings->value(oldLevelKey);
+
+    scheduleSettingSave(newModeKey, isMain);
+    scheduleSettingSave(newLevelKey, level);
+
+    settings->remove(oldModeKey);
+    settings->remove(oldLevelKey);
+
+    // Move subcategories to new main category
+    QStringList subCategories = getSubCategories(oldName);
+    QString oldSubCategoryKey = QString("Categories/%1").arg(oldName);
+    QString newSubCategoryKey = QString("Categories/%1").arg(newName);
+    scheduleSettingSave(newSubCategoryKey, subCategories);
+    settings->remove(oldSubCategoryKey);
+
+    // Update sounds
+    for (const QString &subCategory : subCategories) {
+        QStringList sounds = getSoundsForSubCategory(oldName, subCategory);
+        for (const QString &sound : sounds) {
+            QVariantMap soundDetails = getSoundSubDetails(oldName, subCategory, sound);
+            settings->remove("Sounds/" + oldName + "/" + subCategory + "/" + sound);
+            settings->setValue("Sounds/" + newName + "/" + subCategory + "/" + sound, soundDetails);
+        }
+        // Remove old subcategory key
+        settings->remove("Sounds/" + oldName + "/" + subCategory);
+        // Update subcategory in the new main category
+        settings->setValue("Sounds/" + newName + "/" + subCategory, sounds);
+    }
+
+    // Remove old main category key
+    settings->remove("Sounds/" + oldName);
+
+    return 0; // Success
+}
 void SettingsManager::deleteCategory(const QString &name)
 {
     QStringList categories = getCategories();

@@ -288,6 +288,18 @@ Item {
                         //      console.log("is Main ", sm.isMainCategory(modelData))
                         //  console.log("Clicked category:", modelData)
                     }
+                    onPressAndHold: {
+                         //if (mouse.source === Qt.MouseEventNotSynthesized)
+                        console.log("wwwwwwww")
+                        root.selectedIndex = index
+                        root.selectedCategory = modelData
+                        if(sm.isMainCategory(modelData))
+                        {
+                            root.isSelectedCategoryMain=true
+                            root.selectedCategoryMainName=root.selectedCategory
+                        }
+                             contextMenu.popup()
+                     }
                 }
             }
         }
@@ -297,7 +309,21 @@ Item {
             visible: root.isLoading
         }
     }
+    // Menu {
+    //     id: contextMenu
+    //     Action { text: "Edit"
 
+    //     onTriggered:{
+    //         categoryDialog.mode = "edit"
+    //         categoryName.text = root.selectedCategory
+    //         categoryDialog.open()
+    //     }
+    //     icon.source: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
+
+    //     }
+    //     Action { text: "Copy" }
+    //     Action { text: "Paste" }
+    // }
     RowLayout {
         id:rowToolBtns
         anchors.top: parent.top
@@ -338,6 +364,18 @@ Item {
                 deleteCategoryDialog.open()
             }
             iconSource: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
+            implicitHeightPadding:10
+            Layout.preferredHeight: 30 * heightScale
+        }
+        VButton {
+            text: "Edit Main"
+            visible: root.isSelectedCategoryMain && isSelectedCategoryEditable
+            onClicked: {
+                categoryDialog.mode = "rename"
+                categoryName.text = root.selectedCategoryMainName
+                categoryDialog.open()
+            }
+            iconSource: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
             implicitHeightPadding:10
             Layout.preferredHeight: 30 * heightScale
         }
@@ -460,25 +498,33 @@ Item {
             }
         }
     }
+
     Dialog {
         id: categoryDialog
         property string mode: "add"
         property string oldCategoryName: ""
-        title: mode === "add" ? "Add Category" : "Edit Category"
+        title: {
+            switch(mode) {
+            case "add": return "Add Category"
+            case "edit": return "Edit Category"
+            case "rename": return "Rename Main Category"
+            default: return "Category Dialog"
+            }
+        }
         standardButtons: Dialog.Ok | Dialog.Cancel
         parent: rootAppWindow
         anchors.centerIn: parent
         modal: true
-        width: 300*widthScale
-        height: 150 *heightScale
+        width: 300 * widthScale
+        height: 150 * heightScale
         background: Rectangle {
-            color:  Theme.colorBackgroundView
+            color: Theme.colorBackgroundView
         }
         contentItem: ColumnLayout {
             spacing: 10
-            VCheckBox{
-                id:isMainCategoryCheckBox
-                text:"Main Category"
+            VCheckBox {
+                id: isMainCategoryCheckBox
+                text: "Main Category"
                 checked: false
                 visible: !root.isSelectedCategoryMain
             }
@@ -488,67 +534,68 @@ Item {
                 placeholderText: "Enter category name"
                 text: categoryDialog.mode === "add" ? "" : root.selectedCategory
             }
-
         }
         onOpened: {
             if (mode === "add") {
                 categoryName.text = ""
                 oldCategoryName = ""
-            } else {
+            }
+            else if (mode === "rename") {
+                oldCategoryName = root.selectedCategoryMainName
+                categoryName.text = oldCategoryName
+            }
+            else {
                 oldCategoryName = root.selectedCategory
                 categoryName.text = oldCategoryName
             }
         }
-
         onAccepted: {
-            if(isSelectedCategoryMain){
-                let result = sm.saveSubCategory(root.selectedCategoryMainName,categoryName.text, mode === "add" ? 0 : 1, oldCategoryName)
+            if (mode === "rename") {
+                let result = sm.renameMainCategory(oldCategoryName, categoryName.text)
                 switch(result) {
                 case 0:
-                    console.log("Category saved successfully")
+                    console.log("Main category renamed successfully")
                     root.refreshModel()
-                    if (mode === "edit") {
-                        root.selectedCategory = categoryName.text
-                    }
+                    root.isSelectedCategoryMain=true
+                    root.selectedCategoryMainName=categoryName.text
                     break
                 case 1:
-                    console.log("Category already exists")
-                    break
-                case 2:
                     console.log("New category name already exists")
                     break
-                case 3:
+                case 2:
                     console.log("Old category not found")
                     break
-                case 4:
-                    console.log("Invalid mode")
-                    break
                 }
-
+            } else if (root.isSelectedCategoryMain) {
+                let result = sm.saveSubCategory(root.selectedCategoryMainName, categoryName.text, mode === "add" ? 0 : 1, oldCategoryName)
+                handleSaveResult(result)
+            } else {
+                let result = sm.saveCategory(categoryName.text, mode === "add" ? 0 : 1, oldCategoryName, isMainCategoryCheckBox.checked, 0)
+                handleSaveResult(result)
             }
-            else{
-                let result = sm.saveCategory(categoryName.text, mode === "add" ? 0 : 1, oldCategoryName,isMainCategoryCheckBox.checked,0)
-                switch(result) {
-                case 0:
-                    console.log("Category saved successfully")
-                    root.refreshModel()
-                    if (mode === "edit") {
-                        root.selectedCategory = categoryName.text
-                    }
-                    break
-                case 1:
-                    console.log("Category already exists")
-                    break
-                case 2:
-                    console.log("New category name already exists")
-                    break
-                case 3:
-                    console.log("Old category not found")
-                    break
-                case 4:
-                    console.log("Invalid mode")
-                    break
+        }
+
+        function handleSaveResult(result) {
+            switch(result) {
+            case 0:
+                console.log("Category saved successfully")
+                root.refreshModel()
+                if (mode === "edit") {
+                    root.selectedCategory = categoryName.text
                 }
+                break
+            case 1:
+                console.log("Category already exists")
+                break
+            case 2:
+                console.log("New category name already exists")
+                break
+            case 3:
+                console.log("Old category not found")
+                break
+            case 4:
+                console.log("Invalid mode")
+                break
             }
         }
     }

@@ -59,7 +59,7 @@ public:
     Q_INVOKABLE bool deleteSubSound(const QString &main_name,const QString &category, const QString &name);
     Q_INVOKABLE QVariantMap getSoundSubDetails(const QString &main_name,const QString &category, const QString &name) const;
     Q_INVOKABLE void deleteMainCategory(const QString &main_name);
-
+    Q_INVOKABLE int renameMainCategory(const QString &oldName, const QString &newName);
     Q_INVOKABLE bool importSubSounds(const QString &main_name,const QString &category, const QString &fileContent);
     Q_INVOKABLE QString exportSubSounds(const QString &main_name ,const QString &category) const;
 
