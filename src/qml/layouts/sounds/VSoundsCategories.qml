@@ -5,6 +5,7 @@ import Qt5Compat.GraphicalEffects
 import Theme
 import QtQuick.Dialogs
 import "../../controls"
+// TODO : Hide + add item on genos list
 Item {
     id: root
     property int baseWidth: rootAppWindow.winBaseWidth
@@ -25,16 +26,27 @@ Item {
     property string selectedCategoryMainName: ""
     property bool isSelectedCategoryMain: false
     property bool isCurrentSelectedCategoryMain: false
+    property bool showEditButtons: false
+    property bool isInsideMainCategory: false
     property int selectedIndex: -1
+
+    property int swapselectedIndex: -1
+    property string swapselectedCategory: ""
+    property bool swapisSelectedCategoryMain:false
+    property string swapselectedCategoryMainName: ""
     property bool isLoading: false  // Add this property to control BusyIndicator visibility
     function refreshModel() {
         if(root.isSelectedCategoryMain){
+            root.isInsideMainCategory=true
             model=sm.getSubCategories(root.selectedCategoryMainName)
         }
         else{
             model = sm.getCategories()
             //  isLoading=true
         }
+    }
+    onModelChanged: {
+        gridView.updateGridModel(root.model)
     }
     onSelectedCategoryMainNameChanged:{
         rootAppWindow.currentCategoryMain=selectedCategoryMainName
@@ -45,6 +57,7 @@ Item {
         rootAppWindow.controlIndexSounds.chCategory = selectedCategory
         console.log(" root.selectedIndex " ,  root.selectedIndex)
         if(root.isSelectedCategoryMain){
+
             var main_level=sm.getCategoryLevel(selectedCategoryMainName)
             rootAppWindow.controlIndexSounds.chIsInMain=true
             rootAppWindow.controlIndexSounds.chMainCategory =selectedCategoryMainName
@@ -87,10 +100,26 @@ Item {
         anchors.right: parent.right
         cellWidth: root.cellWidth
         cellHeight: root.cellHeight
-        model: root.isLoading ? 0 : root.model
+        // model: root.isLoading ? 0 : root.model
         anchors.margins: 6
         anchors.topMargin: 2
+        model: ListModel {
+            id: combinedModel
 
+            // Function to update the model and append "+ Add new"
+            function updateModel(newModel) {
+                clear();  // Clear the current proxy model
+                // Add the new model items
+                for (var i = 0; i < newModel.length; i++) {
+                    append({ name: newModel[i] });
+                }
+                // Append the custom item "+ Add new"
+                append({ name: "+ Add new" });
+            }
+        }
+        function updateGridModel(newModel) {
+            combinedModel.updateModel(newModel);
+        }
         // Enable horizontal scrolling
         flow: GridView.FlowTopToBottom
         snapMode: GridView.SnapToRow
@@ -166,8 +195,8 @@ Item {
                     anchors.left : parent.left
                     anchors.leftMargin: 4
                     text: modelData
-                    font.pointSize: 10 *fontScale
-                    color:Theme.colorText
+                    font.pointSize: (model.name === "+ Add new") ? 12 *fontScale: 10 *fontScale
+                    color:(model.name === "+ Add new") ? "Green" : Theme.colorText
                     elide: Text.ElideRight
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
@@ -277,29 +306,47 @@ Item {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: {
-                        root.selectedIndex = index
-                        root.selectedCategory = modelData
-                        if(sm.isMainCategory(modelData))
-                        {
-                            root.isSelectedCategoryMain=true
-                            root.selectedCategoryMainName=root.selectedCategory
-                            root.model=sm.getSubCategories(root.selectedCategory)
+                        if (model.name === "+ Add new") {
+                            // If the custom item is clicked, open the dialog
+                            categoryDialog.mode = "add"
+                            categoryDialog.open()
+                        }
+                        else{
+                            root.selectedIndex = index
+                            root.selectedCategory = modelData
+                            if(sm.isMainCategory(modelData))
+                            {
+                                root.isSelectedCategoryMain=true
+                                root.selectedCategoryMainName=root.selectedCategory
+                                root.model=sm.getSubCategories(root.selectedCategory)
+                                root.isInsideMainCategory=true
+
+                            }
                         }
                         //      console.log("is Main ", sm.isMainCategory(modelData))
                         //  console.log("Clicked category:", modelData)
                     }
                     onPressAndHold: {
-                         //if (mouse.source === Qt.MouseEventNotSynthesized)
+                        root.swapselectedIndex=root.selectedIndex
+                        root.swapselectedCategory=root.selectedCategory
+                        if (model.name === "+ Add new") {
+                            // If the custom item is clicked, open the dialog
+                            return
+                        }
+                        //if (mouse.source === Qt.MouseEventNotSynthesized)
                         console.log("wwwwwwww")
                         root.selectedIndex = index
                         root.selectedCategory = modelData
                         if(sm.isMainCategory(modelData))
                         {
+                            root.swapisSelectedCategoryMain=  root.isSelectedCategoryMain
+                            root.swapselectedCategoryMainName = root.selectedCategoryMainName
                             root.isSelectedCategoryMain=true
                             root.selectedCategoryMainName=root.selectedCategory
+
                         }
-                             contextMenu.popup()
-                     }
+                        contextMenu.popup()
+                    }
                 }
             }
         }
@@ -308,22 +355,70 @@ Item {
             running: root.isLoading
             visible: root.isLoading
         }
+        Component.onCompleted: {
+
+            updateGridModel(root.model)
+        }
     }
-    // Menu {
-    //     id: contextMenu
-    //     Action { text: "Edit"
+    Menu {
+        id: contextMenu
+        property bool actionTriggered: false
+        Action { text: "Edit"
+            enabled: isSelectedCategoryEditable
 
-    //     onTriggered:{
-    //         categoryDialog.mode = "edit"
-    //         categoryName.text = root.selectedCategory
-    //         categoryDialog.open()
-    //     }
-    //     icon.source: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
+            onTriggered:{
+                contextMenu.actionTriggered = true
+                if(root.isSelectedCategoryMain && root.selectedCategoryMainName==root.selectedCategory){
+                    categoryDialog.mode = "rename"
+                    categoryName.text = root.selectedCategoryMainName
+                }
+                else {
+                    categoryDialog.mode = "edit"
+                    categoryName.text = root.selectedCategory
+                }
+                categoryDialog.open()
+            }
+            icon.source: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
 
-    //     }
-    //     Action { text: "Copy" }
-    //     Action { text: "Paste" }
-    // }
+        }
+        Action { text: "Delete"
+            enabled: isSelectedCategoryEditable
+            onTriggered:{
+                contextMenu.actionTriggered = true
+                if(root.isSelectedCategoryMain && root.selectedCategoryMainName==root.selectedCategory){
+                    root.isCurrentSelectedCategoryMain=true
+                    deleteCategoryDialog.open()
+                }
+                else {
+                    deleteCategoryDialog.open()
+                }
+            }
+            icon.source: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
+        }
+        Action { text: "Export"
+            enabled: isSelectedCategoryEditable && !root.isSelectedCategoryMain
+            onTriggered:{
+                contextMenu.actionTriggered = true
+                exportDialog.open()
+            }
+            icon.source: "qrc:/vsonegx/qml/imgs/file-export.svg"
+        }
+        Action { text: "Paste" }
+        onAboutToHide: {
+            onAboutToHide: {
+                if (!contextMenu.actionTriggered) {
+                    if(!root.isInsideMainCategory){
+                        root.selectedIndex=  root.swapselectedIndex
+                        root.selectedCategory=  root.swapselectedCategory
+                        root.isSelectedCategoryMain = root.swapisSelectedCategoryMain
+                        root.selectedCategoryMainName =  root.swapselectedCategoryMainName
+                    }
+                }
+                // Reset the flag for the next menu interaction
+                contextMenu.actionTriggered = false;
+            }
+        }
+    }
     RowLayout {
         id:rowToolBtns
         anchors.top: parent.top
@@ -336,8 +431,9 @@ Item {
         anchors.rightMargin: 4
         VButton {
             text: "Back"
-            visible: root.isSelectedCategoryMain
+            visible: (root.isSelectedCategoryMain && isInsideMainCategory) || isInsideMainCategory
             onClicked: {
+                root.isInsideMainCategory=false
                 root.isSelectedCategoryMain=false
                 root.selectedCategory=""
                 root.selectedCategoryMainName=""
@@ -358,7 +454,7 @@ Item {
         }
         VButton {
             text: "Delete Main"
-            visible: root.isSelectedCategoryMain && isSelectedCategoryEditable
+            visible: root.isSelectedCategoryMain && isSelectedCategoryEditable && showEditButtons
             onClicked: {
                 root.isCurrentSelectedCategoryMain=true
                 deleteCategoryDialog.open()
@@ -369,7 +465,7 @@ Item {
         }
         VButton {
             text: "Edit Main"
-            visible: root.isSelectedCategoryMain && isSelectedCategoryEditable
+            visible: root.isSelectedCategoryMain && isSelectedCategoryEditable && showEditButtons
             onClicked: {
                 categoryDialog.mode = "rename"
                 categoryName.text = root.selectedCategoryMainName
@@ -384,6 +480,7 @@ Item {
         }
         VButton {
             text: "Add"
+            visible: showEditButtons
             onClicked: {
                 categoryDialog.mode = "add"
                 categoryDialog.open()
@@ -396,6 +493,7 @@ Item {
 
         VButton {
             text: "Edit"
+            visible: showEditButtons
             enabled: root.selectedCategory !== "" && isSelectedCategoryEditable &&  selectedCategory!=selectedCategoryMainName
             onClicked: {
                 categoryDialog.mode = "edit"
@@ -408,6 +506,7 @@ Item {
         }
         VButton {
             text: "Export"
+            visible: showEditButtons
             enabled: root.selectedCategory !== "" && selectedCategory!=selectedCategoryMainName && isSelectedCategoryEditable
             onClicked: exportDialog.open()
             iconSource: "qrc:/vsonegx/qml/imgs/file-export.svg"
@@ -417,6 +516,7 @@ Item {
 
         VButton {
             text: "Delete"
+            visible: showEditButtons
             enabled: root.selectedCategory !== "" && selectedCategory!=selectedCategoryMainName && isSelectedCategoryEditable
             onClicked: {
                 deleteCategoryDialog.open()
@@ -526,7 +626,7 @@ Item {
                 id: isMainCategoryCheckBox
                 text: "Main Category"
                 checked: false
-                visible: !root.isSelectedCategoryMain
+                visible: categoryDialog.mode=="add"
             }
             TextField {
                 id: categoryName
@@ -659,10 +759,12 @@ Item {
             var currentCategoryMain =  rootAppWindow.controlIndexSounds.chMainCategory
             if(isMainCategory){
                 root.isSelectedCategoryMain=true
+                 root.isInsideMainCategory=true
                 root.selectedCategoryMainName=currentCategoryMain
                 root.model= sm.getSubCategories(currentCategoryMain)
             }
             else{
+                root.isInsideMainCategory=false
                 root.isSelectedCategoryMain=false
                 root.selectedCategoryMainName=""
                 root.model= sm.getCategories()
@@ -679,5 +781,45 @@ Item {
 
         }
     }
+// function restoreItemSelection(){
+//     let lastIndex = gridView.count - 1;  // Last index corresponds to "+ Add new"
+//      let itemBeforeSpecial = lastIndex - 1;  // Item before "+ Add new"
 
+//      // Check if the current selected item is "+ Add new"
+//      let selectedAtSpecial = root.selectedIndex === lastIndex;
+
+//      // Check if swapselectedIndex is within the valid range
+//      let swapIndexValid = root.swapselectedIndex >= 0 && root.swapselectedIndex < itemBeforeSpecial + 1;
+
+//      // If deleting "+ Add new" or the item before "+ Add new", use fallback
+//      if (selectedAtSpecial || root.selectedIndex === itemBeforeSpecial) {
+//          if (swapIndexValid) {
+//              // Restore swapselectedIndex if valid
+//              root.selectedIndex = root.swapselectedIndex;
+//              root.selectedSoundIndex = root.swapselectedSoundIndex;
+//          } else if (itemBeforeSpecial >= 0) {
+//              // Fallback to selecting the item before "+ Add new"
+//              root.selectedIndex = itemBeforeSpecial;
+//          } else {
+//              // If no valid items, set selectedIndex to -1
+//              root.selectedIndex = -1;
+//          }
+//      } else if (root.selectedIndex === itemBeforeSpecial + 1 && swapIndexValid) {
+//          // If deleting the last valid item before "+ Add new" and swapselectedIndex is valid
+//          root.selectedIndex = root.swapselectedIndex;
+//          root.selectedSoundIndex = root.swapselectedSoundIndex;
+//      } else if (swapIndexValid) {
+//          // Otherwise, restore swapselectedIndex if it's valid
+//          root.selectedIndex = root.swapselectedIndex;
+//          root.selectedSoundIndex = root.swapselectedSoundIndex;
+//      } else {
+//          // If all else fails, fallback to the last valid item
+//          if (itemBeforeSpecial >= 0) {
+//              root.selectedIndex = itemBeforeSpecial;
+//          } else {
+//              root.selectedIndex = -1;
+//          }
+//      }
+
+// }
 }

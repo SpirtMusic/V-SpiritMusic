@@ -18,7 +18,7 @@ Rectangle{
     property int controlIndex: 0
 
     property string voiceName: "voice name"
-    property string chCategory: "Category name"
+    property string chCategory: ""
     property bool chIsInMain: false
     property string chMainCategory: ""
     property int chCatgeoryIndex: -1
