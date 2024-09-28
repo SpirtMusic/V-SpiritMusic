@@ -49,6 +49,10 @@ qt_add_qml_module(VSpiritMusic
     RESOURCES qml/imgs/cil-list.svg
     QML_FILES qml/controls/VSpinBox.qml
     QML_FILES qml/controls/VMidiRange.qml
+    RESOURCES qml/imgs/cil-copy.svg
+    RESOURCES qml/imgs/cil-cut.svg
+    RESOURCES qml/imgs/cil-clone.svg
+    QML_FILES qml/controls/VTextField.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

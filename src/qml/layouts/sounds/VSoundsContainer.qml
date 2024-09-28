@@ -241,14 +241,15 @@ Item {
                             swapselectedSoundIndex = selectedSoundIndex
                             selectedSoundIndex = index
                             root.selectedIndex = index
-
+                            root.currentSoundDetailsName=soundModel[selectedSoundIndex]
+                            console.log("root.currentSoundDetailsName : ", root.currentSoundDetailsName)
                             var soundDetails= currentCategoryMain!=""?sm.getSoundSubDetails(currentCategoryMain,currentCategory, soundModel[selectedSoundIndex]): sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
                             if(soundDetails !== undefined){
                                 var pc_value=soundDetails.pc
                                 if(rootAppWindow.currentCategoryLevel==1){
                                     pc_value=pc_value-1
                                 }
-                                root.currentSoundDetailsName=soundDetails.name
+
                                 console.log("msb    :", soundDetails.msb)
                                 console.log("lsb    :", soundDetails.lsb)
                                 console.log("pc     :", soundDetails.pc)
@@ -264,50 +265,118 @@ Item {
     Menu {
         id: contextMenuSounds
         property bool actionTriggered: false
-        Action { text: "Edit"
+        background: Rectangle {
+            implicitWidth: 150
+            implicitHeight: 120
+            color: Theme.colorBackgroundView
+            border.color: Theme.colorSelect
+            anchors.fill: parent
+        }
+
+        // Action { text: "Edit"
+        //     enabled: selectedSoundIndex !== -1 && rootAppWindow.isCurrentCategoryEditable
+        //     onTriggered: {
+        //         contextMenuSounds.actionTriggered = true
+        //         var soundDetails =currentCategoryMain!=""?sm.getSoundSubDetails(currentCategoryMain,currentCategory, soundModel[selectedSoundIndex]): sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
+        //         soundDialog.openSoundDialog(soundDetails)
+
+        //     }
+        //     icon.source: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
+        //     icon.color: Theme.colorSelect
+
+        // }
+        MenuItem{
+            id:editItem
+            text: "Edit";
             enabled: selectedSoundIndex !== -1 && rootAppWindow.isCurrentCategoryEditable
+            contentItem: Row {
+                spacing: 8
+                IconImage {
+                    source: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
+                    color: Theme.colorSelect
+                    width: 16
+                    height: 16
+                } Text{
+                    text: editItem.text;  color:Theme.colorText
+                }
+            }
             onTriggered: {
                 contextMenuSounds.actionTriggered = true
                 var soundDetails =currentCategoryMain!=""?sm.getSoundSubDetails(currentCategoryMain,currentCategory, soundModel[selectedSoundIndex]): sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
                 soundDialog.openSoundDialog(soundDetails)
-
             }
-            icon.source: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
-
         }
-        Action { text: "Delete"
-            enabled :selectedSoundIndex !== -1  && rootAppWindow.isCurrentCategoryEditable
+        MenuItem {
+            id: deleteItem
+            text: "Delete"
+            enabled: selectedSoundIndex !== -1 && rootAppWindow.isCurrentCategoryEditable
+            contentItem: Row {
+                spacing: 8
+                IconImage {
+                    source: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
+                    color: Theme.colorSelect
+                    width: 16
+                    height: 16
+                }
+                Text {
+                    text: deleteItem.text
+                    color: Theme.colorText
+                }
+            }
             onTriggered: {
                 contextMenuSounds.actionTriggered = true
                 deleteSoundDialog.open()
             }
-            icon.source: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
         }
-        Action { text: "Import"
-            enabled: currentCategory !== ""  && rootAppWindow.isCurrentCategoryEditable
-            icon.source:"qrc:/vsonegx/qml/imgs/file-export.svg"
-            onTriggered: {
-                contextMenuSounds.actionTriggered = true
-                importDialog.open()
-            }
-        }
-        Action { text: "Copy"
-            // enabled:false
-            onTriggered: {
-                rootAppWindow.globalCopyOrCut=0
-                rootAppWindow.globalSourceCategory=currentCategory
-                rootAppWindow.globalSoundName=root.currentSoundDetailsName
 
+        MenuItem {
+            id: copyItem
+            text: "Copy"
+            enabled: rootAppWindow.isCurrentCategoryEditable
+            contentItem: Row {
+                spacing: 8
+                IconImage {
+                    source: "qrc:/vsonegx/qml/imgs/cil-copy.svg"
+                    color: Theme.colorSelect
+                    width: 16
+                    height: 16
+                }
+                Text {
+                    text: copyItem.text
+                    color: Theme.colorText
+                }
             }
-        }
-        Action { text: "Cut"
-            //enabled:
             onTriggered: {
-                rootAppWindow.globalCopyOrCut=1
-                rootAppWindow.globalSourceCategory=currentCategory
-                rootAppWindow.globalSoundName=root.currentSoundDetailsName
+                rootAppWindow.globalCopyOrCut = 0
+                rootAppWindow.globalSourceCategory = currentCategory
+                rootAppWindow.globalSoundName = root.currentSoundDetailsName
             }
         }
+
+        MenuItem {
+            id: cutItem
+            text: "Cut"
+            enabled: rootAppWindow.isCurrentCategoryEditable
+            contentItem: Row {
+                spacing: 8
+                IconImage {
+                    source: "qrc:/vsonegx/qml/imgs/cil-cut.svg"
+                    color: Theme.colorSelect
+                    width: 16
+                    height: 16
+                }
+                Text {
+                    text: cutItem.text
+                    color: Theme.colorText
+                }
+            }
+            onTriggered: {
+                rootAppWindow.globalCopyOrCut = 1
+                rootAppWindow.globalSourceCategory = currentCategory
+                rootAppWindow.globalSoundName = root.currentSoundDetailsName
+            }
+        }
+
         onAboutToHide: {
             if (!contextMenuSounds.actionTriggered) {
                 root.selectedIndex = root.swapselectedIndex;
@@ -398,6 +467,7 @@ Item {
                 Layout.fillHeight: true
                 placeholderText: "Paste your sound data here..."
                 wrapMode: TextArea.Wrap
+                color: Theme.colorText
             }
             VButton {
                 text: "Select File"
@@ -478,7 +548,7 @@ Item {
         anchors.centerIn: parent
         modal: true
         width: 200*widthScale
-        height: 200 *heightScale
+        height: 250 *heightScale
         background: Rectangle {
             color:  Theme.colorBackgroundView
         }
@@ -509,26 +579,35 @@ Item {
         GridLayout {
             columns: 2
             anchors.fill: parent
-            Label { text: "Name:" }
-            TextField { id: soundNameField
+            Label { text: "Name:"
+            color: Theme.colorText
+            }
+            VTextField { id: soundNameField
                 Layout.fillWidth: true
+                color: Theme.colorText
             }
 
-            Label { text: "MSB:" }
+            Label { text: "MSB:"
+            color: Theme.colorText
+            }
             SpinBox { id: soundMSB; from: 0; to: 127
                 Layout.fillWidth: true
                 editable: true
 
             }
 
-            Label { text: "LSB:" }
+            Label { text: "LSB:"
+            color: Theme.colorText
+            }
             SpinBox { id: soundLSB; from: 0; to: 127
                 Layout.fillWidth: true
                 editable: true
 
             }
 
-            Label { text: "PC:" }
+            Label { text: "PC:"
+            color: Theme.colorText
+            }
             SpinBox { id: soundPC; from: 0; to: 127
                 Layout.fillWidth: true
                 editable: true

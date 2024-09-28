@@ -323,6 +323,8 @@ Item {
                                 root.selectedCategoryMainName=root.selectedCategory
                                 root.model=sm.getSubCategories(root.selectedCategory)
                                 root.isInsideMainCategory=true
+                                root.copyMode=false
+                                rootAppWindow.globalSoundName=""
 
                             }
                         }
@@ -365,110 +367,237 @@ Item {
     Menu {
         id: contextMenu
         property bool actionTriggered: false
-        Action { text: "Edit"
+        background: Rectangle {
+            implicitWidth: 150
+            implicitHeight: 120
+            color: Theme.colorBackgroundView
+            border.color: Theme.colorSelect
+            anchors.fill: parent
+        }
+        MenuItem {
+            id: editItem
+            text: "Edit"
             enabled: isSelectedCategoryEditable
-
-            onTriggered:{
+            contentItem: Row {
+                spacing: 8
+                IconImage {
+                    source: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
+                    color: Theme.colorSelect
+                    width: 16
+                    height: 16
+                }
+                Text {
+                    text: editItem.text
+                    color: Theme.colorText
+                }
+            }
+            onTriggered: {
                 contextMenu.actionTriggered = true
-                if(root.isSelectedCategoryMain && root.selectedCategoryMainName==root.selectedCategory){
+                if (root.isSelectedCategoryMain && root.selectedCategoryMainName === root.selectedCategory) {
                     categoryDialog.mode = "rename"
                     categoryName.text = root.selectedCategoryMainName
-                }
-                else {
+                } else {
                     categoryDialog.mode = "edit"
                     categoryName.text = root.selectedCategory
                 }
                 categoryDialog.open()
             }
-            icon.source: "qrc:/vsonegx/qml/imgs/cil-pencil.svg"
-
         }
-        Action { text: "Delete"
+
+        MenuItem {
+            id: deleteItem
+            text: "Delete"
             enabled: isSelectedCategoryEditable
-            onTriggered:{
-                contextMenu.actionTriggered = true
-                if(root.isSelectedCategoryMain && root.selectedCategoryMainName==root.selectedCategory){
-                    root.isCurrentSelectedCategoryMain=true
-                    deleteCategoryDialog.open()
+            contentItem: Row {
+                spacing: 8
+                IconImage {
+                    source: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
+                    color: Theme.colorSelect
+                    width: 16
+                    height: 16
                 }
-                else {
+                Text {
+                    text: deleteItem.text
+                    color: Theme.colorText
+                }
+            }
+            onTriggered: {
+                contextMenu.actionTriggered = true
+                if (root.isSelectedCategoryMain && root.selectedCategoryMainName === root.selectedCategory) {
+                    root.isCurrentSelectedCategoryMain = true
+                    deleteCategoryDialog.open()
+                } else {
                     deleteCategoryDialog.open()
                 }
             }
-            icon.source: "qrc:/vsonegx/qml/imgs/cil-trash.svg"
         }
-        Action { text: "Export"
+
+        MenuItem {
+            id: exportItem
+            text: "Export"
             enabled: isSelectedCategoryEditable && !root.isSelectedCategoryMain
-            onTriggered:{
+            contentItem: Row {
+                spacing: 8
+                IconImage {
+                    source: "qrc:/vsonegx/qml/imgs/file-export.svg"
+                    color: Theme.colorSelect
+                    width: 16
+                    height: 16
+                }
+                Text {
+                    text: exportItem.text
+                    color: Theme.colorText
+                }
+            }
+            onTriggered: {
                 contextMenu.actionTriggered = true
                 exportDialog.open()
             }
-            icon.source: "qrc:/vsonegx/qml/imgs/file-export.svg"
         }
-        Action { text: "Paste"
-            enabled: root.copyMode
+
+        MenuItem {
+            id: pasteItem
+            text: "Paste"
+            enabled: root.copyMode && root.selectedCategoryMainName !== root.selectedCategory && isSelectedCategoryEditable
+            contentItem: Row {
+                spacing: 8
+                IconImage {
+                    source: "qrc:/vsonegx/qml/imgs/cil-clone.svg"
+                    color: Theme.colorSelect
+                    width: 16
+                    height: 16
+                }
+                Text {
+                    text: pasteItem.text
+                    color: Theme.colorText
+                }
+            }
             onTriggered: {
-                var sourceCategory=rootAppWindow.globalSourceCategory
+
+                var sourceMainCategory=root.selectedCategoryMainName
+                var sourceSubCategory=rootAppWindow.globalSourceCategory
                 var soundNameToCopy = rootAppWindow.globalSoundName
-                if(rootAppWindow.globalCopyOrCut==0){
-                    let result = sm.copySoundBetweenCategories(
-                            sourceCategory,
-                            root.selectedCategory,
-                            soundNameToCopy
-                            )
-                    switch(result.status) {
-                    case 0:
-                        if (result.newName !== soundNameToCopy) {
-                            console.log("Sound copied successfully and renamed to: " + result.newName)
-                        } else {
-                            console.log("Sound copied successfully")
+                if(isInsideMainCategory){
+
+                    if (rootAppWindow.globalCopyOrCut == 0) {
+                        let result = sm.copySoundBetweenSubCategories(
+                                sourceMainCategory,
+                                sourceSubCategory,
+                                sourceMainCategory,
+                                root.selectedCategory,
+                                soundNameToCopy
+                                );
+                        switch(result.status) {
+                        case 0:
+                            if (result.newName !== soundNameToCopy) {
+                                console.log("Sound copied successfully and renamed to: " + result.newName);
+                            } else {
+                                console.log("Sound copied successfully");
+                            }
+                            // Refresh your sound list view
+                            break;
+                        case 1:
+                            console.log("Sound not found in source category");
+                            break;
                         }
-                        // Refresh your sound list view
-                        break
-                    case 1:
-                        console.log("Sound not found in source category")
-                        break
+                    } else {
+                        let result = sm.cutSoundBetweenSubCategories(
+                                sourceMainCategory,
+                                sourceSubCategory,
+                                sourceMainCategory,
+                                root.selectedCategory,
+                                soundNameToCopy
+                                );
+                        switch(result.status) {
+                        case 0:
+                            if (result.newName !== soundNameToCopy) {
+                                console.log("Sound cut successfully and renamed to: " + result.newName);
+                            } else {
+                                console.log("Sound cut successfully");
+                            }
+                            // Refresh your sound list view
+                            break;
+                        case 1:
+                            console.log("Sound not found in source category");
+                            break;
+                        }
                     }
                 }
                 else{
-                    let result = sm.cutSoundBetweenCategories(
-                            sourceCategory,
-                            root.selectedCategory,
-                            soundNameToCopy
-                            )
-                    switch(result.status) {
-                    case 0:
-                        if (result.newName !== soundNameToCopy) {
-                            console.log("Sound cut successfully and renamed to: " + result.newName)
-                        } else {
-                            console.log("Sound cut successfully")
+                    if(rootAppWindow.globalCopyOrCut==0){
+                        let result = sm.copySoundBetweenCategories(
+                                sourceSubCategory,
+                                root.selectedCategory,
+                                soundNameToCopy
+                                )
+                        switch(result.status) {
+                        case 0:
+                            if (result.newName !== soundNameToCopy) {
+                                console.log("Sound copied successfully and renamed to: " + result.newName)
+                            } else {
+                                console.log("Sound copied successfully")
+                            }
+                            // Refresh your sound list view
+                            break
+                        case 1:
+                            console.log("Sound not found in source category")
+                            break
                         }
-                        // Refresh your sound list view
-                        break
-                    case 1:
-                        console.log("Sound not found in source category")
-                        break
                     }
+                    else{
+                        let result = sm.cutSoundBetweenCategories(
+                                sourceSubCategory,
+                                root.selectedCategory,
+                                soundNameToCopy
+                                )
+                        switch(result.status) {
+                        case 0:
+                            if (result.newName !== soundNameToCopy) {
+                                console.log("Sound cut successfully and renamed to: " + result.newName)
+                            } else {
+                                console.log("Sound cut successfully")
+                            }
+                            // Refresh your sound list view
+                            break
+                        case 1:
+                            console.log("Sound not found in source category")
+                            break
+                        }
 
+                    }
+                    root.refreshModel()
                 }
                 root.copyMode=false
                 rootAppWindow.globalSoundName=""
+
+
             }
         }
+
         onAboutToHide: {
-            onAboutToHide: {
-                if (!contextMenu.actionTriggered) {
-                    if(!root.isInsideMainCategory){
-                        root.selectedIndex=  root.swapselectedIndex
-                        root.selectedCategory=  root.swapselectedCategory
-                        root.isSelectedCategoryMain = root.swapisSelectedCategoryMain
-                        root.selectedCategoryMainName =  root.swapselectedCategoryMainName
-                    }
+            if (!contextMenu.actionTriggered) {
+                if(!root.isInsideMainCategory){
+                    root.selectedIndex=  -1
+                    root.selectedCategory=  ""
+                    root.selectedIndex=  root.swapselectedIndex
+                    root.selectedCategory=  root.swapselectedCategory
+                    root.isSelectedCategoryMain = root.swapisSelectedCategoryMain
+                    root.selectedCategoryMainName =  root.swapselectedCategoryMainName
                 }
-                // Reset the flag for the next menu interaction
-                contextMenu.actionTriggered = false;
+                else{
+                    root.selectedIndex=  -1
+                    root.selectedCategory=  ""
+                    root.selectedIndex=  root.swapselectedIndex
+                    root.selectedCategory=  root.swapselectedCategory
+                    root.isSelectedCategoryMain = root.swapisSelectedCategoryMain
+                    //  root.selectedCategoryMainName =  root.swapselectedCategoryMainName
+                }
             }
+            // Reset the flag for the next menu interaction
+            contextMenu.actionTriggered = false;
         }
+
+
     }
     RowLayout {
         id:rowToolBtns
@@ -489,6 +618,8 @@ Item {
                 root.selectedCategory=""
                 root.selectedCategoryMainName=""
                 root.isSelectedCategoryEditable=true
+                root.copyMode=false
+                rootAppWindow.globalSoundName=""
                 root.refreshModel()
             }
             iconSource: "qrc:/vsonegx/qml/imgs/cil-arrow-left.svg"
@@ -594,7 +725,7 @@ Item {
         anchors.centerIn: parent
         modal: true
         width: 400 * widthScale
-        height: 300 * heightScale
+        height: 350 * heightScale
         background: Rectangle {
             color: Theme.colorBackgroundView
         }
@@ -610,6 +741,7 @@ Item {
                 readOnly: true
                 wrapMode: TextArea.Wrap
                 text: exportDialog.exportedContent
+                color: Theme.colorText
             }
             RowLayout {
                 Layout.alignment: Qt.AlignRight
@@ -676,7 +808,7 @@ Item {
         anchors.centerIn: parent
         modal: true
         width: 300 * widthScale
-        height: 150 * heightScale
+        height: 200 * heightScale
         background: Rectangle {
             color: Theme.colorBackgroundView
         }
@@ -686,13 +818,15 @@ Item {
                 id: isMainCategoryCheckBox
                 text: "Main Category"
                 checked: false
-                visible: categoryDialog.mode=="add"
+                visible: categoryDialog.mode=="add" && !root.isInsideMainCategory
+
             }
-            TextField {
+            VTextField {
                 id: categoryName
                 Layout.fillWidth: true
                 placeholderText: "Enter category name"
                 text: categoryDialog.mode === "add" ? "" : root.selectedCategory
+                color: Theme.colorText
             }
         }
         onOpened: {

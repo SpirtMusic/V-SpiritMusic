@@ -78,7 +78,16 @@ public:
 
     Q_INVOKABLE SoundOperationResult copySoundBetweenCategories(const QString &sourceCategory, const QString &destCategory, const QString &soundName);
     Q_INVOKABLE SoundOperationResult cutSoundBetweenCategories(const QString &sourceCategory, const QString &destCategory, const QString &soundName);
-    Q_INVOKABLE QString generateUniqueSoundName(const QString &category, const QString &originalName);
+    QString generateUniqueSoundName(const QString &category, const QString &originalName);
+
+    Q_INVOKABLE SoundOperationResult copySoundBetweenSubCategories(const QString &sourceCat, const QString &sourceSubCat,
+                                                                   const QString &destCat, const QString &destSubCat,
+                                                                   const QString &soundName);
+    Q_INVOKABLE SoundOperationResult cutSoundBetweenSubCategories(const QString &sourceCat, const QString &sourceSubCat,
+                                                                  const QString &destCat, const QString &destSubCat,
+                                                                  const QString &soundName);
+    QString generateUniqueSoundNameForSubCategory(const QString &category, const QString &subCategory, const QString &originalName);
+
 
 signals:
     void categoriesLoaded();

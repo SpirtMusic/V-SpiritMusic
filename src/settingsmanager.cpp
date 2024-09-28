@@ -378,16 +378,10 @@ SettingsManager::SoundOperationResult SettingsManager::cutSoundBetweenCategories
     SoundOperationResult copyResult = copySoundBetweenCategories(sourceCategory, destCategory, soundName);
 
     if (copyResult.status == 0) {
+        // Remove the original sound from the source category
+        deleteSound(sourceCategory, soundName);
 
-        // Remove the sound from the source category
-        settings->remove("Sounds/" + sourceCategory + "/" + soundName);
-
-        // Update the sound list for the source category
-        QStringList sourceSounds = getSoundsForCategory(sourceCategory);
-        sourceSounds.removeOne(soundName);
-        settings->setValue("Sounds/" + sourceCategory, sourceSounds);
-
-        return copyResult; // Return the same result as the copy operation
+        return copyResult; // Return the result of the copy operation
     }
 
     return copyResult; // If copy failed, return its result
@@ -402,13 +396,73 @@ QString SettingsManager::generateUniqueSoundName(const QString &category, const 
     QStringList existingSounds = getSoundsForCategory(category);
 
     while (existingSounds.contains(newName)) {
-        newName = QString("%1 (%2)").arg(baseName).arg(counter);
+        newName = QString("%1_%2").arg(baseName).arg(counter);
         counter++;
     }
 
     return newName;
 
 }
+
+SettingsManager::SoundOperationResult SettingsManager::copySoundBetweenSubCategories(const QString &sourceCat, const QString &sourceSubCat,
+                                                                                     const QString &destCat, const QString &destSubCat,
+                                                                                     const QString &soundName) {
+    // Check if the sound exists in the source subcategory
+    QVariantMap soundDetails = getSoundSubDetails(sourceCat, sourceSubCat, soundName);
+    if (soundDetails.isEmpty()) {
+        return {1, ""}; // Sound not found in source subcategory
+    }
+
+    // Check if the sound already exists in the destination subcategory
+    QStringList destSounds = getSoundsForSubCategory(destCat, destSubCat);
+    QString finalSoundName = soundName;
+
+    if (destSounds.contains(soundName)) {
+        // Generate a unique name if the sound already exists
+        finalSoundName = generateUniqueSoundNameForSubCategory(destCat, destSubCat, soundName);
+    }
+
+    // Copy the sound to the destination subcategory with the final name
+    QString destKey = QString("Sounds/%1/%2/%3").arg(destCat, destSubCat, finalSoundName);
+    settings->setValue(destKey, soundDetails);
+
+    // Update the sound list for the destination subcategory
+    destSounds.append(finalSoundName);
+    settings->setValue(QString("Sounds/%1/%2").arg(destCat, destSubCat), destSounds);
+
+    return {0, finalSoundName}; // Success
+}
+
+SettingsManager::SoundOperationResult SettingsManager::cutSoundBetweenSubCategories(const QString &sourceCat, const QString &sourceSubCat,
+                                                                                    const QString &destCat, const QString &destSubCat,
+                                                                                    const QString &soundName) {
+    // First, copy the sound to the destination subcategory
+    SoundOperationResult copyResult = copySoundBetweenSubCategories(sourceCat, sourceSubCat, destCat, destSubCat, soundName);
+
+    if (copyResult.status == 0) {
+        // Remove the original sound from the source subcategory
+        deleteSubSound(sourceCat, sourceSubCat, soundName);
+
+        return copyResult; // Return the result of the copy operation
+    }
+
+    return copyResult; // If copy failed, return its result
+}
+
+QString SettingsManager::generateUniqueSoundNameForSubCategory(const QString &category, const QString &subCategory, const QString &originalName) {
+    QString baseName = originalName;
+    QString newName = baseName;
+    int counter = 1;
+    QStringList existingSounds = getSoundsForSubCategory(category, subCategory);
+
+    while (existingSounds.contains(newName)) {
+        newName = QString("%1_%2").arg(baseName).arg(counter);
+        counter++;
+    }
+
+    return newName;
+}
+
 QVariantMap SettingsManager::getSoundSubDetails(const QString &main_name,const QString &category, const QString &name) const {
     QVariantMap soundDetails = settings->value("Sounds/"+main_name+"/"+ category + "/" + name).toMap();
     if (soundDetails.isEmpty()) {
