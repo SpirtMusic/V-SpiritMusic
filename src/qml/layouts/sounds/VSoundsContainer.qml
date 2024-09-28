@@ -30,7 +30,7 @@ Item {
     property int cellWidth: 150 * widthScale
     property int cellHeight: 40 * heightScale
     property bool setPosition: false
-
+    property string  currentSoundDetailsName: ""
     onSoundModelChanged: {
         gridView.updateGridModel(root.soundModel)
     }
@@ -241,12 +241,14 @@ Item {
                             swapselectedSoundIndex = selectedSoundIndex
                             selectedSoundIndex = index
                             root.selectedIndex = index
+
                             var soundDetails= currentCategoryMain!=""?sm.getSoundSubDetails(currentCategoryMain,currentCategory, soundModel[selectedSoundIndex]): sm.getSoundDetails(currentCategory, soundModel[selectedSoundIndex])
                             if(soundDetails !== undefined){
                                 var pc_value=soundDetails.pc
                                 if(rootAppWindow.currentCategoryLevel==1){
                                     pc_value=pc_value-1
                                 }
+                                root.currentSoundDetailsName=soundDetails.name
                                 console.log("msb    :", soundDetails.msb)
                                 console.log("lsb    :", soundDetails.lsb)
                                 console.log("pc     :", soundDetails.pc)
@@ -289,7 +291,17 @@ Item {
                 importDialog.open()
             }
         }
-        Action { text: "Paste" }
+        Action { text: "Copy"
+           // enabled:false
+            onTriggered: {
+                rootAppWindow.globalSourceCategory=currentCategory
+                rootAppWindow.globalSoundName=root.currentSoundDetailsName
+
+            }
+        }
+        Action { text: "Cut"
+            enabled:false
+        }
         onAboutToHide: {
             if (!contextMenuSounds.actionTriggered) {
                 root.selectedIndex = root.swapselectedIndex;

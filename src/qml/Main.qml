@@ -23,6 +23,10 @@ ApplicationWindow {
     property  var vControlLayers:[]
     property VLayersControlContainer vLayersControlContainerGlobal : null
     property int globalTabIndex: 0
+
+    property string globalSourceCategory: ""
+    property string globalDestCategory: ""
+    property string globalSoundName: ""
     // width: 1024
     // height: 768
 

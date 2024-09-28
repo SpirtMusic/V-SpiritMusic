@@ -13,6 +13,10 @@ class SettingsManager : public QObject
     Q_OBJECT
 public:
     explicit SettingsManager(QObject *parent = nullptr);
+    struct SoundOperationResult {
+        int status;
+        QString newName;
+    };
 
     Q_INVOKABLE int getControlVolume(int controlIndex) const;
     Q_INVOKABLE void setControlVolume(int controlIndex, int value);
@@ -72,6 +76,9 @@ public:
     Q_INVOKABLE void saveChannelRange(int channel, int lowNote, int highNote);
     Q_INVOKABLE QVariantMap getChannelRange(int channel) const;
 
+    Q_INVOKABLE SoundOperationResult copySoundBetweenCategories(const QString &sourceCategory, const QString &destCategory, const QString &soundName);
+    Q_INVOKABLE SoundOperationResult cutSoundBetweenCategories(const QString &sourceCategory, const QString &destCategory, const QString &soundName);
+    Q_INVOKABLE QString generateUniqueSoundName(const QString &category, const QString &originalName);
 
 signals:
     void categoriesLoaded();

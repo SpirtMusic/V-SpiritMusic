@@ -35,6 +35,9 @@ Item {
     property bool swapisSelectedCategoryMain:false
     property string swapselectedCategoryMainName: ""
     property bool isLoading: false  // Add this property to control BusyIndicator visibility
+
+    property bool copyMode: false
+
     function refreshModel() {
         if(root.isSelectedCategoryMain){
             root.isInsideMainCategory=true
@@ -356,7 +359,6 @@ Item {
             visible: root.isLoading
         }
         Component.onCompleted: {
-
             updateGridModel(root.model)
         }
     }
@@ -403,7 +405,33 @@ Item {
             }
             icon.source: "qrc:/vsonegx/qml/imgs/file-export.svg"
         }
-        Action { text: "Paste" }
+        Action { text: "Paste"
+            enabled: root.copyMode
+            onTriggered: {
+                var sourceCategory=rootAppWindow.globalSourceCategory
+                var soundNameToCopy = rootAppWindow.globalSoundName
+                let result = sm.copySoundBetweenCategories(
+                        sourceCategory,
+                        root.selectedCategory,
+                        soundNameToCopy
+                        )
+                switch(result.status) {
+                case 0:
+                    if (result.newName !== soundNameToCopy) {
+                        console.log("Sound copied successfully and renamed to: " + result.newName)
+                    } else {
+                        console.log("Sound copied successfully")
+                    }
+                    // Refresh your sound list view
+                    break
+                case 1:
+                    console.log("Sound not found in source category")
+                    break
+                }
+                root.copyMode=false
+                rootAppWindow.globalSoundName=""
+            }
+        }
         onAboutToHide: {
             onAboutToHide: {
                 if (!contextMenu.actionTriggered) {
@@ -447,6 +475,15 @@ Item {
         Text {
             id: name
             text: root.isSelectedCategoryMain ? selectedCategoryMainName : qsTr("Categories")
+            color:Theme.colorText
+            Layout.leftMargin: 5
+            font.pointSize: 14 *fontScale
+
+        }
+        Text {
+            id: soundName
+            visible: root.copyMode
+            text: " Copy : " + rootAppWindow.globalSoundName
             color:Theme.colorText
             Layout.leftMargin: 5
             font.pointSize: 14 *fontScale
@@ -759,7 +796,7 @@ Item {
             var currentCategoryMain =  rootAppWindow.controlIndexSounds.chMainCategory
             if(isMainCategory){
                 root.isSelectedCategoryMain=true
-                 root.isInsideMainCategory=true
+                root.isInsideMainCategory=true
                 root.selectedCategoryMainName=currentCategoryMain
                 root.model= sm.getSubCategories(currentCategoryMain)
             }
@@ -773,6 +810,14 @@ Item {
             root.selectedCategory = chCategory
 
         }
+        function onGlobalSoundNameChanged(){
+            if(rootAppWindow.globalSoundName!=""){
+                console.log("rootAppWindow.globalSoundName  ",rootAppWindow.globalSoundName)
+                root.copyMode=true
+            }
+            else
+                root.copyMode=false
+        }
     }
     Connections {
         target: root
@@ -781,45 +826,45 @@ Item {
 
         }
     }
-// function restoreItemSelection(){
-//     let lastIndex = gridView.count - 1;  // Last index corresponds to "+ Add new"
-//      let itemBeforeSpecial = lastIndex - 1;  // Item before "+ Add new"
+    // function restoreItemSelection(){
+    //     let lastIndex = gridView.count - 1;  // Last index corresponds to "+ Add new"
+    //      let itemBeforeSpecial = lastIndex - 1;  // Item before "+ Add new"
 
-//      // Check if the current selected item is "+ Add new"
-//      let selectedAtSpecial = root.selectedIndex === lastIndex;
+    //      // Check if the current selected item is "+ Add new"
+    //      let selectedAtSpecial = root.selectedIndex === lastIndex;
 
-//      // Check if swapselectedIndex is within the valid range
-//      let swapIndexValid = root.swapselectedIndex >= 0 && root.swapselectedIndex < itemBeforeSpecial + 1;
+    //      // Check if swapselectedIndex is within the valid range
+    //      let swapIndexValid = root.swapselectedIndex >= 0 && root.swapselectedIndex < itemBeforeSpecial + 1;
 
-//      // If deleting "+ Add new" or the item before "+ Add new", use fallback
-//      if (selectedAtSpecial || root.selectedIndex === itemBeforeSpecial) {
-//          if (swapIndexValid) {
-//              // Restore swapselectedIndex if valid
-//              root.selectedIndex = root.swapselectedIndex;
-//              root.selectedSoundIndex = root.swapselectedSoundIndex;
-//          } else if (itemBeforeSpecial >= 0) {
-//              // Fallback to selecting the item before "+ Add new"
-//              root.selectedIndex = itemBeforeSpecial;
-//          } else {
-//              // If no valid items, set selectedIndex to -1
-//              root.selectedIndex = -1;
-//          }
-//      } else if (root.selectedIndex === itemBeforeSpecial + 1 && swapIndexValid) {
-//          // If deleting the last valid item before "+ Add new" and swapselectedIndex is valid
-//          root.selectedIndex = root.swapselectedIndex;
-//          root.selectedSoundIndex = root.swapselectedSoundIndex;
-//      } else if (swapIndexValid) {
-//          // Otherwise, restore swapselectedIndex if it's valid
-//          root.selectedIndex = root.swapselectedIndex;
-//          root.selectedSoundIndex = root.swapselectedSoundIndex;
-//      } else {
-//          // If all else fails, fallback to the last valid item
-//          if (itemBeforeSpecial >= 0) {
-//              root.selectedIndex = itemBeforeSpecial;
-//          } else {
-//              root.selectedIndex = -1;
-//          }
-//      }
+    //      // If deleting "+ Add new" or the item before "+ Add new", use fallback
+    //      if (selectedAtSpecial || root.selectedIndex === itemBeforeSpecial) {
+    //          if (swapIndexValid) {
+    //              // Restore swapselectedIndex if valid
+    //              root.selectedIndex = root.swapselectedIndex;
+    //              root.selectedSoundIndex = root.swapselectedSoundIndex;
+    //          } else if (itemBeforeSpecial >= 0) {
+    //              // Fallback to selecting the item before "+ Add new"
+    //              root.selectedIndex = itemBeforeSpecial;
+    //          } else {
+    //              // If no valid items, set selectedIndex to -1
+    //              root.selectedIndex = -1;
+    //          }
+    //      } else if (root.selectedIndex === itemBeforeSpecial + 1 && swapIndexValid) {
+    //          // If deleting the last valid item before "+ Add new" and swapselectedIndex is valid
+    //          root.selectedIndex = root.swapselectedIndex;
+    //          root.selectedSoundIndex = root.swapselectedSoundIndex;
+    //      } else if (swapIndexValid) {
+    //          // Otherwise, restore swapselectedIndex if it's valid
+    //          root.selectedIndex = root.swapselectedIndex;
+    //          root.selectedSoundIndex = root.swapselectedSoundIndex;
+    //      } else {
+    //          // If all else fails, fallback to the last valid item
+    //          if (itemBeforeSpecial >= 0) {
+    //              root.selectedIndex = itemBeforeSpecial;
+    //          } else {
+    //              root.selectedIndex = -1;
+    //          }
+    //      }
 
-// }
+    // }
 }
