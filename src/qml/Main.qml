@@ -27,6 +27,7 @@ ApplicationWindow {
     property string globalSourceCategory: ""
     property string globalDestCategory: ""
     property string globalSoundName: ""
+     property int globalCopyOrCut:0 // 0:cp 1:cut
     // width: 1024
     // height: 768
 

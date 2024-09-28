@@ -410,23 +410,46 @@ Item {
             onTriggered: {
                 var sourceCategory=rootAppWindow.globalSourceCategory
                 var soundNameToCopy = rootAppWindow.globalSoundName
-                let result = sm.copySoundBetweenCategories(
-                        sourceCategory,
-                        root.selectedCategory,
-                        soundNameToCopy
-                        )
-                switch(result.status) {
-                case 0:
-                    if (result.newName !== soundNameToCopy) {
-                        console.log("Sound copied successfully and renamed to: " + result.newName)
-                    } else {
-                        console.log("Sound copied successfully")
+                if(rootAppWindow.globalCopyOrCut==0){
+                    let result = sm.copySoundBetweenCategories(
+                            sourceCategory,
+                            root.selectedCategory,
+                            soundNameToCopy
+                            )
+                    switch(result.status) {
+                    case 0:
+                        if (result.newName !== soundNameToCopy) {
+                            console.log("Sound copied successfully and renamed to: " + result.newName)
+                        } else {
+                            console.log("Sound copied successfully")
+                        }
+                        // Refresh your sound list view
+                        break
+                    case 1:
+                        console.log("Sound not found in source category")
+                        break
                     }
-                    // Refresh your sound list view
-                    break
-                case 1:
-                    console.log("Sound not found in source category")
-                    break
+                }
+                else{
+                    let result = sm.cutSoundBetweenCategories(
+                            sourceCategory,
+                            root.selectedCategory,
+                            soundNameToCopy
+                            )
+                    switch(result.status) {
+                    case 0:
+                        if (result.newName !== soundNameToCopy) {
+                            console.log("Sound cut successfully and renamed to: " + result.newName)
+                        } else {
+                            console.log("Sound cut successfully")
+                        }
+                        // Refresh your sound list view
+                        break
+                    case 1:
+                        console.log("Sound not found in source category")
+                        break
+                    }
+
                 }
                 root.copyMode=false
                 rootAppWindow.globalSoundName=""
@@ -483,7 +506,7 @@ Item {
         Text {
             id: soundName
             visible: root.copyMode
-            text: " Copy : " + rootAppWindow.globalSoundName
+            text: rootAppWindow.globalCopyOrCut==0? " Copy : " + rootAppWindow.globalSoundName : " Move : " + rootAppWindow.globalSoundName
             color:Theme.colorText
             Layout.leftMargin: 5
             font.pointSize: 14 *fontScale

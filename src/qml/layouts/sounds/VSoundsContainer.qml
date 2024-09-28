@@ -292,15 +292,21 @@ Item {
             }
         }
         Action { text: "Copy"
-           // enabled:false
+            // enabled:false
             onTriggered: {
+                rootAppWindow.globalCopyOrCut=0
                 rootAppWindow.globalSourceCategory=currentCategory
                 rootAppWindow.globalSoundName=root.currentSoundDetailsName
 
             }
         }
         Action { text: "Cut"
-            enabled:false
+            //enabled:
+            onTriggered: {
+                rootAppWindow.globalCopyOrCut=1
+                rootAppWindow.globalSourceCategory=currentCategory
+                rootAppWindow.globalSoundName=root.currentSoundDetailsName
+            }
         }
         onAboutToHide: {
             if (!contextMenuSounds.actionTriggered) {
