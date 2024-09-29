@@ -40,11 +40,5 @@ ColumnLayout {
             Layout.fillWidth: true
         }
     }
-    Connections{
-        target: mc
-        function onBankNumberChanged(){
-                sm.loadRegistration(mc.bankNumber+1)
-        }
 
-    }
 }

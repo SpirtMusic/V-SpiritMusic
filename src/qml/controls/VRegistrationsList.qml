@@ -29,5 +29,13 @@ RowLayout {
     Component.onCompleted: {
         sm.loadRegistration(currentSelectedIndex+1)
     }
+    Connections{
+        target: mc
+        function onBankNumberChanged(){
+            currentSelectedIndex=mc.bankNumber
+            sm.loadRegistration(mc.bankNumber+1)
+        }
+
+    }
 }
 
