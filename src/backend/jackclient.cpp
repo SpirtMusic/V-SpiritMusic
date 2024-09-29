@@ -63,7 +63,8 @@ JackClient::JackClient(QObject *parent)
 
     midiin = std::make_unique<libremidi::midi_in>(
         libremidi::input_configuration{
-            .on_message = [=](const libremidi::message& msg) { callback(0, msg); }
+            .on_message = [=](const libremidi::message& msg) { callback(0, msg); },
+            .ignore_sysex = false
         },
         api_input_config
         );

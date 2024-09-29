@@ -21,7 +21,7 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
     int bankNumber = 0;
     if (isGenosRegistrationBankChange(message, bankNumber)) {
         qDebug() << "Received registration bank change for bank" << bankNumber;
-        // Handle the bank change event here
+        setBankNumber(bankNumber);
     }
 
     if(itsVolumeCC(message))
