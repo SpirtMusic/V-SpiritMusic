@@ -120,6 +120,10 @@ void JackClient::sendMidiMessage(int port, const libremidi::message& message)
 {
     midiout->send_message(message);
 }
+void JackClient::send_MidiMessage(const libremidi::message message)
+{
+    midiout->send_message(message);
+}
 void JackClient::setVolume(float newVolume)
 {
     m_volume = newVolume;

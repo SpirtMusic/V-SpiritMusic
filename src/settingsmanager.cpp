@@ -1,31 +1,83 @@
 #include "settingsmanager.h"
 SettingsManager::SettingsManager(QObject *parent)
-    : QObject(parent),
-    settings(new QSettings(QSettings::IniFormat, QSettings::UserScope, "SpiritMusic", "VSpiritMusic")),
+    : QObject(parent), currentRegistration(2),
+    //  settings(new QSettings(QSettings::IniFormat, QSettings::UserScope, "SpiritMusic", "VSpiritMusic")),
     saveTimer(new QTimer(this))
 {
+    settings = new QSettings(QSettings::IniFormat, QSettings::UserScope, "SpiritMusic", "VSpiritMusic", this);
+    loadRegistrationSettings(currentRegistration);
     connect(saveTimer, &QTimer::timeout, this, &SettingsManager::saveSettings);
     saveTimer->setSingleShot(true);
+    //loadRegistration(1);
+}
+
+void SettingsManager::loadRegistration(int registrationNumber)
+{
+    if (currentRegistration != registrationNumber) {
+        // saveRegistration();
+        currentRegistration = registrationNumber;
+        loadRegistrationSettings(registrationNumber);
+        emit currentRegistrationChanged(registrationNumber);
+    }
+}
+
+void SettingsManager::saveRegistration()
+{
+    QString filePath = getRegistrationFilePath(currentRegistration);
+    QSettings registrationFile(filePath, QSettings::IniFormat);
+
+    for (auto it = registrationSettings.constBegin(); it != registrationSettings.constEnd(); ++it) {
+        registrationFile.setValue(it.key(), it.value());
+    }
+    registrationFile.sync();
+}
+
+QString SettingsManager::getRegistrationFilePath(int registrationNumber) const
+{
+    QDir dir(QSettings(QSettings::IniFormat, QSettings::UserScope, "SpiritMusic", "VSpiritMusic").fileName());
+    dir.cdUp();
+    return dir.filePath(QString("VSpiritMusic_Registration_%1.ini").arg(registrationNumber));
+}
+
+void SettingsManager::loadRegistrationSettings(int registrationNumber)
+{
+    clearRegistrationSettings();
+    QString filePath = getRegistrationFilePath(registrationNumber);
+    if (QFile::exists(filePath)) {
+        QSettings registrationFile(filePath, QSettings::IniFormat);
+        for (const QString &key : registrationFile.allKeys()) {
+            registrationSettings[key] = registrationFile.value(key);
+        }
+    }
+}
+
+void SettingsManager::clearRegistrationSettings()
+{
+    registrationSettings.clear();
 }
 
 int SettingsManager::getControlVolume(int controlIndex) const
 {
-    return settings->value(QString("controlVolume/c_%1").arg(controlIndex), 0).toInt();
+    //return settings->value(QString("controlVolume/c_%1").arg(controlIndex), 0).toInt();
+    return registrationSettings.value(QString("controlVolume/c_%1").arg(controlIndex), 0).toInt();
 }
 
 void SettingsManager::setControlVolume(int controlIndex, int value)
 {
-    scheduleSettingSave(QString("controlVolume/c_%1").arg(controlIndex), value);
+    // scheduleSettingSave(QString("controlVolume/c_%1").arg(controlIndex), value);
+    registrationSettings[QString("controlVolume/c_%1").arg(controlIndex)] = value;
 }
 
 int SettingsManager::getControlReverb(int controlIndex) const
 {
-    return settings->value(QString("controlReverb/c_%1").arg(controlIndex), 0).toInt();
+    // return settings->value(QString("controlReverb/c_%1").arg(controlIndex), 0).toInt();
+    return registrationSettings.value(QString("controlReverb/c_%1").arg(controlIndex), 0).toInt();
 }
 
 void SettingsManager::setControlReverb(int controlIndex, int value)
 {
-    scheduleSettingSave(QString("controlReverb/c_%1").arg(controlIndex), value);
+    // scheduleSettingSave(QString("controlReverb/c_%1").arg(controlIndex), value);
+    registrationSettings[QString("controlReverb/c_%1").arg(controlIndex)] = value;
 }
 
 
@@ -51,12 +103,14 @@ QString SettingsManager::loadSelectedOutput()
 
 void  SettingsManager::saveLayerEnabled(int layerSet, int layerNumber, bool enabled){
     QString key = QString("LayerSettings/Set%1_Layer%2").arg(layerSet).arg(layerNumber);
-    scheduleSettingSave(key, enabled);
+    //  scheduleSettingSave(key, enabled);
+    registrationSettings[key] = enabled;  // Save to registration settings immediately
 }
 
 bool SettingsManager::getLayerEnabled(int layerSet, int layerNumber) const{
     QString key = QString("LayerSettings/Set%1_Layer%2").arg(layerSet).arg(layerNumber);
-    return settings->value(key, false).toBool();
+    //  return settings->value(key, false).toBool();
+    return registrationSettings.value(key, false).toBool();  // Retrieve from registration settings
 }
 
 QStringList SettingsManager::getCategories() const
@@ -618,36 +672,58 @@ void SettingsManager::saveChannelSound(int channel, bool chIsInMain, const QStri
     channelData["categoryIndex"] = chCategoryIndex;
     channelData["soundIndex"] = chSoundIndex;
 
-    scheduleSettingSave(key, channelData);
+    // scheduleSettingSave(key, channelData);
+
+    registrationSettings[key] = channelData;
 }
 
 void SettingsManager::saveOctave(int channel, int octave){
     QString key = QString("ChannelOctave/Channel_%1").arg(channel);
-    scheduleSettingSave(key, octave);
+    //  scheduleSettingSave(key, octave);
+    registrationSettings[key] = octave;
 }
 int SettingsManager::getOctave(int channel) const
 {
     QString key = QString("ChannelOctave/Channel_%1").arg(channel);
-    return settings->value(key, 0).toInt();
+    // return settings->value(key, 0).toInt();
+    return registrationSettings.value(key, 0).toInt();  // Retrieve from registration settings
 }
 
 QVariantMap SettingsManager::getChannelSound(int channel) const
 {
     QString key = QString("ChannelSounds/Channel_%1").arg(channel);
-    return settings->value(key).toMap();
+    // return settings->value(key).toMap();
+    return registrationSettings.value(key, QVariantMap()).toMap();  // Retrieve from registration settings
 }
 
 void SettingsManager::saveChannelRange(int channel, int lowNote, int highNote)
 {
+    // QString key = QString("ChannelRange/Channel_%1").arg(channel);
+    // QString value = QString("%1,%2").arg(lowNote).arg(highNote);
+    // scheduleSettingSave(key, value);
     QString key = QString("ChannelRange/Channel_%1").arg(channel);
     QString value = QString("%1,%2").arg(lowNote).arg(highNote);
-    scheduleSettingSave(key, value);
+    registrationSettings[key] = value;  // Save directly to registration settings
 }
 
 QVariantMap SettingsManager::getChannelRange(int channel) const
 {
+    // QString key = QString("ChannelRange/Channel_%1").arg(channel);
+    // QString value = settings->value(key, "0,127").toString(); // Default range 0 to 127
+    // QStringList range = value.split(",");
+
+    // QVariantMap result;
+    // if (range.size() == 2) {
+    //     result["lowNote"] = range[0].toInt();
+    //     result["highNote"] = range[1].toInt();
+    // } else {
+    //     result["lowNote"] = 0;
+    //     result["highNote"] = 127; // Default range if parsing fails
+    // }
+    // return  result;
+
     QString key = QString("ChannelRange/Channel_%1").arg(channel);
-    QString value = settings->value(key, "0,127").toString(); // Default range 0 to 127
+    QString value = registrationSettings.value(key, "0,127").toString(); // Default range 0 to 127
     QStringList range = value.split(",");
 
     QVariantMap result;
@@ -658,7 +734,7 @@ QVariantMap SettingsManager::getChannelRange(int channel) const
         result["lowNote"] = 0;
         result["highNote"] = 127; // Default range if parsing fails
     }
-    return  result;
+    return result;
 }
 void SettingsManager::scheduleSettingSave(const QString &key, const QVariant &value)
 {

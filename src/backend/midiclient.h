@@ -23,6 +23,9 @@ class MidiClient  : public QObject
     Q_PROPERTY(QString noteRange READ noteRange NOTIFY noteRangeChanged)
     Q_PROPERTY(int currentChannel READ currentChannel WRITE setCurrentChannel NOTIFY currentChannelChanged)
     Q_PROPERTY(QVariantMap channelRanges READ channelRanges NOTIFY channelRangesChanged)
+    Q_PROPERTY(int bankNumber READ bankNumber WRITE setBankNumber NOTIFY bankNumberChanged)
+
+
 public:
 
     enum LayersSet {
@@ -54,6 +57,9 @@ signals:
     void noteRangeChanged();
     void currentChannelChanged();
     void channelRangesChanged();
+
+    void bankNumberChanged(int newBankNumber);
+
 public slots:
     Q_INVOKABLE void sendNoteOn(int channel, int note, int velocity);
     Q_INVOKABLE void sendControlChange(int channel, int control, int value);
@@ -96,8 +102,11 @@ public slots:
 
     Q_INVOKABLE QVariantMap channelRanges() const;
 
+    Q_INVOKABLE void sendRegistrationChange(int bankNumber);
+    bool isGenosRegistrationBankChange(const libremidi::message& message, int& bankNumber);
 
-
+    int bankNumber() const;
+    void setBankNumber(int newBankNumber);
 private slots:
     void handleMidiMessage(const libremidi::message& message);
 
@@ -131,6 +140,8 @@ private:
     int m_highNote = -1;
     QString m_noteRange;
     int m_currentChannel = 0;  // Added to keep track of the current channel
+
+    int m_bankNumber;
 };
 
 #endif // MIDICLIENT_H

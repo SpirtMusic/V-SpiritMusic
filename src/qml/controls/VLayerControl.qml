@@ -26,12 +26,23 @@ Rectangle{
 
     property bool selected: false
     property bool firstLaunch : true
+    property bool  isFirstLoad: false
     property int spinBoxValue: 0
     color:Theme.colorBackgroundView
     border.color: selected ? selectColor : backgroundColor
     onVoiceNameChanged: {
-        if(selected && !firstLaunch)
-            sm.saveChannelSound(controlIndex,chIsInMain,chMainCategory,chCatgeoryIndex,chSoundIndex)
+        if(!isFirstLoad)
+            if(selected && !firstLaunch)
+                sm.saveChannelSound(controlIndex,chIsInMain,chMainCategory,chCatgeoryIndex,chSoundIndex)
+    }
+    Connections {
+        target:sm
+        function  onCurrentRegistrationChanged(){
+            layerControl.isFirstLoad=true
+            getChannelSound()
+            layerControl.isFirstLoad=false
+        }
+
     }
 
     radius: 4
@@ -186,7 +197,7 @@ Rectangle{
             width: parent.width/3.5 * widthScale
             value:20// spinBoxValue
             to:100
-
+            property bool isFirstLoad: true
             up.indicator:Item{
                 visible: false
             }
@@ -276,17 +287,29 @@ Rectangle{
                 }
             }
             onValueChanged:{
-                vLayersControlContainer.vPopupInfo.open()
-                vLayersControlContainer.vPopupText = voiceControl.value
-                vLayersControlContainer.vPopupTimer.restart()
-                vLayersControlContainer.vPopUpItem.getX(layerControl)
-                vLayersControlContainer.vPopUpItem.getY(layerControl)
-                vLayersControlContainer.vPopupEmitterControl=voiceControl
-                sm.setControlVolume(controlIndex,value)
-                mc.setVolume(controlIndex,value)
+                if(!isFirstLoad){
+                    vLayersControlContainer.vPopupInfo.open()
+                    vLayersControlContainer.vPopupText = voiceControl.value
+                    vLayersControlContainer.vPopupTimer.restart()
+                    vLayersControlContainer.vPopUpItem.getX(layerControl)
+                    vLayersControlContainer.vPopUpItem.getY(layerControl)
+                    vLayersControlContainer.vPopupEmitterControl=voiceControl
+                    sm.setControlVolume(controlIndex,value)
+                    mc.setVolume(controlIndex,value)
+                }
+                isFirstLoad=false
             }
             Component.onCompleted: {
+                voiceControl.isFirstLoad=true
                 value=sm.getControlVolume(controlIndex)
+
+            }
+            Connections{
+                target: sm
+                function onCurrentRegistrationChanged(){
+                    voiceControl.isFirstLoad=true
+                    voiceControl.value=sm.getControlVolume(controlIndex)
+                }
 
             }
 
@@ -476,6 +499,7 @@ Rectangle{
     Component.onCompleted:{
 
     }
+
     function getChannelSound(){
 
         var channelInfo = sm.getChannelSound(controlIndex)

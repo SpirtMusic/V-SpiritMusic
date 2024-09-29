@@ -1,7 +1,7 @@
 #include "midiclient.h"
 
 MidiClient::MidiClient(QObject *parent)
-    : QObject(parent) {
+    : QObject(parent), m_bankNumber(0)  {
     jackClient = new JackClient;
     connect(jackClient, &JackClient::midiMessageReceived, this, &MidiClient::handleMidiMessage);
     m_inputPorts = new MidiPortModel(this);
@@ -18,6 +18,12 @@ void MidiClient::handleMidiMessage(const libremidi::message& message)
     // Handle the received MIDI message here
     // e.g., update UI, process the message, etc.
     qDebug()<< message;
+    int bankNumber = 0;
+    if (isGenosRegistrationBankChange(message, bankNumber)) {
+        qDebug() << "Received registration bank change for bank" << bankNumber;
+        // Handle the bank change event here
+    }
+
     if(itsVolumeCC(message))
     {
         int statusByte = message[0];
@@ -448,4 +454,62 @@ QString MidiClient::noteNumberToName(int noteNumber) const
     QString note = noteNames[noteNumber % 12];
 
     return QString("%1%2").arg(note).arg(octave);
+}
+void MidiClient::sendRegistrationChange(int bankNumber)
+{
+
+
+    // Ensure bankNumber is within the range 1-10
+    if (bankNumber < 1 || bankNumber > 10) {
+        qWarning() << "Invalid bank number. Please use a value between 1 and 10.";
+        return;
+    }
+
+    // Create a libremidi::message directly using initializer list
+    libremidi::message message{
+        240, 67, 115, 1, 82, 37, 17, 0, 2, 0, static_cast<unsigned char>(bankNumber - 1), 247
+    };
+
+    // Send the SysEx message
+    jackClient->send_MidiMessage(message);
+}
+
+bool MidiClient::isGenosRegistrationBankChange(const libremidi::message& message, int& bankNumber)
+{
+    // Check if the message is a SysEx message
+    if (message[0] != 0xF0 || message.back() != 0xF7) {
+        return false; // Not a SysEx message
+    }
+
+    // Check if the message is a Yamaha Genos registration bank change
+    // SysEx message structure: 240, 67, 115, 1, 82, 37, 17, 0, 2, 0, <bank>, 247
+    if (message.size() == 12 &&
+        message[1] == 67 &&  // Yamaha Manufacturer ID
+        message[2] == 115 && // Extended ID
+        message[3] == 1 &&   // Device ID (can vary)
+        message[4] == 82 &&  // Command ID
+        message[5] == 37 &&  // Sub-command
+        message[6] == 17 &&  // Indicates registration memory change
+        message[7] == 0 &&
+        message[8] == 2 &&
+        message[9] == 0)
+    {
+        // Extract the bank number from the second-to-last byte
+        bankNumber = message[10] + 1; // Adjust to 1-based index for banks 1-10
+        return true;
+    }
+
+    return false; // Not a registration bank change message
+}
+int MidiClient::bankNumber() const
+{
+    return m_bankNumber;
+}
+
+void MidiClient::setBankNumber(int newBankNumber)
+{
+    if (m_bankNumber != newBankNumber) {
+        m_bankNumber = newBankNumber;
+        emit bankNumberChanged(m_bankNumber);  // Emit signal when the bankNumber changes
+    }
 }

@@ -5,7 +5,7 @@
 #include <libremidi/configurations.hpp>
 #include <libremidi/detail/memory.hpp>
 #include <libremidi/libremidi.hpp>
-
+#include <libremidi/message.hpp>
 #include <jack/jack.h>
 
 
@@ -28,6 +28,7 @@ signals:
     void midiMessageReceived(const libremidi::message& message);
 public slots:
     void sendMidiMessage(int port, const libremidi::message& message);
+    void send_MidiMessage(const libremidi::message message);
 private:
     libremidi::unique_handle<jack_client_t, jack_client_close> handle;
 

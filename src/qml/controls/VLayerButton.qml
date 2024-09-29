@@ -22,7 +22,7 @@ Rectangle {
 
     property int layerNumber: 0
     property int layerSet
-
+    property bool  isFirstLoad: false
 
     id: vLayerButton
     Layout.margins: 2
@@ -36,20 +36,36 @@ Rectangle {
     color:  colorBorder
 
     onCheckedChanged: {
-        if (rootAppWindow.vLayersControlContainerGlobal.selectedControl) {
-            rootAppWindow.vLayersControlContainerGlobal.selectedControl.selected = false
-        }
-        rootAppWindow.vLayersControlContainerGlobal.selectedControl = rootAppWindow.vControlLayers[layerNumber]
-        rootAppWindow.vControlLayers[layerNumber].selected = true
+        if(!isFirstLoad){
+            if (rootAppWindow.vLayersControlContainerGlobal.selectedControl) {
+                rootAppWindow.vLayersControlContainerGlobal.selectedControl.selected = false
+            }
+            rootAppWindow.vLayersControlContainerGlobal.selectedControl = rootAppWindow.vControlLayers[layerNumber]
+            rootAppWindow.vControlLayers[layerNumber].selected = true
 
-
-        if (mc) {
-            mc.setLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
-            sm.saveLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
-            if(!checked){
-                mc.sendNotesOff(layerNumber)
+            if (mc) {
+                mc.setLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
+                sm.saveLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
+                if(!checked){
+                    mc.sendNotesOff(layerNumber)
+                }
             }
         }
+
+    }
+    // Component.onCompleted: {
+    //     checked = sm.getLayerEnabled(layerSet, layerNumber)
+    //     mc.setLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
+    // }
+
+    Connections{
+        target: sm
+        function onCurrentRegistrationChanged(){
+            vLayerButton.isFirstLoad=true
+            checked = sm.getLayerEnabled(layerSet, layerNumber)
+            vLayerButton.isFirstLoad=false
+        }
+
     }
 
     Image {
@@ -99,7 +115,6 @@ Rectangle {
         maskSource: maskLayer
         opacity: checked ? 0.7 : 0.0
 
-
     }
 
 
@@ -139,10 +154,10 @@ Rectangle {
 
     }
 
-    Component.onCompleted: {
-        checked = sm.getLayerEnabled(layerSet, layerNumber)
-        mc.setLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
-    }
+    // Component.onCompleted: {
+    //     checked = sm.getLayerEnabled(layerSet, layerNumber)
+    //     mc.setLayerEnabled(vLayerButton.layerSet, layerNumber, checked)
+    // }
 
 
 }

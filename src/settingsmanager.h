@@ -8,15 +8,23 @@
 #include <QFile>
 #include <QTextStream>
 #include <QUrl>
+#include <QDir>
+
 class SettingsManager : public QObject
 {
     Q_OBJECT
+    Q_PROPERTY(int currentRegistration READ getCurrentRegistration NOTIFY currentRegistrationChanged)
 public:
     explicit SettingsManager(QObject *parent = nullptr);
     struct SoundOperationResult {
         int status;
         QString newName;
     };
+    // Registration handling
+    Q_INVOKABLE void loadRegistration(int registrationNumber);
+    Q_INVOKABLE void saveRegistration();
+    Q_INVOKABLE int getCurrentRegistration() const { return currentRegistration; }
+
 
     Q_INVOKABLE int getControlVolume(int controlIndex) const;
     Q_INVOKABLE void setControlVolume(int controlIndex, int value);
@@ -91,6 +99,7 @@ public:
 
 signals:
     void categoriesLoaded();
+    void currentRegistrationChanged(int newRegistration);
 
 private slots:
     void saveSettings();
@@ -100,6 +109,14 @@ private:
     QTimer *saveTimer;
     QMap<QString, QVariant> pendingSettings;
     int saveDelay = 500; // Delay in milliseconds
+
+    QMap<QString, QVariant> registrationSettings;
+    int currentRegistration;
+
+    QString getRegistrationFilePath(int registrationNumber) const;
+    void loadRegistrationSettings(int registrationNumber);
+    void clearRegistrationSettings();
+
 
     void scheduleSettingSave(const QString &key, const QVariant &value);
 };

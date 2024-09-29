@@ -20,15 +20,16 @@ Button {
     property string iconSource: ""
     property real iconSizeRatio: 0.6
     property real implicitHeightPadding: 20
-    property real fontPixelSize: 12
+    property real fontPixelSize: 16
 
     property bool isFlashing: false
+    property bool isBlink: isFlashing
     property color flashColor: "red" // Color to flash
-
+    property int selectIndex: 0
     text: qsTr("Button")
 
-    implicitWidth: contentItem.implicitWidth  + 20 //* widthScale //* widthScale
-    implicitHeight: contentItem.implicitHeight * heightScale + implicitHeightPadding * heightScale
+    implicitWidth:55 //contentItem.implicitWidth  + 20 //* widthScale //* widthScale
+    implicitHeight: 55 //contentItem.implicitHeight * heightScale + implicitHeightPadding * heightScale
 
     contentItem:RowLayout {
         anchors.centerIn: parent
@@ -62,6 +63,7 @@ Button {
             elide: Text.ElideRight
             Layout.fillWidth: true
             Layout.fillHeight: true
+            font.bold: true
         }
     }
 
@@ -78,23 +80,13 @@ Button {
     background: Rectangle {
         id: buttonBackground
         opacity: enabled ? 1 : 0.3
-        implicitWidth: 100
-        implicitHeight: 40 * heightScale
-        border.color: control.isFlashing ? (timer.running ? flashingColor : colorSelect) : (control.down ? Theme.colorHover : colorSelect)
+        implicitWidth: 55
+        implicitHeight: 55
+        border.color: control.isFlashing ?  colorSelect : (control.down ? Theme.colorHover : colorSelect)
         color: "transparent"
         border.width: 1
         radius: 2
 
-        Timer {
-            id: timer
-            interval: 500 // 1 second
-            running: control.isFlashing
-            repeat: true
-            onTriggered: {
-                // Toggle the state between flashingColor and colorSelect
-                buttonBackground.border.color = (buttonBackground.border.color === control.flashColor) ? colorSelect : control.flashColor
-            }
-        }
         Rectangle {
             id:recMask
             anchors.fill: parent
@@ -110,16 +102,64 @@ Button {
             }
 
         }
+        Image {
+            id: mask
+            source: "qrc:/vsonegx/qml/controls/resource/effects/fog_effect.png"
+            // sourceSize: Qt.size(parent.width, parent.height)
+            smooth: true
+            visible: true
+        }
+
+        OpacityMask {
+            anchors.fill: buttonBackground
+            source: mask
+            maskSource: mask
+            z:80
+        }
+        Image {
+            id: maskLayer
+            source: "qrc:/vsonegx/qml/controls/resource/effects/onMemory.png"
+            height: buttonBackground.height
+            width: buttonBackground.width
+            // smooth: true
+            visible: isBlink
+            opacity: 0.2
+        }
+        Glow {
+            anchors.fill: maskLayer
+            radius: 50
+            spread: 0.3
+            samples: 128
+            color:"#fc6b03"
+            source: maskLayer
+            visible: isBlink
+        }
+        OpacityMask {
+            id: opacityMask
+            anchors.fill: buttonBackground
+            source: maskLayer
+            z: 99  // Ensure it's on top of all other children
+            maskSource: maskLayer
+            opacity: isBlink ? 0.7 : 0.0
+        }
+        Rectangle {
+            id:glowRec
+            anchors.fill: buttonBackground
+            color:"transparent"
+            border.color:  isBlink ? "#fc6b03" : "#085cb5"
+            z:9999
+        }
+        Glow {
+            anchors.fill: glowRec
+            radius: 64
+            spread: 0.5
+            samples: 128
+            color:"#fc6b03"
+            source: glowRec
+            visible: isBlink
+        }
 
     }
     // Update the timer based on the isFlashing property
 
-    onIsFlashingChanged: {
-        if (control.isFlashing) {
-            timer.start()
-        } else {
-            timer.stop()
-            buttonBackground.border.color = colorSelect // Ensure it returns to normal color when flashing is off
-        }
-    }
 }

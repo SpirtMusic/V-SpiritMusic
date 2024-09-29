@@ -131,6 +131,14 @@ VSplitView {
                                 }
 
                             }
+                            Connections {
+                                target:sm
+                                function  onCurrentRegistrationChanged(){
+                                    reverbKnob.knob.value = sm.getControlReverb(rootAppWindow.selectedControlIndex)
+
+                                }
+
+                            }
                             Connections{
                                 target:reverbKnob.knob
                                 function onValueChanged(){
@@ -188,6 +196,13 @@ VSplitView {
                                     }
 
                                 }
+                                Connections {
+                                    target:sm
+                                    function  onCurrentRegistrationChanged(){
+                                        octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
+                                    }
+
+                                }
                                 Connections{
                                     target:octaveSpinbBox.control
                                     function onValueChanged(){
@@ -206,12 +221,6 @@ VSplitView {
                             Item{}
                             Item{}
                             Item{ Layout.fillHeight: true}
-                            VButton{
-                                text:"P A N I C"
-                                onClicked: {
-                                    mc.sendAllNotesOff()
-                                }
-                            }
                             VMidiRange{
                                 Connections {
                                     target:mc
@@ -231,6 +240,7 @@ VSplitView {
                                         var range = sm.getChannelRange(rootAppWindow.selectedControlIndex);
                                         mc.setChannelRange(rootAppWindow.selectedControlIndex,range.lowNote,range.highNote);
                                     }
+
                                     // onIsFlashingChanged: {
                                     //     if(!mc.capturingHighNote){
                                     //             var chRange= mc.channelRanges()
@@ -238,6 +248,15 @@ VSplitView {
                                     //     }
 
                                     // }
+                                }
+                                Connections {
+                                    target:sm
+                                    function  onCurrentRegistrationChanged(){
+                                        mc.setCurrentChannel(rootAppWindow.selectedControlIndex)
+                                        var range = sm.getChannelRange(rootAppWindow.selectedControlIndex);
+                                        mc.setChannelRange(rootAppWindow.selectedControlIndex,range.lowNote,range.highNote);
+                                    }
+
                                 }
                                 Component.onCompleted: {
                                     // Retrieve the range for channel 1
@@ -252,128 +271,37 @@ VSplitView {
                             }
                             Item{ Layout.fillHeight: true}
                         }
-                        RowLayout{
-                            anchors.margins: 10
-                            Layout.fillHeight: true
-                            Layout.fillWidth: true
-                            VSlider{
-                                id:masterVolumeSLider
-                                sliderLabel:"Master Volume"
-                                sliderValue: mc.masterVolume
-                                Connections{
-                                    target: masterVolumeSLider.control
-                                    function onValueChanged(){
-                                        if (masterVolumeSLider.control.value !== mc.masterVolume && masterVolumeSLider.control.pressed) {
-                                            mc.setMasterVolume(masterVolumeSLider.control.value)
-                                            console.log(masterVolumeSLider.control.value)
-                                        }
-                                    }
-                                }
-                                Connections{
-                                    target: mc
-                                    function onMasterVolumeChanged(){
-                                        if (mc.masterVolume !== masterVolumeSLider.sliderValue && !masterVolumeSLider.control.pressed) {
-                                            masterVolumeSLider.sliderValue = mc.masterVolume
-                                        }
-                                    }
-                                }
-                            }
+                        // RowLayout{
+                        //     anchors.margins: 10
+                        //     Layout.fillHeight: true
+                        //     Layout.fillWidth: true
+                        //     VSlider{
+                        //         id:masterVolumeSLider
+                        //         sliderLabel:"Master Volume"
+                        //         sliderValue: mc.masterVolume
+                        //         Connections{
+                        //             target: masterVolumeSLider.control
+                        //             function onValueChanged(){
+                        //                 if (masterVolumeSLider.control.value !== mc.masterVolume && masterVolumeSLider.control.pressed) {
+                        //                     mc.setMasterVolume(masterVolumeSLider.control.value)
+                        //                     console.log(masterVolumeSLider.control.value)
+                        //                 }
+                        //             }
+                        //         }
+                        //         Connections{
+                        //             target: mc
+                        //             function onMasterVolumeChanged(){
+                        //                 if (mc.masterVolume !== masterVolumeSLider.sliderValue && !masterVolumeSLider.control.pressed) {
+                        //                     masterVolumeSLider.sliderValue = mc.masterVolume
+                        //                 }
+                        //             }
+                        //         }
+                        //     }
 
-                            // VSpinBox{
-                            //     id:octaveSpinbBox
-                            //     Layout.preferredHeight: 40
-                            //     Layout.preferredWidth: 120
 
-                            //     Connections {
-                            //         target:rootAppWindow
-                            //         function  onSelectedControlIndexChanged(){
-                            //             octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
-                            //             mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
-                            //         }
-
-                            //     }
-                            //     Connections{
-                            //         target:octaveSpinbBox.control
-                            //         function onValueChanged(){
-                            //             mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
-                            //             sm.saveOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
-                            //             mc.sendAllNotesOff()
-
-                            //         }
-                            //     }
-                            //     Component.onCompleted: {
-                            //         octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
-                            //         mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
-
-                            //     }
-                            // }
-
-                        }
+                        // }
 
                     }
-                    // RowLayout{
-                    //     anchors.fill: parent
-                    //     anchors.margins: 10
-                    //     VSlider{
-                    //         id:masterVolumeSLider
-                    //         sliderLabel:"Master Volume"
-                    //         sliderValue: mc.masterVolume
-                    //         Connections{
-                    //             target: masterVolumeSLider.control
-                    //             function onValueChanged(){
-                    //                 if (masterVolumeSLider.control.value !== mc.masterVolume && masterVolumeSLider.control.pressed) {
-                    //                     mc.setMasterVolume(masterVolumeSLider.control.value)
-                    //                     console.log(masterVolumeSLider.control.value)
-                    //                 }
-                    //             }
-                    //         }
-                    //         Connections{
-                    //             target: mc
-                    //             function onMasterVolumeChanged(){
-                    //                 if (mc.masterVolume !== masterVolumeSLider.sliderValue && !masterVolumeSLider.control.pressed) {
-                    //                     masterVolumeSLider.sliderValue = mc.masterVolume
-                    //                 }
-                    //             }
-                    //         }
-                    //     }
-
-
-                    //     VButton{
-                    //         text:"P A N I C"
-                    //         onClicked: {
-                    //             mc.sendAllNotesOff()
-                    //         }
-                    //     }
-                    //     VSpinBox{
-                    //         id:octaveSpinbBox
-                    //         Layout.preferredHeight: 40
-                    //         Layout.preferredWidth: 120
-
-                    //         Connections {
-                    //             target:rootAppWindow
-                    //             function  onSelectedControlIndexChanged(){
-                    //                 octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
-                    //                 mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
-                    //             }
-
-                    //         }
-                    //         Connections{
-                    //             target:octaveSpinbBox.control
-                    //             function onValueChanged(){
-                    //                 mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
-                    //                 sm.saveOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
-                    //                 mc.sendAllNotesOff()
-
-                    //             }
-                    //         }
-                    //         Component.onCompleted: {
-                    //             octaveSpinbBox.control.value = sm.getOctave(rootAppWindow.selectedControlIndex)
-                    //             mc.setOctave(rootAppWindow.selectedControlIndex,octaveSpinbBox.control.value)
-
-                    //         }
-                    //     }
-
-                    // }
                 }
 
 
@@ -386,7 +314,7 @@ VSplitView {
     Item{
         SplitView.preferredHeight: quickSetSplitToggle ?  heightScale :  120*heightScale
         SplitView.fillWidth :true
-        VRegistrationsList{
+        VLayerRegistraions{
             anchors.fill: parent
             z:3
             visible:!quickSetSplitToggle
