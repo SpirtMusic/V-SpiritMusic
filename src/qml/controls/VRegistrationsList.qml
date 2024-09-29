@@ -32,8 +32,8 @@ RowLayout {
     Connections{
         target: mc
         function onBankNumberChanged(){
-            currentSelectedIndex=mc.bankNumber
-            sm.loadRegistration(mc.bankNumber+1)
+            currentSelectedIndex=mc.bankNumber-1
+            sm.loadRegistration(mc.bankNumber)
         }
 
     }
