@@ -26,6 +26,7 @@ VSplitView {
     }
     VSplitView {
         id:quickSetSplit
+        toggled:false
         orientation: Qt.Horizontal
         SplitView.preferredHeight: availableHeight
         SplitView.fillHeight: true
@@ -384,15 +385,13 @@ VSplitView {
 
     Item{
         SplitView.preferredHeight: quickSetSplitToggle ?  heightScale :  120*heightScale
-
         SplitView.fillWidth :true
-        VLayersControlContainer{
+        VRegistrationsList{
             anchors.fill: parent
             z:3
             visible:!quickSetSplitToggle
         }
     }
-
 }
 
 
