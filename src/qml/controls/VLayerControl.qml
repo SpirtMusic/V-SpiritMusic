@@ -179,14 +179,24 @@ Rectangle{
 
             }
             Text {
+                id:decrText
                 text: "-"
                 font.pixelSize: voiceControl.font.pixelSize * 2
-                color: "#ff6127"
+                color: Theme.colorText
                 anchors.fill: parent
                 fontSizeMode: Text.Fit
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 z:99
+            }
+            Glow {
+                anchors.fill: parent
+                radius: 16
+                spread: 0.3
+                samples: 32
+                color:Theme.colorSelect
+                source: decrText
+                visible: true
             }
         }
         SpinBox {
@@ -213,12 +223,22 @@ Rectangle{
                 color: layerControl.backgroundColor
 
                 Text {
+                    id:spinBoxText
                     anchors.centerIn: parent
                     font.pointSize: 10 *fontScale
                     z: 99
                     text: voiceControl.textFromValue(voiceControl.value, voiceControl.locale)
                     color: layerControl.textColor
 
+                }
+                Glow {
+                    anchors.fill: spinBoxText
+                    radius: 16
+                    spread: 0.3
+                    samples: 32
+                    color:Theme.colorSelect
+                    source: spinBoxText
+                    visible: true
                 }
                 MouseArea {
                     property real previousPosition: 0
@@ -386,14 +406,25 @@ Rectangle{
 
             }
             Text {
+                id:incText
                 text: "+"
                 font.pixelSize: voiceControl.font.pixelSize * 2
-                color: "#ff6127"
+                color: Theme.colorText
                 anchors.fill: parent
                 fontSizeMode: Text.Fit
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 z:99
+
+            }
+            Glow {
+                anchors.fill: parent
+                radius: 16
+                spread: 0.3
+                samples: 32
+                color:Theme.colorSelect
+                source: incText
+                visible: true
             }
         }
 
